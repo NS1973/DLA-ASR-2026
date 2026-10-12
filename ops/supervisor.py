@@ -55,6 +55,14 @@ def wait_for(path):
         time.sleep(10)
 
 
+def staging_initialization():
+    for name in ['best_model.pt', 'last_model.pt']:
+        path = RUNS/'staging'/name
+        if path.exists():
+            return [f'init_checkpoint={path}']
+    return []
+
+
 if __name__ == '__main__':
     mode = sys.argv[1]
     if mode == 'main':
@@ -67,7 +75,7 @@ if __name__ == '__main__':
         wait_for(ROOT / 'data/train-clean-100.ready')
         wait_for(ROOT / 'data/dev-clean.ready')
         wait_for(ROOT / 'data/dev-other.ready')
-        run('main', 0, ['data_root=/work/data/datasets','end_utc=2026-10-13T03:00:00+00:00'])
+        run('main', 0, ['data_root=/work/data/datasets','end_utc=2026-10-13T03:00:00+00:00', *staging_initialization()])
         if (ROOT/'data/train-clean-360.ready').exists():
             marker_time = datetime.fromtimestamp((ROOT/'data/train-clean-360.ready').stat().st_mtime, timezone.utc)
             if marker_time.isoformat() < '2026-10-13T03:00:00':
@@ -83,6 +91,10 @@ if __name__ == '__main__':
     elif mode == 'ablation':
         for part in ['train-clean-100','dev-clean','dev-other']:
             wait_for(ROOT / f'data/{part}.ready')
-        run('no_aug', 1, ['data_root=/work/data/datasets','augment=false','epochs=10','end_utc=2026-10-13T04:00:00+00:00'])
+        run('no_aug', 1, ['data_root=/work/data/datasets','augment=false','epochs=10','end_utc=2026-10-13T04:00:00+00:00', *staging_initialization()])
+    elif mode == 'staging':
+        wait_for(ROOT/'data/staging.ready')
+        run('staging', 0, ['custom_train=/work/data/datasets/staging','data_root=/work/data/datasets','epochs=100','warmup_steps=50',
+                          'end_utc=2026-10-13T00:12:00+00:00'])
     else:
         raise ValueError(mode)

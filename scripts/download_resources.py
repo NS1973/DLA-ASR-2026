@@ -40,4 +40,7 @@ if __name__ == '__main__':
     if not manifest.get('resources'):
         raise ValueError('Release resources not populated yet; final manifest is generated from verified artifacts')
     for resource in manifest['resources']:
-        fetch(resource['url'], Path(args.output_dir) / resource['filename'], resource['sha256'])
+        downloaded = fetch(resource['url'], Path(args.output_dir) / resource['filename'], resource['sha256'])
+        if resource.get('extract_to'):
+            from prepare_custom_dataset import extract
+            extract(downloaded, Path(args.output_dir) / resource['extract_to'])

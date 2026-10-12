@@ -286,7 +286,7 @@ def train(config):
                     optimizer.zero_grad(set_to_none=True)
                     state["micro_count"] = 0
                     state["step"] += 1
-                    if state["step"] % config["log_every"] == 0:
+                    if state["step"] == 1 or state["step"] % config["log_every"] == 0:
                         paths = result["log_probs"].detach().argmax(-1).cpu()
                         codec = Codec()
                         predictions = [codec.greedy(p[:int(n)]) for p, n in zip(paths, output_lengths)]

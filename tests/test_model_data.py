@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 import soundfile as sf
+import pytest
 
 
 def test_downsampling_lengths_ctc_and_backward():
@@ -53,3 +54,27 @@ def test_augmentations_preserve_valid_audio():
         assert result.numel() > 10000
         assert result.abs().max() <= 1
         assert result.shape != wave.shape or not torch.equal(result, wave)
+
+
+@pytest.mark.parametrize('extension,rate,duration', [('wav',8000,.012),('flac',22050,.7),('mp3',44100,1.2)])
+def test_audio_formats_rates_and_short_clips(tmp_path, extension, rate, duration):
+    from src.asr.data import CustomDirDataset
+    (tmp_path/'audio').mkdir()
+    signal = np.sin(np.arange(int(rate*duration)) * .02).astype(np.float32) * .1
+    stereo = np.stack([signal, signal*.5], axis=1)
+    sf.write(tmp_path/'audio'/f'format.{extension}', stereo, rate)
+    item = CustomDirDataset(tmp_path)[0]
+    assert item['waveform'].ndim == 1
+    assert item['spectrogram'].shape[0] == 80
+    assert torch.isfinite(item['spectrogram']).all()
+
+
+def test_augmentation_repeats_by_epoch_and_sample_after_worker_restart(tmp_path):
+    from src.asr.data import SpeechDataset
+    path = tmp_path/'one.wav'
+    sf.write(path, np.sin(np.arange(16000)*.03)*.1, 16000)
+    entries = [{'uid':'one','path':str(path),'text':'a'}]
+    first, restarted = SpeechDataset(entries, True, 42), SpeechDataset(entries, True, 42)
+    first.epoch[0] = restarted.epoch[0] = 7
+    torch.rand(100)
+    assert torch.equal(first[0]['spectrogram'], restarted[0]['spectrogram'])
