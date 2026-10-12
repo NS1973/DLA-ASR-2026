@@ -112,3 +112,11 @@ outputs/
 .vscode/
 .idea/
 __MACOSX/
+runs/
+delivery/
+artifacts/
+logs/
+.pytest_cache/
+*.partial
+*.pt
+*.pth

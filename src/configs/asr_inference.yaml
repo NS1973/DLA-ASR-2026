@@ -1,0 +1,21 @@
+checkpoint: artifacts/model.pt
+device: auto
+custom_dir: null
+data_root: data/datasets
+part: test-clean
+output_dir: predictions
+decoder: greedy
+beam_width: 20
+token_topk: 8
+beam_workers: 4
+batch_size: 16
+workers: 4
+cpu_threads: 2
+bf16: true
+limit: null
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  job:
+    chdir: false
