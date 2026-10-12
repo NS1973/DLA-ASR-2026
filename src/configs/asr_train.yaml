@@ -26,6 +26,8 @@ clip_grad: 5.0
 bf16: true
 augment: true
 resume: null
+recovery_lr_scale: 1.0
+init_checkpoint: null
 overfit: false
 overfit_target: 0.03
 max_steps: null

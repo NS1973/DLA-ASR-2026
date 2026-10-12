@@ -5,10 +5,13 @@ import shlex
 import subprocess
 import sys
 import time
+import argparse
 
 ROOT = Path(__file__).resolve().parents[1]
 REMOTE = "/home/protei_ii/dla-asr-2026"
-PARTS = ["bootstrap", "train-clean-100", "dev-clean", "dev-other", "test-clean", "test-other"]
+parser = argparse.ArgumentParser()
+parser.add_argument('--parts', nargs='+', default=["bootstrap", "train-clean-100", "dev-clean", "dev-other", "test-clean", "test-other"])
+PARTS = parser.parse_args().parts
 
 
 def gmc(*args):

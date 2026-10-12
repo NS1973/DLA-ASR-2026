@@ -30,6 +30,7 @@ def save_checkpoint(path, model, optimizer, scheduler, state, config):
     payload = {"model": model.state_dict(), "model_spec": getattr(model, "spec", config.get("model", {})),
                "optimizer": optimizer.state_dict(), "scheduler": scheduler.state_dict(), "state": state.copy(),
                "config": config, "rng_python": random.getstate(), "rng_numpy": np.random.get_state(),
+               "gradients": {name: p.grad.detach().cpu() for name, p in model.named_parameters() if p.grad is not None},
                "rng_torch": torch.get_rng_state(), "rng_cuda": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else []}
     temp = Path(str(path) + ".tmp")
     torch.save(payload, temp)
@@ -39,6 +40,9 @@ def save_checkpoint(path, model, optimizer, scheduler, state, config):
 def restore_checkpoint(path, model, optimizer=None, scheduler=None):
     payload = torch.load(path, map_location="cpu", weights_only=False)
     model.load_state_dict(payload["model"])
+    for name, parameter in model.named_parameters():
+        gradient = payload.get("gradients", {}).get(name)
+        parameter.grad = gradient.to(parameter.device) if gradient is not None else None
     if optimizer is not None:
         optimizer.load_state_dict(payload["optimizer"])
     if scheduler is not None:
@@ -103,7 +107,8 @@ def worker_seed(worker_id):
 
 def make_loader(entries, config, augment=False, shuffle=False):
     sampler = LengthBatchSampler(entries, config["batch_size"], config["seed"], shuffle)
-    return DataLoader(SpeechDataset(entries, augment), batch_sampler=sampler, collate_fn=collate,
+    return DataLoader(SpeechDataset(entries, augment, config["seed"]), batch_sampler=sampler, collate_fn=collate,
+                      generator=torch.Generator().manual_seed(config["seed"]),
                       num_workers=config["workers"], pin_memory=True, worker_init_fn=worker_seed,
                       persistent_workers=config["workers"] > 0)
 
@@ -130,14 +135,14 @@ def evaluate(model, loader, device, max_batches=None):
     return corpus_metrics(references, predictions), examples
 
 
-def log_media(entries, directory, logger):
+def log_media(entries, directory, logger, namespace="train"):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     import soundfile as sf
     from src.asr.data import load_audio, augment_waveform
-    media = Path(directory) / "media"
-    media.mkdir(exist_ok=True)
+    media = Path(directory) / "media" / namespace
+    media.mkdir(parents=True, exist_ok=True)
     mel_transform = SpeechDataset([]).mel
     for i, entry in enumerate(entries[:3]):
         original = load_audio(entry["path"])
@@ -155,8 +160,8 @@ def log_media(entries, directory, logger):
             if logger.wandb is not None:
                 try:
                     import wandb
-                    logger.wandb.log({f"audio/{i}_{kind}": wandb.Audio(str(wav_path), sample_rate=16000),
-                                      f"spectrogram/{i}_{kind}": wandb.Image(str(image_path))})
+                    logger.wandb.log({f"audio/{namespace}/{i}_{kind}": wandb.Audio(str(wav_path), sample_rate=16000),
+                                      f"spectrogram/{namespace}/{i}_{kind}": wandb.Image(str(image_path))})
                 except Exception:
                     pass
     logger.emit({"event": "augmentation_media_saved", "path": str(media), "waveform_augmentations": 4})
@@ -192,6 +197,10 @@ def train(config):
         except FileNotFoundError:
             logger.emit({"event": "validation_pending", "split": part})
     model = DeepSpeech2CTC(**config["model"]).to(device)
+    if config.get("init_checkpoint"):
+        initial = torch.load(config["init_checkpoint"], map_location="cpu", weights_only=True)
+        model.load_state_dict(initial["model"])
+        logger.emit({"event": "initialize_from_model", "path": config["init_checkpoint"], "source_state": initial.get("state")})
     optimizer = torch.optim.AdamW(model.parameters(), lr=config["lr"], weight_decay=config["weight_decay"])
     total_steps = config["epochs"] * max(1, math.ceil(len(loader) / config["accumulation"]))
     def lr_factor(step):
@@ -201,13 +210,27 @@ def train(config):
         progress = min(1, (step - warmup) / max(1, total_steps - warmup))
         return .1 + .9 * .5 * (1 + math.cos(math.pi * progress))
     scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_factor)
-    state = {"step": 0, "epoch": 0, "batch_index": 0, "best_wer": 1e9}
-    if config.get("resume"):
-        state.update(restore_checkpoint(config["resume"], model, optimizer, scheduler))
+    state = {"step": 0, "epoch": 0, "batch_index": 0, "micro_count": 0, "best_wer": 1e9}
     criterion = torch.nn.CTCLoss(blank=0, zero_infinity=False)
     logger.emit({"event": "train_start", "parameters": sum(p.numel() for p in model.parameters()),
                  "utterances": len(entries), "batches": len(loader), "device": str(device), "step": state["step"]})
     log_media(entries, directory, logger)
+    for part, valid_loader in validations.items():
+        log_media(valid_loader.dataset.entries[:1], directory, logger, namespace=part)
+    optimizer.zero_grad(set_to_none=True)
+    if config.get("resume"):
+        state.update(restore_checkpoint(config["resume"], model, optimizer, scheduler))
+        previous = torch.load(config["resume"], map_location="cpu", weights_only=False)["config"]
+        if previous.get("batch_size") != config["batch_size"] or previous.get("accumulation") != config["accumulation"]:
+            state["batch_index"], state["micro_count"] = 0, 0
+            optimizer.zero_grad(set_to_none=True)
+            logger.emit({"event": "resume_changed_batch_restart_epoch", "epoch": state["epoch"]})
+        logger.emit({"event": "resume_restored", "step": state["step"], "batch_index": state["batch_index"]})
+    if config.get("recovery_lr_scale", 1.0) != 1.0:
+        scale = config["recovery_lr_scale"]
+        scheduler.base_lrs = [lr * scale for lr in scheduler.base_lrs]
+        for group in optimizer.param_groups:
+            group["lr"] *= scale
     stopping = False
     def stop(signum, frame):
         nonlocal stopping
@@ -217,11 +240,15 @@ def train(config):
     start = last_save = time.monotonic()
     mixed = config["bf16"] and device.type == "cuda"
     deadline = datetime.fromisoformat(config["end_utc"]).timestamp() if config.get("end_utc") else math.inf
-    optimizer.zero_grad(set_to_none=True)
     last = directory / "last.pt"
+    save_checkpoint(last, model, optimizer, scheduler, state, config)
+    completed_normally = False
     try:
         for epoch in range(state["epoch"], config["epochs"]):
+            if time.time() >= deadline or (config["max_steps"] and state["step"] >= config["max_steps"]):
+                break
             loader.batch_sampler.epoch = epoch
+            loader.dataset.epoch[0] = epoch
             model.train()
             epoch_loss = count = 0
             resume_batch = state.get("batch_index", 0) if epoch == state["epoch"] else 0
@@ -243,25 +270,21 @@ def train(config):
                                  result["log_probs_length"], batch["target_lengths"])
                 if not torch.isfinite(loss):
                     logger.emit({"event": "nonfinite_loss", "step": state["step"]})
-                    optimizer.zero_grad(set_to_none=True)
-                    mixed = False
-                    for group in optimizer.param_groups:
-                        group["lr"] *= .5
-                    continue
+                    raise FloatingPointError("Nonfinite CTC loss; restore the last safe checkpoint")
                 (loss / config["accumulation"]).backward()
                 epoch_loss += loss.item()
                 count += 1
                 state["batch_index"] = batch_index + 1
-                if (batch_index + 1) % config["accumulation"] == 0 or batch_index + 1 == len(loader):
+                state["micro_count"] += 1
+                if state["micro_count"] == config["accumulation"] or batch_index + 1 == len(loader):
                     norm = torch.nn.utils.clip_grad_norm_(model.parameters(), config["clip_grad"])
                     if not torch.isfinite(norm):
-                        optimizer.zero_grad(set_to_none=True)
-                        mixed = False
                         logger.emit({"event": "nonfinite_gradient", "step": state["step"]})
-                        continue
+                        raise FloatingPointError("Nonfinite gradient; restore the last safe checkpoint")
                     optimizer.step()
                     scheduler.step()
                     optimizer.zero_grad(set_to_none=True)
+                    state["micro_count"] = 0
                     state["step"] += 1
                     if state["step"] % config["log_every"] == 0:
                         paths = result["log_probs"].detach().argmax(-1).cpu()
@@ -298,9 +321,11 @@ def train(config):
                 logger.emit({"event": "epoch_end", "epoch": epoch, "step": state["step"], "mean_loss": epoch_loss/max(1,count)})
             if stopping or time.time() >= deadline or (config["max_steps"] and state["step"] >= config["max_steps"]):
                 break
+        completed_normally = True
     finally:
-        save_checkpoint(last, model, optimizer, scheduler, state, config)
-        export_model(model, directory / "last_model.pt", state)
-        logger.emit({"event": "train_exit", "step": state["step"], "epoch": state["epoch"]})
+        if completed_normally:
+            save_checkpoint(last, model, optimizer, scheduler, state, config)
+            export_model(model, directory / "last_model.pt", state)
+        logger.emit({"event": "train_exit" if completed_normally else "train_failed_preserved_checkpoint", "step": state["step"], "epoch": state["epoch"]})
         if logger.wandb is not None:
             logger.wandb.finish()

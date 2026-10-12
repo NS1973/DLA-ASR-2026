@@ -24,35 +24,38 @@ def load_audio(path):
     return wave.clamp(-1, 1)
 
 
-def augment_waveform(wave, kind):
+def augment_waveform(wave, kind, rng=None, generator=None):
+    rng = rng or random
     if kind == "gain":
-        result = wave * random.uniform(.75, 1.25)
+        result = wave * rng.uniform(.75, 1.25)
     elif kind == "noise":
-        snr = random.uniform(20, 35)
-        noise = torch.randn_like(wave)
+        snr = rng.uniform(20, 35)
+        noise = torch.randn(wave.shape, generator=generator)
         result = wave + noise * wave.square().mean().sqrt() / (10 ** (snr / 20))
     elif kind == "speed":
-        speed = random.uniform(.90, 1.10)
+        speed = rng.uniform(.90, 1.10)
         # Interpolation avoids thousands of resampling kernels for random ratios.
         result = torch.nn.functional.interpolate(wave[None, None], size=max(1, int(len(wave) / speed)), mode="linear", align_corners=False)[0, 0]
     elif kind == "reverb":
-        duration = random.uniform(.1, .3)
+        duration = rng.uniform(.1, .3)
         n = int(duration * 16000)
-        impulse = torch.randn(n) * torch.exp(-torch.arange(n) / (n / 6))
+        impulse = torch.randn(n, generator=generator) * torch.exp(-torch.arange(n) / (n / 6))
         impulse[0] = 0
         impulse /= impulse.abs().sum().clamp_min(1e-8)
         size = 1 << (len(wave) + n - 2).bit_length()
         reflected = torch.fft.irfft(torch.fft.rfft(wave, size) * torch.fft.rfft(impulse, size), size)[:len(wave)]
-        result = wave + random.uniform(.1, .2) * reflected
+        result = wave + rng.uniform(.1, .2) * reflected
     else:
         raise ValueError(kind)
     return result.clamp(-1, 1)
 
 
 class SpeechDataset(Dataset):
-    def __init__(self, entries, augment=False):
+    def __init__(self, entries, augment=False, seed=1):
         self.entries = entries
         self.augment = augment
+        self.seed = seed
+        self.epoch = torch.zeros(1, dtype=torch.int64).share_memory_()
         self.codec = Codec()
         self.mel = torchaudio.transforms.MelSpectrogram(sample_rate=16000, n_fft=400, win_length=400,
                                                        hop_length=160, n_mels=80, f_min=20, f_max=7600)
@@ -64,9 +67,12 @@ class SpeechDataset(Dataset):
         entry = self.entries[index]
         wave = load_audio(entry["path"])
         if self.augment:
+            seed = self.seed + int(self.epoch[0]) * 1000003 + index
+            rng = random.Random(seed)
+            generator = torch.Generator().manual_seed(seed)
             for kind in ("gain", "noise", "speed", "reverb"):
-                if random.random() < .35:
-                    wave = augment_waveform(wave, kind)
+                if rng.random() < .35:
+                    wave = augment_waveform(wave, kind, rng, generator)
         # For very short files reflect-padding can fail, so pad to an FFT window.
         if len(wave) < 400:
             wave = torch.nn.functional.pad(wave, (0, 400 - len(wave)))
