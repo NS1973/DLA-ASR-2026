@@ -131,3 +131,8 @@ Full-corpus training, dev/test evaluation, full artifact download, fresh Colab v
 - Prepared bounded separateGPU0 B128 LR5e-5 candidate lr_candidate_augmented460, offset80,cutoff12:30; baseline trainers unchanged. Launch and devbenefit not yet claimed.
 
 - Independentreview verifiedexactlegacyoutputs for all4augs andsilencefinite, flaggedrunnerfailedcompletion wronglytreatedassuccess. Newlifecycle regression reproducedfalsecomplete ->fixedcheckprocess_succeeded;60tests5.58s local/60cleanGMCpassed. Operator recordsactualsourcecommit and per-fileSHA.
+
+### 2026-10-13 10:35 MSK pooled final checkpoint policy
+- Following audit, finalmodel selectionnowpooled full-devclean+other sumerrors/sumwords, deterministicclean/other/nameties; trainingbest256policyunchanged. Teststillunused. Two regressioncases failedoldclean-onlypriority ->GREEN61local5.59s/61cleanGMC1.95s. Independentreview no substantialissues.
+- Threeactualtrainerslive10:32; newv2step240 finite, checkpoints103/119/119sec. EarlysharedGPU0 windowsmain194+v2293utt/s, secondary507; differentwindows/notisolatedspeedbenchmark. Fullv2epoch/devpending.
+- Waitingcontroller13185stillloadedoldpolicy; replaceonlyafter exactownership/status/precutoff guards. No trainingprocessis stopped.

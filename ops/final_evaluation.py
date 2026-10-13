@@ -60,7 +60,12 @@ def word_rate(metrics):
 def choose_checkpoint(scores):
     if not scores or any(set(parts) != set(DEV) for parts in scores.values()):
         raise ValueError('Checkpoint selection requires both dev splits only')
-    return min(scores, key=lambda name: (word_rate(scores[name]['dev-clean']),
+    for parts in scores.values():
+        for metrics in parts.values():
+            word_rate(metrics)
+    return min(scores, key=lambda name: (sum(scores[name][part]['word_errors'] for part in DEV) /
+                                        sum(scores[name][part]['words'] for part in DEV),
+                                        word_rate(scores[name]['dev-clean']),
                                         word_rate(scores[name]['dev-other']), name))
 
 
@@ -178,7 +183,7 @@ def main():
         frozen = model.read_bytes()
         atomic_write(output/'selected_model.pt', frozen)
         copy_matching_resume(model, Path(sources[selected]['source'])/'best.pt', output/'selected_resume.pt')
-        selection = {'selected': selected, 'selection': 'full dev-clean greedy corpus WER',
+        selection = {'selected': selected, 'selection': 'pooled full dev-clean/dev-other greedy corpus WER',
                      'candidates': sources, 'scores': scores}
         atomic_write(output/'selection.json', json.dumps(selection, indent=2).encode())
         emit(output, 'model_frozen', selected=selected, sha256=hashlib.sha256(frozen).hexdigest())

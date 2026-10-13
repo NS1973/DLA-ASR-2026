@@ -8,12 +8,12 @@ def result(errors, words):
     return {'word_errors': errors, 'words': words}
 
 
-def test_model_selection_uses_full_dev_clean_only():
+def test_model_selection_pools_both_full_dev_splits():
     scores = {
         'main': {'dev-clean': result(21, 100), 'dev-other': result(20, 100)},
         'candidate': {'dev-clean': result(20, 100), 'dev-other': result(80, 100)},
     }
-    assert choose_checkpoint(scores) == 'candidate'
+    assert choose_checkpoint(scores) == 'main'
 
 
 def test_decoder_selection_pools_errors_and_rejects_mixed_checkpoints():
@@ -103,3 +103,11 @@ def test_final_pipeline_freezes_model_and_decoder_before_test(tmp_path, monkeypa
     complete = json.loads((output/'complete.json').read_text())
     assert complete['selected'] == 'lr_candidate_finetune460'
     assert complete['decoder']['name'] == 'beam20_lm0.1_bonus1.0'
+
+
+def test_checkpoint_selection_uses_total_words_instead_of_mean_split_rates():
+    scores={
+        "main":{"dev-clean":result(1,10),"dev-other":result(100,1000)},
+        "candidate":{"dev-clean":result(0,10),"dev-other":result(110,1000)},
+    }
+    assert choose_checkpoint(scores)=="main"
