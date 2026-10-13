@@ -65,7 +65,7 @@ The configuration has a campaign cutoff. For reproduction after the submission d
 python train.py run_dir=runs/reproduction end_utc=null
 ```
 
-The exact original configuration and training manifests are saved inside each run. Seeds, selected checkpoint, epochs and final results will be documented in `REPORT.md`.
+The exact original configuration and training manifests are saved inside each run. See [REPRODUCTION.md](REPRODUCTION.md) for the own staging initialization and scheduler-preserving training commands. Seeds, selected checkpoint, epochs and final results will be documented in `REPORT.md`.
 
 Resume a trusted training checkpoint:
 
