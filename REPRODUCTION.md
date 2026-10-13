@@ -91,3 +91,13 @@ Snapshot и кеши записываются атомарно. Повреждё
 ## Сборка архивов логов
 
 `scripts/package_delivery.py` принимает либо `--runs <directory>`, либо `--logs-archive <captured.tar.gz>`. Второй вариант преобразует проверенный TAR в ZIP потоком, не распаковывая десятки тысяч файлов. PT/NPZ/временные файлы исключаются из logs.zip; исходные и итоговые веса сохраняются отдельно. Текстовые и медиафайлы сохраняются побайтно. Даты служебных файлов до1980 допускаются, логические UTC-времена внутри журналов не изменяются. ZIP завершается атомарно; повреждённый или небезопасный TAR не заменяет существующий готовый logs.zip.
+
+## Chronological training curves
+
+For phases with separate optimizer counters, render on the actual shared UTC timeline:
+
+```sh
+python scripts/build_report_pdf.py --source REPORT.md --output REPORT.pdf --metrics runs/main/metrics.jsonl runs/finetune460/metrics.jsonl runs/lr_candidate_finetune460/metrics.jsonl --time-axis elapsed
+```
+
+The origin is the earliest recorded UTC timestamp across the supplied logs. Counter resets split lines rather than connecting unrelated steps. Solid dev curves denote dev-clean; dashed curves denote dev-other. These training-monitoring curves use the logged subsets and do not replace full dev/test evaluation. The default `--time-axis step` remains available for comparable schedules such as the augmentation ablation. Report rendering uses the separate `requirements-report.txt` dependencies.
