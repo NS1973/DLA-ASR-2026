@@ -47,7 +47,7 @@ python train.py data_root=data/datasets train_parts=[train-clean-100] init_check
 
 ## 4. Последующие этапы
 
-Кампания сначала использует оставшееся время до 06:00 для refinement на 100 часах: новый optimizer/scheduler, LR 1e-4, warmup 100, горизонт 120 эпох. После 06:00 используются 460 часов только при полной проверке и распаковке train-clean-360 до cutoff; иначе остаются 100 часов. Начальная модель каждого этапа выбирается по измеренному dev-clean WER среди завершённых кандидатов. Дальнейшее обучение ограничено 12:30 МСК.
+Кампания сначала использует оставшееся время до 06:00 для refinement на 100 часах: новый optimizer/scheduler, LR 1e-4, warmup 100, горизонт 120 эпох. После 06:00 используются 460 часов только при полной проверке и распаковке train-clean-360 до cutoff; иначе остаются 100 часов. Начальная модель каждого этапа выбирается по измеренному dev-clean WER среди доступных сохранённых checkpoint кандидатов. Дальнейшее обучение ограничено 12:30 МСК.
 
 Для 460 часов заранее загрузить и распаковать официальный train-clean-360.tar.gz. Его проверенный SHA-256: 146a56496217e96c14334a160df97fffedd6e0a04e66b9c5af0d40be3c792ecf.
 
@@ -111,3 +111,15 @@ python scripts/collect_initializations.py --runs /work/runs --legacy-evidence /w
 ```
 
 The collector preserves original events, labels retrospective evidence explicitly and checks every parent hash and training state. Historical retries have separate evidence records for each actual initialization timestamp. A retry initialization event may precede loading a full resume checkpoint; it is not presented as a fresh training start. New continuation phases record their own immutable parent snapshot at initialization. Re-run collection after the final phase exits; the intermediate archive cannot contain future phases.
+
+## Подтверждённое продолжение кандидата после 40 эпох
+
+Первый этап `lr_candidate_finetune460` завершил 40 полных эпох по 132553 записям (41440 optimizer steps) 13 октября в08:19:38МСК. Его последний checkpoint оказался лучшим по контрольному dev-clean: WER14.9056%, dev-other40.8360%, по256 seed1 записям. Это мониторинговые поднаборы, а не итоговая оценка.
+
+Следующий этап автоматически стартовал с точных собственных весов SHA-256 `a51d1268802190790766736a6e97f8f23a17de78787dec8e7d349f8a21204fa5` (parent step41440/epoch39). Batch128, новый AdamW/LR5e-5, warmup100, cosine horizon40эпох. Пример отдельного воспроизведения после распаковки архива родителей:
+
+```bash
+python train.py data_root=data/datasets train_parts=[train-clean-100,train-clean-360] init_checkpoint=initializations/a51d1268802190790766736a6e97f8f23a17de78787dec8e7d349f8a21204fa5.pt run_dir=runs/repro-candidate-continue1 batch_size=128 epochs=40 lr=0.00005 warmup_steps=100 end_utc=null
+```
+
+Для точного финального префикса потребуется фактическое число шагов выбранного checkpoint; оно ещё не зафиксировано. Нельзя считать весь новый40-эпоховый этап уже завершённым. Локальный резерв завершённого предыдущего этапа содержит model-only и совпадающий по всем тензорам/state full resume, SHA-256 full resume `8a3f536cfaba13528144f9ebf92dbfe6cf0da98edb52ce731e47b8405d53bf88`.
