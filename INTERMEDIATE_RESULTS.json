@@ -1,0 +1,70 @@
+{
+  "model_sha256": "e640a13abfc720cbdbaa3617edee386138cd4f9b7c78e9d191319e57d6e90f77",
+  "selected": "lr_candidate_extension1326_effective_v2__last",
+  "decoder": {
+    "name": "beam10_lm0.2_bonus1.0",
+    "wer": 0.37579492816204757,
+    "selection": "full dev-other corpus WER, with full dev-clean WER <=20%",
+    "pooled_wer": 0.25262458471760796,
+    "dev_clean_wer": 0.13727436491305467,
+    "decoder": "beam",
+    "width": 10,
+    "lm_weight": 0.2,
+    "word_bonus": 1.0,
+    "checkpoint_sha256": "e640a13abfc720cbdbaa3617edee386138cd4f9b7c78e9d191319e57d6e90f77"
+  },
+  "completed_utc": "2026-10-13T12:37:25.635933+00:00",
+  "status": "checked_intermediate_candidate; further mixed-data training continues until20:40MSK",
+  "selection_criterion": "full dev-other greedy corpus WER, with full dev-clean WER <=20%",
+  "dev": {
+    "dev-clean": {
+      "wer": 0.13727436491305467,
+      "cer": 0.04425284965471337,
+      "word_errors": 7468,
+      "char_errors": 12765,
+      "words": 54402,
+      "chars": 288456,
+      "utterances": 2703,
+      "seconds": 12.659612461924553
+    },
+    "dev-other": {
+      "wer": 0.37579492816204757,
+      "cer": 0.1619847265097706,
+      "word_errors": 19146,
+      "char_errors": 43080,
+      "words": 50948,
+      "chars": 265951,
+      "utterances": 2864,
+      "seconds": 10.097036700695753
+    }
+  },
+  "test": {
+    "test-clean": {
+      "wer": 0.13979762629336578,
+      "cer": 0.04483003587539516,
+      "word_errors": 7350,
+      "char_errors": 12621,
+      "words": 52576,
+      "chars": 281530,
+      "utterances": 2620,
+      "seconds": 12.468468498438597
+    },
+    "test-other": {
+      "wer": 0.39884989396863,
+      "cer": 0.17139368964430007,
+      "word_errors": 20877,
+      "char_errors": 46749,
+      "words": 52343,
+      "chars": 272758,
+      "utterances": 2939,
+      "seconds": 10.794997122138739
+    }
+  },
+  "resume_sha256": "9ed809fb5ff6a5848056f5d2f996032f1b1423b21b560a36e1f34c89783ad8e5",
+  "fresh_colab": {
+    "with_references": "logs/Colab_extension_with_reference.executed.ipynb",
+    "without_references": "logs/Colab_extension_without_reference.executed.ipynb",
+    "original_cells": 12,
+    "both_executions_verified": true
+  }
+}
