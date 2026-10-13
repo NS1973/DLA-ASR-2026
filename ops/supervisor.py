@@ -7,6 +7,8 @@ import subprocess
 import sys
 import time
 
+from campaign import continue_training
+
 ROOT = Path('/work')
 CODE = ROOT / 'code'
 PYTHON = '/work/env/bin/python'
@@ -76,18 +78,20 @@ if __name__ == '__main__':
         wait_for(ROOT / 'data/dev-clean.ready')
         wait_for(ROOT / 'data/dev-other.ready')
         run('main', 0, ['data_root=/work/data/datasets','end_utc=2026-10-13T03:00:00+00:00', *staging_initialization()])
-        if (ROOT/'data/train-clean-360.ready').exists():
-            marker_time = datetime.fromtimestamp((ROOT/'data/train-clean-360.ready').stat().st_mtime, timezone.utc)
-            if marker_time.isoformat() < '2026-10-13T03:00:00':
-                initial = RUNS/'main/best_model.pt'
-                if not initial.exists(): initial = RUNS/'main/last_model.pt'
-                run('finetune460', 0, ['data_root=/work/data/datasets','train_parts=[train-clean-100,train-clean-360]',
-                                      f'init_checkpoint={initial}','epochs=15','lr=0.0001','warmup_steps=100',
-                                      'end_utc=2026-10-13T09:30:00+00:00'])
-            else:
-                run('main', 0, ['data_root=/work/data/datasets','end_utc=2026-10-13T09:30:00+00:00'])
-        else:
-            run('main', 0, ['data_root=/work/data/datasets','end_utc=2026-10-13T09:30:00+00:00'])
+        def best_checkpoint():
+            import torch
+            choices=[]
+            for candidate in ['main','no_aug','refine100']:
+                path=RUNS/candidate/'best_model.pt'
+                if path.exists():
+                    state=torch.load(path,map_location='cpu',weights_only=True)['state']
+                    choices.append((state['best_wer'],path))
+            if not choices:
+                raise RuntimeError('No dev-selected checkpoint is available')
+            wer,path=min(choices,key=lambda item:item[0])
+            print(f'Selected initialization {path}: dev-clean WER={wer}',flush=True)
+            return path
+        continue_training(run,ROOT/'data',best_checkpoint)
     elif mode == 'ablation':
         for part in ['train-clean-100','dev-clean','dev-other']:
             wait_for(ROOT / f'data/{part}.ready')
@@ -95,6 +99,9 @@ if __name__ == '__main__':
         # Keep the main run's 60-epoch scheduler and compare at ten epochs.
         run('no_aug', 1, ['data_root=/work/data/datasets','augment=false','epochs=60','max_steps=8920',
                           'end_utc=2026-10-13T04:00:00+00:00', *staging_initialization()])
+    elif mode == 'ablation_continue':
+        run('no_aug',1,['data_root=/work/data/datasets','augment=false','epochs=60',
+                        'max_steps=null','end_utc=2026-10-13T03:00:00+00:00'])
     elif mode == 'staging':
         wait_for(ROOT/'data/staging.ready')
         run('staging', 0, ['custom_train=/work/data/datasets/staging','data_root=/work/data/datasets','epochs=100','warmup_steps=50',

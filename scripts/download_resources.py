@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import requests
+from urllib.parse import urlparse
 
 
 def fetch(url, destination, sha256):
@@ -15,14 +16,21 @@ def fetch(url, destination, sha256):
             if hashlib.file_digest(stream, 'sha256').hexdigest() == sha256:
                 return destination
     offset = partial.stat().st_size if partial.exists() else 0
-    with requests.get(url, headers={'Range':f'bytes={offset}-'} if offset else {}, stream=True, timeout=(20,120)) as response:
-        response.raise_for_status()
-        mode = 'ab' if offset and response.status_code == 206 else 'wb'
-        if mode == 'ab' and not response.headers.get('Content-Range','').startswith(f'bytes {offset}-'):
-            raise ValueError('Unexpected resume Content-Range')
-        with partial.open(mode) as stream:
-            for chunk in response.iter_content(2**20):
-                if chunk: stream.write(chunk)
+    if urlparse(url).hostname == 'drive.google.com':
+        import gdown
+        result = gdown.download(url=url,output=str(partial),fuzzy=True,
+                                quiet=False,resume=True,use_cookies=False)
+        if not result:
+            raise RuntimeError('Public Drive resource download failed')
+    else:
+        with requests.get(url, headers={'Range':f'bytes={offset}-'} if offset else {}, stream=True, timeout=(20,120)) as response:
+            response.raise_for_status()
+            mode = 'ab' if offset and response.status_code == 206 else 'wb'
+            if mode == 'ab' and not response.headers.get('Content-Range','').startswith(f'bytes {offset}-'):
+                raise ValueError('Unexpected resume Content-Range')
+            with partial.open(mode) as stream:
+                for chunk in response.iter_content(2**20):
+                    if chunk: stream.write(chunk)
     with partial.open('rb') as stream:
         actual = hashlib.file_digest(stream, 'sha256').hexdigest()
     if actual != sha256:
