@@ -59,3 +59,21 @@ def test_shards_reject_excluded_ids_and_infeasible_ctc(tmp_path):
     source, _ = fixture_archive(other, bad_text=True)
     with pytest.raises(ValueError, match='CTC'):
         shard_archive(source, tmp_path / 'ctc')
+
+
+def test_explicit_ctc_exclusions_preserve_original_audio_and_transcripts(tmp_path):
+    source, files = fixture_archive(tmp_path,bad_text=True)
+    original=hashlib.sha256(source.read_bytes()).hexdigest()
+    result=shard_archive(source,tmp_path/'filtered',allow_ctc_exclusions=True,shard_index_offset=1)
+    assert result['unique_utterances']==4 and result['training_unique_utterances']==0
+    assert result['training_unique_hours']==0 and len(result['excluded_ctc'])==4
+    assert all(row['required_ctc_steps']>row['available_ctc_steps'] for row in result['excluded_ctc'])
+    assert hashlib.sha256(source.read_bytes()).hexdigest()==original
+    proof=result['shards'][0]
+    assert proof['archive']=='shard-002.tar.gz'
+    manifest=json.loads((tmp_path/'filtered'/proof['manifest']).read_text())
+    assert manifest['entries']==[] and len(manifest['excluded_ctc'])==4
+    with tarfile.open(tmp_path/'filtered'/proof['archive']) as archive:
+        assert len(archive.getnames())==6
+        for uid,item in files.items():
+            assert hashlib.sha256(archive.extractfile(item['source_member']).read()).hexdigest()==item['sha256']

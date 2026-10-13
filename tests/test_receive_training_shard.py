@@ -60,3 +60,27 @@ def test_container_reserve_is_independent_of_host_free_ram(tmp_path,monkeypatch)
     monkeypatch.setattr(receiver_module,'container_memory_headroom',lambda:7*2**30)
     with pytest.raises(OSError,match='Container'):
         receiver_module.check_reserves(tmp_path,1024,5*2**30,32*2**30)
+
+
+def test_receiver_preserves_declared_ctc_infeasible_audio_without_enrolling_it(tmp_path):
+    from src.asr.codec import Codec
+    files,manifest=payload()
+    row=manifest['entries'].pop();row['text']='this target is too long'
+    tokens=Codec().encode(row['text'])
+    row.update(required_ctc_steps=len(tokens)+sum(a==b for a,b in zip(tokens,tokens[1:])),available_ctc_steps=3)
+    manifest['excluded_ctc']=[row]
+    transcript=next(name for name in files if name.endswith('.trans.txt'))
+    files[transcript]=(row['uid']+' THIS TARGET IS TOO LONG\n').encode()
+    manifest['files'][transcript]={'bytes':len(files[transcript]),'sha256':hashlib.sha256(files[transcript]).hexdigest()}
+    result=receive_shard(stream(files),tmp_path,manifest)
+    assert result['excluded_ctc_preserved_count']==1 and result['all_training_ctc_feasible']
+    assert (tmp_path/row['path']).read_bytes()==files[row['path']]
+
+
+def test_receiver_does_not_allow_excluding_a_feasible_training_record(tmp_path):
+    files,manifest=payload()
+    row=manifest['entries'].pop()
+    row.update(required_ctc_steps=1,available_ctc_steps=3)
+    manifest['excluded_ctc']=[row]
+    with pytest.raises(ValueError,match='Invalid CTC exclusion'):
+        receive_shard(stream(files),tmp_path,manifest)

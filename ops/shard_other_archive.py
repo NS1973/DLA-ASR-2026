@@ -33,7 +33,8 @@ class HashingWriter:
         self.stream.flush()
 
 
-def shard_archive(source, output, target_hours=100, known_files=None, excluded_ids=()):
+def shard_archive(source, output, target_hours=100, known_files=None, excluded_ids=(),
+                  allow_ctc_exclusions=False, shard_index_offset=0):
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     if any(output.iterdir()):
@@ -43,19 +44,22 @@ def shard_archive(source, output, target_hours=100, known_files=None, excluded_i
     codec = Codec()
     seen = set();reused = set();total_seconds = 0
     shards = [];archive = writer = temporary = None
-    shard_rows = [];shard_files = {};shard_seconds = 0
+    excluded_ctc = {}
+    shard_rows = [];shard_files = {};shard_seconds = 0;shard_excluded=[]
 
     def finish_shard():
-        nonlocal archive,writer,temporary,shard_rows,shard_files,shard_seconds
+        nonlocal archive,writer,temporary,shard_rows,shard_files,shard_seconds,shard_excluded
         if archive is None:
             return
         archive.close();writer.flush();writer.stream.close()
         final = output / temporary.name.removesuffix('.partial')
         temporary.rename(final)
         proof = {'archive': final.name, 'bytes': writer.bytes, 'sha256': writer.digest.hexdigest(),
-                 'unique_hours': shard_seconds/3600, 'unique_utterances': len(shard_rows)}
+                 'unique_hours': sum(row['duration'] for row in shard_rows)/3600,
+                 'source_audio_hours':shard_seconds/3600,'unique_utterances': len(shard_rows)}
         manifest = {**proof, 'entries': shard_rows, 'files': shard_files, 'whole_chapters': True,
-                    'audio_full_decode_rate_channels_finite_ctc_verified': True}
+                    'audio_full_decode_rate_channels_finite_ctc_verified': not shard_excluded,
+                    'all_training_ctc_feasible':True,'excluded_ctc':shard_excluded}
         manifest_path = final.with_suffix('.manifest.json')
         manifest_path.write_text(json.dumps(manifest, separators=(',', ':')))
         proof['manifest'] = manifest_path.name
@@ -63,7 +67,7 @@ def shard_archive(source, output, target_hours=100, known_files=None, excluded_i
         shards.append(proof)
         (output/'progress.json').write_text(json.dumps({'shards':shards,'unique_utterances_seen':len(seen),
             'unique_hours_seen':total_seconds/3600,'existing_utterances_reused':len(reused)},indent=2))
-        archive=writer=temporary=None;shard_rows=[];shard_files={};shard_seconds=0
+        archive=writer=temporary=None;shard_rows=[];shard_files={};shard_seconds=0;shard_excluded=[]
 
     def process_chapter(files):
         nonlocal archive,writer,temporary,total_seconds,shard_seconds
@@ -90,15 +94,22 @@ def shard_archive(source, output, target_hours=100, known_files=None, excluded_i
             tokens=codec.encode(transcripts[uid])
             required=len(tokens)+sum(a==b for a,b in zip(tokens,tokens[1:]))
             available=(max(400,len(wave))//160+4)//4
-            if not tokens or available<required:raise ValueError('Infeasible CTC target')
             digest=hashlib.sha256(data).hexdigest();duration=len(wave)/rate
             row={'uid':uid,'path':name,'text':codec.normalize(transcripts[uid]),'duration':duration,'sha256':digest}
+            if not tokens or available<required:
+                if not allow_ctc_exclusions:
+                    raise ValueError(f'Infeasible CTC target {uid}: required={required}, available={available}, samples={len(wave)}')
+                excluded_ctc[uid]={**row,'required_ctc_steps':required,'available_ctc_steps':available,
+                    'reason':'target_does_not_fit_stride4_output','original_audio_and_text_preserved':True}
+                print(json.dumps({'event':'ctc_training_exclusion','uid':uid,'required':required,'available':available,'samples':len(wave)}),flush=True)
             if uid in known_files:
                 prior=known_files[uid]
                 if prior['sha256']!=digest or abs(prior['duration']-duration)>1e-8:
                     raise ValueError('Existing audio identity mismatch')
                 if prior.get('transcription_sha256') and hashlib.sha256((transcripts[uid]+'\n').encode()).hexdigest()!=prior['transcription_sha256']:
                     raise ValueError('Existing transcript identity mismatch')
+                if prior.get('text') and codec.normalize(prior['text'])!=row['text']:
+                    raise ValueError('Existing normalized transcript identity mismatch')
                 reused.add(uid)
             rows.append(row);seen.add(uid);total_seconds+=duration
         if set(transcripts)!={row['uid'] for row in rows}:raise ValueError('Transcript/audio UID mismatch')
@@ -107,14 +118,16 @@ def shard_archive(source, output, target_hours=100, known_files=None, excluded_i
             if not all(flags):raise ValueError('Existing subset ends inside a chapter')
             return
         if archive is None:
-            temporary=output/f'shard-{len(shards)+1:03d}.tar.gz.partial'
+            temporary=output/f'shard-{len(shards)+1+shard_index_offset:03d}.tar.gz.partial'
             writer=HashingWriter(temporary)
             archive=tarfile.open(fileobj=writer,mode='w:gz',compresslevel=1)
         for name,data in files:
             member=tarfile.TarInfo(name);member.size=len(data)
             archive.addfile(member,io.BytesIO(data))
             shard_files[name]={'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()}
-        shard_rows.extend(rows);shard_seconds+=sum(row['duration'] for row in rows)
+        shard_rows.extend(row for row in rows if row['uid'] not in excluded_ctc)
+        shard_excluded.extend(excluded_ctc[row['uid']] for row in rows if row['uid'] in excluded_ctc)
+        shard_seconds+=sum(row['duration'] for row in rows)
         if shard_seconds>=target_hours*3600:finish_shard()
 
     chapter=None;buffer=[];buffer_bytes=0
@@ -141,7 +154,11 @@ def shard_archive(source, output, target_hours=100, known_files=None, excluded_i
         raise
     if set(known_files)-reused:raise ValueError('Existing IDs absent from official full archive')
     result={'shards':shards,'unique_utterances':len(seen),'unique_hours':total_seconds/3600,
-            'existing_utterances_reused':len(reused),'full_audio_and_ctc_validated':True,
+            'existing_utterances_reused':len(reused),'full_audio_and_ctc_validated':not excluded_ctc,
+            'all_audio_fully_decoded':True,'all_training_ctc_feasible':True,
+            'training_unique_utterances':len(seen)-len(excluded_ctc),
+            'training_unique_hours':(total_seconds-sum(row['duration'] for row in excluded_ctc.values()))/3600,
+            'excluded_ctc':list(excluded_ctc.values()),
             'source':str(source),'selection':'All full-archive chapters; existing identical chapters omitted from transfer'}
     (output/'ready.json').write_text(json.dumps(result,indent=2))
     return result

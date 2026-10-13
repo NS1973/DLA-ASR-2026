@@ -69,6 +69,10 @@ def receive_shard(stream, root, manifest, excluded_ids=(), reserve_bytes=0, min_
     root=Path(root);root.mkdir(parents=True,exist_ok=True)
     expected=manifest['files'];rows={row['uid']:row for row in manifest['entries']}
     if len(rows)!=len(manifest['entries']):raise ValueError('Duplicate shard UID')
+    excluded_ctc={row['uid']:row for row in manifest.get('excluded_ctc',[])}
+    if len(excluded_ctc)!=len(manifest.get('excluded_ctc',[])) or set(rows)&set(excluded_ctc):
+        raise ValueError('Conflicting CTC exclusion UID')
+    rows.update(excluded_ctc)
     if set(rows)&set(excluded_ids):raise ValueError('Shard contains excluded clean/dev/test UID')
     for name in expected:member_path(root,name)
     received=verified_received(root,manifest)
@@ -96,7 +100,13 @@ def receive_shard(stream, root, manifest, excluded_ids=(), reserve_bytes=0, min_
                 if rate!=16000 or wave.shape[1]!=1 or not len(wave) or not np.isfinite(wave).all():raise ValueError('Invalid audio')
                 if abs(len(wave)/rate-rows[uid]['duration'])>1e-8:raise ValueError('Audio duration mismatch')
                 tokens=codec.encode(rows[uid]['text']);required=len(tokens)+sum(a==b for a,b in zip(tokens,tokens[1:]))
-                if not tokens or (max(400,len(wave))//160+4)//4<required:raise ValueError('Infeasible CTC length')
+                available=(max(400,len(wave))//160+4)//4
+                feasible=bool(tokens) and available>=required
+                if uid in excluded_ctc:
+                    item=excluded_ctc[uid]
+                    if feasible or item['required_ctc_steps']!=required or item['available_ctc_steps']!=available:
+                        raise ValueError('Invalid CTC exclusion declaration')
+                elif not feasible:raise ValueError('Infeasible CTC length')
             elif name.endswith('.trans.txt'):
                 for line in data.decode('utf-8').splitlines():
                     uid,text=line.split(' ',1)
@@ -114,7 +124,8 @@ def receive_shard(stream, root, manifest, excluded_ids=(), reserve_bytes=0, min_
     if set(received)!=set(expected):raise ValueError('Incomplete shard; verified members retained for resume')
     save_status(complete=True)
     return {'files_total':len(expected),'new_files_verified':len(set(received)-initial),
-            'all_members_sha_verified':True,'audio_ctc_and_transcripts_verified':True,'manifest_identity':identity}
+            'all_members_sha_verified':True,'audio_ctc_and_transcripts_verified':True,'manifest_identity':identity,
+            'all_training_ctc_feasible':True,'excluded_ctc_preserved_count':len(excluded_ctc)}
 
 
 def main():
