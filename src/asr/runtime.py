@@ -223,7 +223,11 @@ def train(config):
     directory.mkdir(parents=True, exist_ok=True)
     (directory / "config.json").write_text(json.dumps(config, indent=2), encoding="utf-8")
     logger = RunLog(directory, config)
-    if config.get("custom_train"):
+    if config.get('training_manifest_path'):
+        from ops.build_mixed_manifest import load_manifest
+        entries = load_manifest(config['training_manifest_path'], config['data_root'],
+                                config['training_manifest_sha256'])
+    elif config.get("custom_train"):
         entries = CustomDirDataset(config["custom_train"]).entries
     else:
         entries = sum([librispeech_entries(config["data_root"], p) for p in config["train_parts"]], [])
