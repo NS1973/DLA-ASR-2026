@@ -1,11 +1,11 @@
 # Воспроизведение обучения
 
-Это описание фактической цепочки обучения, а не итоговый выбор сдаваемой модели. После фиксации checkpoint сюда добавляются окончательные этапы и число шагов. Все команды выполняются из корня проекта после установки requirements.txt. Для нового запуска отключается календарный cutoff через end_utc=null; каталог каждого запуска должен быть новым.
+Окончательная модель выбрана по полным dev-clean/dev-other: lr_candidate_finetune460_continue2__last, шаг 31717 текущего этапа. Ниже приведены её собственная цепочка родителей и фактические горизонты scheduler. Все команды выполняются из корня проекта после установки requirements.txt. Для нового запуска отключается календарный cutoff через end_utc=null; каталог каждого запуска должен быть новым.
 
 ## 1. Данные
 
 ```bash
-python ops/download_data.py --parts train-clean-100 dev-clean dev-other test-clean test-other
+python ops/download_data.py --parts train-clean-100 train-clean-360 dev-clean dev-other test-clean test-other
 mkdir -p data/datasets
 for archive in data/downloads/*.tar.gz; do tar -xzf "$archive" -C data/datasets; done
 python ops/build_staging.py
@@ -45,13 +45,46 @@ python train.py data_root=data/datasets train_parts=[train-clean-100] init_check
 
 Для сравнения на десяти эпохах добавить max_steps=8920, сохранив epochs=60. Сохранённые исходные main10/no_aug10 и их dev-сравнения входят в логи. Не сравнивать разные шаги как одинаковый бюджет.
 
-## 4. Последующие этапы
+## 4. Выбранная цепочка на 464 часах
 
-Кампания сначала использует оставшееся время до 06:00 для refinement на 100 часах: новый optimizer/scheduler, LR 1e-4, warmup 100, горизонт 120 эпох. После 06:00 используются 460 часов только при полной проверке и распаковке train-clean-360 до cutoff; иначе остаются 100 часов. Начальная модель каждого этапа выбирается по измеренному dev-clean WER среди доступных сохранённых checkpoint кандидатов. Дальнейшее обучение ограничено 12:30 МСК.
+train-clean-360 готов и проверен в 05:43:45 МСК, до cutoff 06:00. Вместе с train-clean-100 он даёт 132553 записи, 464,20 часа. SHA-256 официального train-clean-360.tar.gz: 146a56496217e96c14334a160df97fffedd6e0a04e66b9c5af0d40be3c792ecf.
 
-Для 460 часов заранее загрузить и распаковать официальный train-clean-360.tar.gz. Его проверенный SHA-256: 146a56496217e96c14334a160df97fffedd6e0a04e66b9c5af0d40be3c792ecf.
+В окончательный архив включён initializations.zip с пятью неизменяемыми собственными родительскими моделями и исходными событиями инициализации. Распаковка:
 
-Фактический выбранный родитель, конфигурация, количество шагов и SHA-256 финальных весов будут внесены после завершения кампании. Состояния optimizer, scheduler, RNG и накопленных градиентов сохраняются в доверенных full checkpoint; model-only checkpoint предназначен для инференса.
+```bash
+python -m zipfile -e initializations.zip initializations
+```
+
+Выбранная цепочка:
+
+| Родитель | Шаг | SHA-256 |
+|---|---:|---|
+| staging, собственная инициализация из случайных весов | 2784 | 0513d0edd18ce740f0994946a76cdc8a4a93b5367c4d054869736dd5fbc94da6 |
+| main на train-clean-100 | 52628 | 4f0d97726e4116286040ff8095d1c6030a1281469962c5a6544b4b16277f16be |
+| первый batch-128 этап на train100+360 | 41440 | a51d1268802190790766736a6e97f8f23a17de78787dec8e7d349f8a21204fa5 |
+| продолжение 1, лучший сохранённый родитель | 39368 | a475b472868aca39556102640143a5278ab1cd9d2fb65efd59c2bd81f6fcc553 |
+
+Пятый родитель 6066bd6b382a8d1391a4669f188f64b623266c4b7806742f82dc34d2db3e7678, шаг 36260 продолжения 1, использовался только отдельным кандидатом effective_v2; он тоже сохранён.
+
+Для воспроизведения условий каждого этапа используйте соответствующего исходного родителя. Это исключает накопление различий предыдущего повторного обучения:
+
+```bash
+python train.py data_root=data/datasets train_parts=[train-clean-100,train-clean-360] init_checkpoint=initializations/4f0d97726e4116286040ff8095d1c6030a1281469962c5a6544b4b16277f16be.pt run_dir=runs/repro-460-first batch_size=128 epochs=40 lr=0.0003 warmup_steps=100 augmentation_profile=legacy data_epoch_offset=0 max_steps=41440 end_utc=null
+python train.py data_root=data/datasets train_parts=[train-clean-100,train-clean-360] init_checkpoint=initializations/a51d1268802190790766736a6e97f8f23a17de78787dec8e7d349f8a21204fa5.pt run_dir=runs/repro-460-continue1 batch_size=128 epochs=40 lr=0.00005 warmup_steps=100 augmentation_profile=legacy data_epoch_offset=0 max_steps=39368 end_utc=null
+python train.py data_root=data/datasets train_parts=[train-clean-100,train-clean-360] init_checkpoint=initializations/a475b472868aca39556102640143a5278ab1cd9d2fb65efd59c2bd81f6fcc553.pt run_dir=runs/repro-selected-prefix batch_size=128 epochs=40 lr=0.00005 warmup_steps=100 augmentation_profile=legacy data_epoch_offset=0 max_steps=31717 end_utc=null
+```
+
+epochs=40 сохраняет фактический cosine horizon 41440 шагов; max_steps задаёт префикс, а не новый горизонт scheduler. Продолжение 1 в исходной кампании завершило все 41440 шагов; следующий этап был инициализирован его best на шаге 39368. Последний выбранный этап штатно остановлен по времени на шаге 31717, epoch 30, batch_index 637. Это 30 полных эпох и часть 31-й.
+
+Для непрерывной новой цепочки от случайной инициализации выполните staging-префикс из раздела 2, затем main-префикс max_steps=52628 при epochs=60; в следующих командах заменяйте ссылки initializations/*.pt на last_model.pt предыдущего воспроизведённого префикса. Побитная идентичность исторического обучения на другой GPU/версии библиотек не обещается. Предоставленные исходные родители и финальные веса позволяют точно проверить сохранённые состояния и повторить инференс.
+
+Возобновление выбранного доверенного full checkpoint не зависит от наличия исходного пути родителя:
+
+```bash
+python train.py resume=resume.pt data_root=data/datasets train_parts=[train-clean-100,train-clean-360] run_dir=runs/resume-selected batch_size=128 accumulation=1 epochs=40 lr=0.00005 warmup_steps=100 augmentation_profile=legacy data_epoch_offset=0 end_utc=null
+```
+
+Проверка именно сдаваемого full checkpoint подтвердила точное восстановление параметров, AdamW, scheduler, Python/NumPy/Torch/CUDA RNG и градиентов. Диагностический шаг на четырёх коротких train-записях выполнен в FP32 на CPU только в памяти: loss 0,00465095, норма градиента 0,350478. Сдаваемые файлы не изменялись. Это проверка восстановления, не новое обучение модели для выбора.
 
 ## 5. Проверка и пределы воспроизводимости
 
@@ -122,7 +155,7 @@ The collector preserves original events, labels retrospective evidence explicitl
 python train.py data_root=data/datasets train_parts=[train-clean-100,train-clean-360] init_checkpoint=initializations/a51d1268802190790766736a6e97f8f23a17de78787dec8e7d349f8a21204fa5.pt run_dir=runs/repro-candidate-continue1 batch_size=128 epochs=40 lr=0.00005 warmup_steps=100 end_utc=null
 ```
 
-Для точного финального префикса потребуется фактическое число шагов выбранного checkpoint; оно ещё не зафиксировано. Нельзя считать весь новый40-эпоховый этап уже завершённым. Локальный резерв завершённого предыдущего этапа содержит model-only и совпадающий по всем тензорам/state full resume, SHA-256 full resume `8a3f536cfaba13528144f9ebf92dbfe6cf0da98edb52ce731e47b8405d53bf88`.
+Продолжение 1 завершило все 40 эпох; выбранным родителем продолжения 2 стал его best на шаге 39368. Для воспроизведения этого префикса сохраняйте epochs=40 и задавайте max_steps=39368. Локальный резерв завершённого предыдущего этапа содержит model-only и совпадающий по всем тензорам/state full resume, SHA-256 full resume `8a3f536cfaba13528144f9ebf92dbfe6cf0da98edb52ce731e47b8405d53bf88`.
 
 ## Исправление аугментаций после аудита
 
@@ -134,4 +167,4 @@ python train.py data_root=data/datasets train_parts=[train-clean-100,train-clean
 
 ## Финальное правило выбора после аудита
 
-До первого запуска test-оценки правило уточнено: среди замороженных best checkpoint каждого эксперимента выбрать минимальный **pooled greedy WER полного dev-clean+dev-other**: сумма word_errors обоих наборов / сумма reference words. При равенстве — dev-clean, затем dev-other, затем имя запуска. Это заменяет прежний приоритет только dev-clean; фиксированное правило не использует test и лучше учитывает целевой test-other. Сначала выбирается checkpoint, затем настройки декодера по обоим полным dev, затем единственная итоговая оценка test. Исторические мониторинговые best внутри отдельных запусков по-прежнему сохранялись по dev-clean256; утверждения о глобальном поиске среди всех промежуточных эпох не делаются.
+До первого запуска test-оценки правило уточнено: среди замороженных best и last checkpoint каждого основного эксперимента выбрать минимальный **pooled greedy WER полного dev-clean+dev-other**: сумма word_errors обоих наборов / сумма reference words. При равенстве — dev-clean, затем dev-other, затем имя запуска. Это заменяет прежний приоритет только dev-clean; фиксированное правило не использует test и лучше учитывает целевой test-other. Сначала выбирается checkpoint, затем настройки декодера по обоим полным dev, затем единственная итоговая оценка test. Исторические мониторинговые best внутри отдельных запусков по-прежнему сохранялись по dev-clean256; утверждения о глобальном поиске среди всех промежуточных эпох не делаются.

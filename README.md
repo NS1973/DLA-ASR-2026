@@ -3,7 +3,7 @@
 Own DeepSpeech2-style CTC recognizer based on the official course project template.
 Template branch: `example/asr`; template history is preserved in Git. The new pipeline is in `src/asr/`; legacy template examples are retained but are not runtime dependencies.
 
-**Status: training and final evaluation are in progress. No held-out quality claim is made yet.**
+**Measured full-set result of the preserved dev-selected candidate: test-clean WER 14.16996% (2620 utterances), test-other WER 40.46195% (2939 utterances). Final demo and packaging acceptance are in progress. Two additional training stages are separate candidates; they do not replace this result without full dev selection and acceptance.**
 
 ## Installation
 
@@ -22,7 +22,7 @@ The fully pinned CPU verification environment is in `requirements-lock-cpu.txt` 
 
 ## Resources and inference
 
-The final release `resources.json` contains exact artifact URLs and SHA-256 digests. Once the release is finalized:
+The final release `resources.json` contains exact artifact URLs and SHA-256 digests. The download script verifies every resource hash:
 
 ```bash
 python scripts/download_resources.py
@@ -43,7 +43,7 @@ Predictions keep the utterance IDs. Ground truth is optional for inference. Metr
 Own CTC prefix beam search:
 
 ```bash
-python inference.py checkpoint=artifacts/model.pt custom_dir=/path/to/dataset output_dir=predictions_beam decoder=beam beam_width=20 beam_workers=4
+python inference.py checkpoint=artifacts/model.pt custom_dir=/path/to/dataset output_dir=predictions_beam decoder=beam beam_width=50 beam_workers=2 lm_path=artifacts/3-gram.pruned.1e-7.arpa.gz lm_weight=0.1 word_bonus=1.0
 ```
 
 ## Training
@@ -54,7 +54,7 @@ Download official LibriSpeech archives:
 python ops/download_data.py --parts train-clean-100 dev-clean dev-other test-clean test-other
 mkdir -p data/datasets
 for archive in data/downloads/*.tar.gz; do tar -xzf "$archive" -C data/datasets; done
-python train.py run_dir=runs/main
+python train.py run_dir=runs/main end_utc=null
 ```
 
 The reference configuration uses 80 log-Mel features, 16 kHz audio, 25 ms windows and 10 ms hops; two convolutions with 4x temporal reduction, five bidirectional GRU layers (512 units per direction), 29 CTC symbols; AdamW, BF16 with FP32 CTC loss, warmup/cosine scheduling and gradient clipping.
