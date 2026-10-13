@@ -1,0 +1,47 @@
+{
+  "status": "checked_intermediate_candidate",
+  "model_sha256": "e640a13abfc720cbdbaa3617edee386138cd4f9b7c78e9d191319e57d6e90f77",
+  "selected": "lr_candidate_extension1326_effective_v2__last",
+  "inference_overrides": [
+    "decoder=beam",
+    "beam_width=10",
+    "token_topk=8",
+    "beam_workers=2",
+    "lm_path=artifacts/3-gram.pruned.1e-7.arpa.gz",
+    "lm_weight=0.2",
+    "word_bonus=1.0"
+  ],
+  "resources": [
+    {
+      "url": "https://drive.google.com/file/d/103R6Bwn72KNDc24devEKQgLQK1Gk3oRT/view",
+      "filename": "model.pt",
+      "bytes": 97898508,
+      "sha256": "e640a13abfc720cbdbaa3617edee386138cd4f9b7c78e9d191319e57d6e90f77"
+    },
+    {
+      "url": "https://drive.google.com/file/d/1JGya3yQFvHgqNRhqS5CT7tlsuN-6s4I8/view",
+      "filename": "example.zip",
+      "bytes": 235054,
+      "sha256": "52efa3738b406fff5e025ef57fb08fa31f616703398567e9f1b217c990df78f1",
+      "extract_to": "example"
+    },
+    {
+      "filename": "3-gram.pruned.1e-7.arpa.gz",
+      "url": "https://www.openslr.org/resources/11/3-gram.pruned.1e-7.arpa.gz",
+      "sha256": "71dd880667cb6ea3942bb1982988c91fb1208839a21911eeec7e31c857c4bdfb",
+      "bytes": 34094057
+    },
+    {
+      "filename": "logs.zip",
+      "url": "https://drive.google.com/file/d/1CTePHacX1rowRL0KE071nyZpC0QtgMJ_/view",
+      "sha256": "fcaee6a15e80133e4c27bd72267ce14f9b4ab3928d53495eecda93dcedaa3e8d",
+      "bytes": 707817314,
+      "scope": "All closed first-campaign training/evaluation logs from step0; additional extension stages are separate experiments"
+    },
+    {
+      "filename": "extension-logs.zip",
+      "url": "https://drive.google.com/file/d/1V7LzukXVu0ghg-6o8TH2_Jevi70TeFnO/view",
+      "sha256": "05c0c78bad1e67bc5cd475f4f7ff4856f1c12759dd3415b089f945def6dbd48e"
+    }
+  ]
+}

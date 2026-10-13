@@ -1,0 +1,320 @@
+"""Freeze the completed campaign, select on full dev, then evaluate test once.
+
+Runs independently of the SSH/chat session. Only this project's files are read
+or written; no process is stopped and no service configuration is changed.
+"""
+import argparse
+from datetime import datetime, timezone
+import hashlib
+import io
+import json
+import math
+import os
+from pathlib import Path
+import re
+import sys
+import time
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import torch
+
+DEV = ('dev-clean', 'dev-other')
+CUTOFF = datetime(2026, 10, 13, 9, 30, tzinfo=timezone.utc)
+
+
+def read_cached_dev_comparison(path, checkpoint_sha, split, settings, lm_sha=None):
+    """Reuse only an exact frozen model's complete, internally consistent dev result."""
+    expected = {'dev-clean': (2703, 54402, 288456), 'dev-other': (2864, 50948, 265951)}
+    if split not in expected:
+        raise ValueError('Only full official dev results can be reused')
+    result = json.loads(Path(path).read_text())
+    utterances, words, chars = expected[split]
+    if (result.get('checkpoint_sha256') != checkpoint_sha or result.get('utterances') != utterances
+            or set(result.get('decoders', {})) != set(settings)):
+        raise ValueError('Cached dev model, corpus size or decoder settings mismatch')
+    if lm_sha is not None and result.get('lm_sha256') != lm_sha:
+        raise ValueError('Cached dev LM SHA mismatch')
+    for metrics in result['decoders'].values():
+        if (metrics.get('utterances'), metrics.get('words'), metrics.get('chars')) != (utterances, words, chars):
+            raise ValueError('Cached dev reference counts mismatch')
+        for rate, errors, units in [('wer', 'word_errors', words), ('cer', 'char_errors', chars)]:
+            count = metrics.get(errors)
+            if (type(count) is not int or count < 0 or not isinstance(metrics.get(rate), (int, float))
+                    or not math.isclose(metrics[rate], count/units, rel_tol=1e-12, abs_tol=1e-12)):
+                raise ValueError('Cached dev error rate is inconsistent with its counts')
+    return result
+
+
+def atomic_write(path, content):
+    path = Path(path)
+    temporary = Path(str(path)+'.tmp')
+    try:
+        with temporary.open('wb') as stream:
+            stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
+        temporary.replace(path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def freeze_model(source, destination):
+    # An existing derived snapshot must not hide a missing/corrupt source.
+    content = source.read_bytes()
+    try:
+        payload = torch.load(io.BytesIO(content), map_location='cpu', weights_only=True)
+        if 'model' not in payload or 'state' not in payload:
+            raise ValueError('Incomplete model snapshot')
+    except Exception as error:
+        raise ValueError(f'Invalid model checkpoint {source}: {error}') from error
+    if destination.exists():
+        try:
+            snapshot = destination.read_bytes()
+            payload = torch.load(io.BytesIO(snapshot), map_location='cpu', weights_only=True)
+            if 'model' not in payload or 'state' not in payload:
+                raise ValueError('Incomplete model snapshot')
+        except Exception:
+            # This derived snapshot can always be rebuilt from the original.
+            pass
+        else:
+            source_sha = hashlib.sha256(content).hexdigest()
+            snapshot_sha = hashlib.sha256(snapshot).hexdigest()
+            if source_sha != snapshot_sha:
+                raise ValueError(f'Checkpoint source SHA256 changed after freeze: {source} '
+                                 f'(source={source_sha}, snapshot={snapshot_sha}); '
+                                 f'preserving frozen snapshot {destination}')
+            return snapshot
+    atomic_write(destination, content)
+    return content
+
+
+def word_rate(metrics):
+    if metrics['words'] <= 0:
+        raise ValueError('Dev reference word count must be positive')
+    return metrics['word_errors'] / metrics['words']
+
+
+def choose_checkpoint(scores, objective='pooled'):
+    if objective not in ('pooled', 'other'):
+        raise ValueError('Unknown dev selection objective')
+    if not scores or any(set(parts) != set(DEV) for parts in scores.values()):
+        raise ValueError('Checkpoint selection requires both dev splits only')
+    for parts in scores.values():
+        for metrics in parts.values():
+            word_rate(metrics)
+    if objective == 'other':
+        eligible = [name for name in scores if word_rate(scores[name]['dev-clean']) <= .20]
+        if not eligible:
+            raise ValueError('No checkpoint satisfies full dev-clean WER <=20%')
+        return min(eligible, key=lambda name: (word_rate(scores[name]['dev-other']),
+                                              word_rate(scores[name]['dev-clean']), name))
+    return min(scores, key=lambda name: (sum(scores[name][part]['word_errors'] for part in DEV) /
+                                        sum(scores[name][part]['words'] for part in DEV),
+                                        word_rate(scores[name]['dev-clean']),
+                                        word_rate(scores[name]['dev-other']), name))
+
+
+def choose_decoder(scores, objective='pooled'):
+    if objective not in ('pooled', 'other'):
+        raise ValueError('Unknown dev selection objective')
+    if set(scores) != set(DEV):
+        raise ValueError('Decoder selection requires both dev splits only')
+    if len({part['checkpoint_sha256'] for part in scores.values()}) != 1:
+        raise ValueError('Decoder comparison mixes checkpoint hashes')
+    names = set(scores['dev-clean']['decoders'])
+    if names != set(scores['dev-other']['decoders']) or not names:
+        raise ValueError('Both dev splits must have identical decoder settings')
+    pooled = {}
+    for name in names:
+        metrics = [scores[part]['decoders'][name] for part in DEV]
+        for item in metrics:
+            word_rate(item)
+        pooled[name] = sum(x['word_errors'] for x in metrics) / sum(x['words'] for x in metrics)
+    eligible = names
+    if objective == 'other':
+        eligible = {name for name in names if word_rate(scores['dev-clean']['decoders'][name]) <= .20}
+        if not eligible:
+            raise ValueError('No decoder satisfies full dev-clean WER <=20%')
+    def rank(setting):
+        if objective == 'other':
+            return (word_rate(scores['dev-other']['decoders'][setting]),
+                    word_rate(scores['dev-clean']['decoders'][setting]), setting)
+        return (pooled[setting], setting)
+    name = min(eligible, key=rank)
+    result = {'name': name, 'wer': pooled[name], 'selection': 'pooled full dev-clean/dev-other corpus WER'}
+    if objective == 'other':
+        result.update(wer=word_rate(scores['dev-other']['decoders'][name]), pooled_wer=pooled[name],
+                      dev_clean_wer=word_rate(scores['dev-clean']['decoders'][name]),
+                      selection='full dev-other corpus WER, with full dev-clean WER <=20%')
+    if name == 'greedy':
+        plain = [setting for setting in eligible if re.fullmatch(r'beam\d+', setting)]
+        width = int(min(plain, key=rank)[4:]) if plain else 20
+        result.update(decoder='greedy', width=width, lm_weight=None)
+    else:
+        match = re.fullmatch(r'beam(\d+)(?:_lm([\d.]+)_bonus([\d.]+))?', name)
+        if match is None:
+            raise ValueError(f'Unknown decoder setting: {name}')
+        result.update(decoder='beam', width=int(match[1]),
+                      lm_weight=float(match[2]) if match[2] else None,
+                      word_bonus=float(match[3]) if match[3] else 1.0)
+    return result
+
+
+def matching_resume_bytes(model_path, resume_path):
+    """Only load trusted full checkpoints made by this project."""
+    try:
+        model = torch.load(model_path, map_location='cpu', weights_only=True)
+    except Exception as error:
+        raise ValueError(f'Invalid model checkpoint {model_path}: {error}') from error
+    content = Path(resume_path).read_bytes()
+    try:
+        resume = torch.load(io.BytesIO(content), map_location='cpu', weights_only=False)
+        if (model['state'] != resume['state'] or model['model'].keys() != resume['model'].keys()
+                or any(not torch.equal(value, resume['model'][name]) for name, value in model['model'].items())):
+            raise ValueError('Full resume checkpoint does not match frozen model')
+    except Exception as error:
+        raise ValueError(f'Invalid full resume checkpoint {resume_path}: {error}') from error
+    return content
+
+
+def copy_matching_resume(model_path, resume_path, destination):
+    atomic_write(destination, matching_resume_bytes(model_path, resume_path))
+
+
+def freeze_candidates(runs, output):
+    """Validate both checkpoint pairs, then collapse identical model bytes.
+
+    Best aliases take precedence, followed by lexicographic run order. Keep all
+    aliases in the manifest so every source checkpoint remains traceable.
+    """
+    candidates = sorted(p for p in runs.iterdir() if p.is_dir() and
+                        (p.name in ('main', 'no_aug') or p.name.startswith(
+                            ('refine100', 'finetune100', 'finetune460', 'lr_candidate_'))))
+    sources, by_sha = {}, {}
+    for kind in ('best', 'last'):
+        for candidate in candidates:
+            key = f'{candidate.name}__{kind}'
+            source = candidate/f'{kind}_model.pt'
+            resume = candidate/f'{kind}.pt'
+            for path in (source, resume):
+                if not path.is_file():
+                    raise FileNotFoundError(f'Missing checkpoint source: {path}')
+            destination = output/'candidates'/key
+            destination.mkdir(parents=True, exist_ok=True)
+            # Check the current pair independently; a cached snapshot must not
+            # hide a mismatch between today's model and its full resume source.
+            matching_resume_bytes(source, resume)
+            frozen = freeze_model(source, destination/'model.pt')
+            sha = hashlib.sha256(frozen).hexdigest()
+            alias = {'candidate': key, 'source': str(candidate), 'run': candidate.name,
+                     'checkpoint_kind': kind, 'model_source': str(source),
+                     'resume_source': str(resume)}
+            if sha in by_sha:
+                sources[by_sha[sha]]['aliases'].append(alias)
+            else:
+                by_sha[sha] = key
+                sources[key] = {**alias, 'sha256': sha, 'aliases': [alias]}
+    return sources
+
+
+def emit(output, event, **values):
+    record = {'utc': datetime.now(timezone.utc).isoformat(), 'event': event, **values}
+    text = json.dumps(record)
+    with (output/'events.jsonl').open('a') as stream:
+        stream.write(text+'\n')
+    atomic_write(output/'status.json', text.encode())
+    print(text, flush=True)
+
+
+def own_trainers():
+    pids = []
+    for process in Path('/proc').iterdir():
+        if not process.name.isdigit():
+            continue
+        try:
+            command = (process/'cmdline').read_bytes().split(b'\0')
+            if (b'train.py' in command and any(x.startswith(b'run_dir=/work/runs/') for x in command)
+                    and (process/'stat').read_text().split(') ', 1)[1].split()[0] != 'Z'):
+                pids.append(int(process.name))
+        except (FileNotFoundError, PermissionError):
+            pass
+    return pids
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--root', type=Path, default=Path('/work'))
+    parser.add_argument('--workers', type=int, default=8)
+    parser.add_argument('--objective', choices=('pooled', 'other'), default='pooled')
+    args = parser.parse_args()
+    root = args.root.resolve()
+    output = root/'runs/final-evaluation'
+    output.mkdir(parents=True, exist_ok=True)
+    import fcntl
+    with (output/'controller.lock').open('w') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        if (output/'complete.json').exists():
+            print('Final evaluation is already complete; preserving it.', flush=True)
+            return
+        emit(output, 'waiting_for_training_cutoff', pid=os.getpid(), cutoff=CUTOFF.isoformat())
+        while datetime.now(timezone.utc) < CUTOFF:
+            time.sleep(30)
+        # Allow the current batch, validation and checkpoint writes to finish.
+        while pids := own_trainers():
+            if datetime.now(timezone.utc).timestamp() > CUTOFF.timestamp()+300:
+                raise RuntimeError(f'Own trainers still active after cutoff grace period: {pids}')
+            time.sleep(10)
+        torch.set_num_threads(2)
+        from scripts.evaluate_decoders import cache_emissions, compare
+        runs = root/'runs'
+        sources = freeze_candidates(runs, output)
+        scores = {}
+        for candidate in sources:
+            destination = output/'candidates'/candidate
+            model = destination/'model.pt'
+            frozen = model.read_bytes()
+            scores[candidate] = {}
+            for part in DEV:
+                cache = cache_emissions(frozen, root/'data/datasets', part, 0,
+                                        destination, torch.device('cuda'), 16, 4)
+                summary = compare(cache, destination/part, [], 8, 1)
+                scores[candidate][part] = summary['decoders']['greedy']
+            emit(output, 'candidate_evaluated', candidate=candidate, scores=scores[candidate])
+        selected = choose_checkpoint(scores, objective=args.objective)
+        model = output/'candidates'/selected/'model.pt'
+        frozen = model.read_bytes()
+        atomic_write(output/'selected_model.pt', frozen)
+        copy_matching_resume(model, Path(sources[selected]['resume_source']), output/'selected_resume.pt')
+        criterion = ('full dev-other greedy corpus WER, with full dev-clean WER <=20%'
+                     if args.objective == 'other' else 'pooled full dev-clean/dev-other greedy corpus WER')
+        selection = {'selected': selected, 'selection': criterion,
+                     'candidates': sources, 'scores': scores}
+        atomic_write(output/'selection.json', json.dumps(selection, indent=2).encode())
+        emit(output, 'model_frozen', selected=selected, sha256=hashlib.sha256(frozen).hexdigest())
+        lm = root/'incoming/3-gram.pruned.1e-7.arpa.gz'
+        decoded = {}
+        for part in DEV:
+            cache = cache_emissions(frozen, root/'data/datasets', part, 0,
+                                    output, torch.device('cuda'), 16, 4)
+            decoded[part] = compare(cache, output/'dev-decoders'/part,
+                                    [10, 20, 50], 8, args.workers,
+                                    str(lm), [.1, .2, .3], 1.0)
+        decoder = choose_decoder(decoded, objective=args.objective)
+        decoder['checkpoint_sha256'] = hashlib.sha256(frozen).hexdigest()
+        atomic_write(output/'frozen_decoder.json', json.dumps(decoder, indent=2).encode())
+        emit(output, 'decoder_frozen', **decoder)
+        for part in ('test-clean', 'test-other'):
+            cache = cache_emissions(frozen, root/'data/datasets', part, 0,
+                                    output, torch.device('cuda'), 16, 4)
+            summary = compare(cache, output/'test'/part, [decoder['width']], 8, args.workers,
+                              str(lm) if decoder['lm_weight'] is not None else None,
+                              [decoder['lm_weight']] if decoder['lm_weight'] is not None else [], 1.0)
+            emit(output, 'test_evaluated', split=part, decoders=summary['decoders'])
+        complete = {'model_sha256': hashlib.sha256(frozen).hexdigest(), 'selected': selected,
+                    'decoder': decoder, 'completed_utc': datetime.now(timezone.utc).isoformat()}
+        atomic_write(output/'complete.json', json.dumps(complete, indent=2).encode())
+        emit(output, 'final_evaluation_complete', **complete)
+
+
+if __name__ == '__main__':
+    main()

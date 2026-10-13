@@ -1,0 +1,45 @@
+seed: 1
+device: cuda
+data_root: data/datasets
+custom_train: null
+train_parts: [train-clean-100]
+valid_parts: [dev-clean, dev-other]
+valid_limit: 256
+checkpoint_monitor: dev-clean
+limit_train: null
+run_dir: runs/main
+model:
+  n_feats: 80
+  n_tokens: 29
+  hidden: 512
+  layers: 5
+  conv_channels: 32
+  dropout: 0.1
+batch_size: 32
+accumulation: 1
+workers: 8
+cpu_threads: 4
+epochs: 60
+lr: 0.0003
+weight_decay: 0.0001
+warmup_steps: 500
+clip_grad: 5.0
+bf16: true
+augment: true
+augmentation_profile: legacy
+data_epoch_offset: 0
+resume: null
+recovery_lr_scale: 1.0
+init_checkpoint: null
+overfit: false
+overfit_target: 0.03
+max_steps: null
+log_every: 20
+checkpoint_seconds: 300
+end_utc: '2026-10-13T09:30:00+00:00'
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  job:
+    chdir: false

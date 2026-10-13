@@ -1,0 +1,2372 @@
+{
+  "model_sha256": "e05cdea14cb642968ffa30e87373d84bb13c6ffcb6a5b08f5a4cd9da66366e4f",
+  "selected": "lr_candidate_othermix100_5x__best",
+  "decoder": {
+    "name": "beam50_lm0.1_bonus1.0",
+    "wer": 0.33369317735730547,
+    "selection": "full dev-other corpus WER, with full dev-clean WER <=20%",
+    "pooled_wer": 0.23068818224964405,
+    "dev_clean_wer": 0.13422300650711372,
+    "decoder": "beam",
+    "width": 50,
+    "lm_weight": 0.1,
+    "word_bonus": 1.0,
+    "checkpoint_sha256": "e05cdea14cb642968ffa30e87373d84bb13c6ffcb6a5b08f5a4cd9da66366e4f"
+  },
+  "completed_utc": "2026-10-13T17:56:31.858574+00:00",
+  "status": "measured_final_candidate; resources_and_fresh_Colab_verified; archive_acceptance_separate",
+  "selection_criterion": "full dev-other greedy corpus WER, with full dev-clean WER <=20%",
+  "resume_sha256": "9d4afccb97075453b9edc263c6af8d67eb7d482eac40276e5b81d792ca233fd6",
+  "dev": {
+    "dev-clean": {
+      "wer": 0.13422300650711372,
+      "cer": 0.043008292425881244,
+      "word_errors": 7302,
+      "char_errors": 12406,
+      "words": 54402,
+      "chars": 288456,
+      "utterances": 2703,
+      "seconds": 39.029943915084004
+    },
+    "dev-other": {
+      "wer": 0.33369317735730547,
+      "cer": 0.13751405334065298,
+      "word_errors": 17001,
+      "char_errors": 36572,
+      "words": 50948,
+      "chars": 265951,
+      "utterances": 2864,
+      "seconds": 32.77904842980206
+    }
+  },
+  "test": {
+    "test-clean": {
+      "wer": 0.1355181071211199,
+      "cer": 0.04287997726707633,
+      "word_errors": 7125,
+      "char_errors": 12072,
+      "words": 52576,
+      "chars": 281530,
+      "utterances": 2620,
+      "seconds": 38.459175281226635
+    },
+    "test-other": {
+      "wer": 0.3546797088435894,
+      "cer": 0.14545127915588177,
+      "word_errors": 18565,
+      "char_errors": 39673,
+      "words": 52343,
+      "chars": 272758,
+      "utterances": 2939,
+      "seconds": 32.615856755524874
+    }
+  },
+  "quality_targets_met": {
+    "test-clean": true,
+    "test-other": false
+  },
+  "unique_candidates": 28,
+  "candidate_aliases": 28,
+  "selection": {
+    "selected": "lr_candidate_othermix100_5x__best",
+    "selection": "full dev-other greedy corpus WER, with full dev-clean WER <=20%",
+    "candidates": {
+      "finetune460__best": {
+        "candidate": "finetune460__best",
+        "source": "/scratch/evaluation2040-root/runs/finetune460",
+        "run": "finetune460",
+        "checkpoint_kind": "best",
+        "model_source": "/scratch/evaluation2040-root/runs/finetune460/best_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/finetune460/best.pt",
+        "sha256": "58e2e5b28ca87f032741fbbbe9bcf5bbff8647db985c4ef6c7878a2073187c61",
+        "aliases": [
+          {
+            "candidate": "finetune460__best",
+            "source": "/scratch/evaluation2040-root/runs/finetune460",
+            "run": "finetune460",
+            "checkpoint_kind": "best",
+            "model_source": "/scratch/evaluation2040-root/runs/finetune460/best_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/finetune460/best.pt"
+          }
+        ]
+      },
+      "lr_candidate_augmented460__best": {
+        "candidate": "lr_candidate_augmented460__best",
+        "source": "/scratch/evaluation2040-root/runs/lr_candidate_augmented460",
+        "run": "lr_candidate_augmented460",
+        "checkpoint_kind": "best",
+        "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_augmented460/best_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_augmented460/best.pt",
+        "sha256": "502bbce9b8dc1076f42249d0b7086dd8b4681f948a057639421636755d5c0135",
+        "aliases": [
+          {
+            "candidate": "lr_candidate_augmented460__best",
+            "source": "/scratch/evaluation2040-root/runs/lr_candidate_augmented460",
+            "run": "lr_candidate_augmented460",
+            "checkpoint_kind": "best",
+            "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_augmented460/best_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_augmented460/best.pt"
+          }
+        ]
+      },
+      "lr_candidate_extension1326_effective_v2__best": {
+        "candidate": "lr_candidate_extension1326_effective_v2__best",
+        "source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_effective_v2",
+        "run": "lr_candidate_extension1326_effective_v2",
+        "checkpoint_kind": "best",
+        "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_effective_v2/best_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_effective_v2/best.pt",
+        "sha256": "66a415470bea6c370d6276ccc7ff404d1148882f018f6cf6342228ecc019cb07",
+        "aliases": [
+          {
+            "candidate": "lr_candidate_extension1326_effective_v2__best",
+            "source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_effective_v2",
+            "run": "lr_candidate_extension1326_effective_v2",
+            "checkpoint_kind": "best",
+            "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_effective_v2/best_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_effective_v2/best.pt"
+          }
+        ]
+      },
+      "lr_candidate_extension1326_legacy__best": {
+        "candidate": "lr_candidate_extension1326_legacy__best",
+        "source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_legacy",
+        "run": "lr_candidate_extension1326_legacy",
+        "checkpoint_kind": "best",
+        "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_legacy/best_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_legacy/best.pt",
+        "sha256": "e1731f6f9cca8e763b0700ef78612e4b7ee43d77d866ea844d17dbca0c5a0af9",
+        "aliases": [
+          {
+            "candidate": "lr_candidate_extension1326_legacy__best",
+            "source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_legacy",
+            "run": "lr_candidate_extension1326_legacy",
+            "checkpoint_kind": "best",
+            "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_legacy/best_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_legacy/best.pt"
+          }
+        ]
+      },
+      "lr_candidate_extension1547_lr1e5__best": {
+        "candidate": "lr_candidate_extension1547_lr1e5__best",
+        "source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr1e5",
+        "run": "lr_candidate_extension1547_lr1e5",
+        "checkpoint_kind": "best",
+        "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr1e5/best_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr1e5/best.pt",
+        "sha256": "4918c281a3c5a95fc4582d71d3dcc1ff2ae00737152107caf065a084e88ccd23",
+        "aliases": [
+          {
+            "candidate": "lr_candidate_extension1547_lr1e5__best",
+            "source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr1e5",
+            "run": "lr_candidate_extension1547_lr1e5",
+            "checkpoint_kind": "best",
+            "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr1e5/best_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr1e5/best.pt"
+          }
+        ]
+      },
+      "lr_candidate_extension1547_lr3e5__best": {
+        "candidate": "lr_candidate_extension1547_lr3e5__best",
+        "source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr3e5",
+        "run": "lr_candidate_extension1547_lr3e5",
+        "checkpoint_kind": "best",
+        "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr3e5/best_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr3e5/best.pt",
+        "sha256": "c36f330347bd1481aa18e6b5dfb9c0adcc1893ef21cea8b5dd2ed90c28a92cc6",
+        "aliases": [
+          {
+            "candidate": "lr_candidate_extension1547_lr3e5__best",
+            "source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr3e5",
+            "run": "lr_candidate_extension1547_lr3e5",
+            "checkpoint_kind": "best",
+            "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr3e5/best_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr3e5/best.pt"
+          }
+        ]
+      },
+      "lr_candidate_finetune460__best": {
+        "candidate": "lr_candidate_finetune460__best",
+        "source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460",
+        "run": "lr_candidate_finetune460",
+        "checkpoint_kind": "best",
+        "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460/best_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460/best.pt",
+        "sha256": "a51d1268802190790766736a6e97f8f23a17de78787dec8e7d349f8a21204fa5",
+        "aliases": [
+          {
+            "candidate": "lr_candidate_finetune460__best",
+            "source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460",
+            "run": "lr_candidate_finetune460",
+            "checkpoint_kind": "best",
+            "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460/best_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460/best.pt"
+          }
+        ]
+      },
+      "lr_candidate_finetune460_continue1__best": {
+        "candidate": "lr_candidate_finetune460_continue1__best",
+        "source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue1",
+        "run": "lr_candidate_finetune460_continue1",
+        "checkpoint_kind": "best",
+        "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue1/best_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue1/best.pt",
+        "sha256": "a475b472868aca39556102640143a5278ab1cd9d2fb65efd59c2bd81f6fcc553",
+        "aliases": [
+          {
+            "candidate": "lr_candidate_finetune460_continue1__best",
+            "source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue1",
+            "run": "lr_candidate_finetune460_continue1",
+            "checkpoint_kind": "best",
+            "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue1/best_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue1/best.pt"
+          }
+        ]
+      },
+      "lr_candidate_finetune460_continue2__best": {
+        "candidate": "lr_candidate_finetune460_continue2__best",
+        "source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue2",
+        "run": "lr_candidate_finetune460_continue2",
+        "checkpoint_kind": "best",
+        "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue2/best_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue2/best.pt",
+        "sha256": "f9c59263dd8260fdeeabb72b71edc8c594536911db0e4f1631503e15860db00a",
+        "aliases": [
+          {
+            "candidate": "lr_candidate_finetune460_continue2__best",
+            "source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue2",
+            "run": "lr_candidate_finetune460_continue2",
+            "checkpoint_kind": "best",
+            "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue2/best_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue2/best.pt"
+          }
+        ]
+      },
+      "lr_candidate_othermix100_5x__best": {
+        "candidate": "lr_candidate_othermix100_5x__best",
+        "source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix100_5x",
+        "run": "lr_candidate_othermix100_5x",
+        "checkpoint_kind": "best",
+        "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix100_5x/best_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix100_5x/best.pt",
+        "sha256": "e05cdea14cb642968ffa30e87373d84bb13c6ffcb6a5b08f5a4cd9da66366e4f",
+        "aliases": [
+          {
+            "candidate": "lr_candidate_othermix100_5x__best",
+            "source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix100_5x",
+            "run": "lr_candidate_othermix100_5x",
+            "checkpoint_kind": "best",
+            "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix100_5x/best_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix100_5x/best.pt"
+          }
+        ]
+      },
+      "lr_candidate_othermix50_9x__best": {
+        "candidate": "lr_candidate_othermix50_9x__best",
+        "source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix50_9x",
+        "run": "lr_candidate_othermix50_9x",
+        "checkpoint_kind": "best",
+        "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix50_9x/best_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix50_9x/best.pt",
+        "sha256": "1dcda0513cedf0039af15e13385defc3fb067e31e61053aeff35049757e94934",
+        "aliases": [
+          {
+            "candidate": "lr_candidate_othermix50_9x__best",
+            "source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix50_9x",
+            "run": "lr_candidate_othermix50_9x",
+            "checkpoint_kind": "best",
+            "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix50_9x/best_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix50_9x/best.pt"
+          }
+        ]
+      },
+      "main__best": {
+        "candidate": "main__best",
+        "source": "/scratch/evaluation2040-root/runs/main",
+        "run": "main",
+        "checkpoint_kind": "best",
+        "model_source": "/scratch/evaluation2040-root/runs/main/best_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/main/best.pt",
+        "sha256": "4f0d97726e4116286040ff8095d1c6030a1281469962c5a6544b4b16277f16be",
+        "aliases": [
+          {
+            "candidate": "main__best",
+            "source": "/scratch/evaluation2040-root/runs/main",
+            "run": "main",
+            "checkpoint_kind": "best",
+            "model_source": "/scratch/evaluation2040-root/runs/main/best_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/main/best.pt"
+          }
+        ]
+      },
+      "no_aug__best": {
+        "candidate": "no_aug__best",
+        "source": "/scratch/evaluation2040-root/runs/no_aug",
+        "run": "no_aug",
+        "checkpoint_kind": "best",
+        "model_source": "/scratch/evaluation2040-root/runs/no_aug/best_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/no_aug/best.pt",
+        "sha256": "41e7937286cf2934e7b9f5decb5c90264be3c966141631e251a5dcf353013c97",
+        "aliases": [
+          {
+            "candidate": "no_aug__best",
+            "source": "/scratch/evaluation2040-root/runs/no_aug",
+            "run": "no_aug",
+            "checkpoint_kind": "best",
+            "model_source": "/scratch/evaluation2040-root/runs/no_aug/best_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/no_aug/best.pt"
+          }
+        ]
+      },
+      "refine100__best": {
+        "candidate": "refine100__best",
+        "source": "/scratch/evaluation2040-root/runs/refine100",
+        "run": "refine100",
+        "checkpoint_kind": "best",
+        "model_source": "/scratch/evaluation2040-root/runs/refine100/best_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/refine100/best.pt",
+        "sha256": "64247de51e0ba4caf2bf771207321cafbf962f2e9d5b582742d28cae9de2ffe7",
+        "aliases": [
+          {
+            "candidate": "refine100__best",
+            "source": "/scratch/evaluation2040-root/runs/refine100",
+            "run": "refine100",
+            "checkpoint_kind": "best",
+            "model_source": "/scratch/evaluation2040-root/runs/refine100/best_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/refine100/best.pt"
+          }
+        ]
+      },
+      "finetune460__last": {
+        "candidate": "finetune460__last",
+        "source": "/scratch/evaluation2040-root/runs/finetune460",
+        "run": "finetune460",
+        "checkpoint_kind": "last",
+        "model_source": "/scratch/evaluation2040-root/runs/finetune460/last_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/finetune460/last.pt",
+        "sha256": "ef5881e68d076e0be2f98468512a668653917a2720aeb15d7eb59205351a5079",
+        "aliases": [
+          {
+            "candidate": "finetune460__last",
+            "source": "/scratch/evaluation2040-root/runs/finetune460",
+            "run": "finetune460",
+            "checkpoint_kind": "last",
+            "model_source": "/scratch/evaluation2040-root/runs/finetune460/last_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/finetune460/last.pt"
+          }
+        ]
+      },
+      "lr_candidate_augmented460__last": {
+        "candidate": "lr_candidate_augmented460__last",
+        "source": "/scratch/evaluation2040-root/runs/lr_candidate_augmented460",
+        "run": "lr_candidate_augmented460",
+        "checkpoint_kind": "last",
+        "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_augmented460/last_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_augmented460/last.pt",
+        "sha256": "56266e33b114da27b62852a3a687d8a36d2b071e14905e1c30a343c8541f2e49",
+        "aliases": [
+          {
+            "candidate": "lr_candidate_augmented460__last",
+            "source": "/scratch/evaluation2040-root/runs/lr_candidate_augmented460",
+            "run": "lr_candidate_augmented460",
+            "checkpoint_kind": "last",
+            "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_augmented460/last_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_augmented460/last.pt"
+          }
+        ]
+      },
+      "lr_candidate_extension1326_effective_v2__last": {
+        "candidate": "lr_candidate_extension1326_effective_v2__last",
+        "source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_effective_v2",
+        "run": "lr_candidate_extension1326_effective_v2",
+        "checkpoint_kind": "last",
+        "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_effective_v2/last_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_effective_v2/last.pt",
+        "sha256": "e640a13abfc720cbdbaa3617edee386138cd4f9b7c78e9d191319e57d6e90f77",
+        "aliases": [
+          {
+            "candidate": "lr_candidate_extension1326_effective_v2__last",
+            "source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_effective_v2",
+            "run": "lr_candidate_extension1326_effective_v2",
+            "checkpoint_kind": "last",
+            "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_effective_v2/last_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_effective_v2/last.pt"
+          }
+        ]
+      },
+      "lr_candidate_extension1326_legacy__last": {
+        "candidate": "lr_candidate_extension1326_legacy__last",
+        "source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_legacy",
+        "run": "lr_candidate_extension1326_legacy",
+        "checkpoint_kind": "last",
+        "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_legacy/last_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_legacy/last.pt",
+        "sha256": "f079b5152733e2750f90b6d677ba2ca874d089f99952222c31a5ef5c526e6c9f",
+        "aliases": [
+          {
+            "candidate": "lr_candidate_extension1326_legacy__last",
+            "source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_legacy",
+            "run": "lr_candidate_extension1326_legacy",
+            "checkpoint_kind": "last",
+            "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_legacy/last_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1326_legacy/last.pt"
+          }
+        ]
+      },
+      "lr_candidate_extension1547_lr1e5__last": {
+        "candidate": "lr_candidate_extension1547_lr1e5__last",
+        "source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr1e5",
+        "run": "lr_candidate_extension1547_lr1e5",
+        "checkpoint_kind": "last",
+        "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr1e5/last_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr1e5/last.pt",
+        "sha256": "8c92b5b0fc648c4e409ce4d3ca2c886c4697a3f3893e8df56808089053376349",
+        "aliases": [
+          {
+            "candidate": "lr_candidate_extension1547_lr1e5__last",
+            "source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr1e5",
+            "run": "lr_candidate_extension1547_lr1e5",
+            "checkpoint_kind": "last",
+            "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr1e5/last_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr1e5/last.pt"
+          }
+        ]
+      },
+      "lr_candidate_extension1547_lr3e5__last": {
+        "candidate": "lr_candidate_extension1547_lr3e5__last",
+        "source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr3e5",
+        "run": "lr_candidate_extension1547_lr3e5",
+        "checkpoint_kind": "last",
+        "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr3e5/last_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr3e5/last.pt",
+        "sha256": "993660b4fc7382b98307100732eaca2097212861f1b0ecf9864baa327e67188d",
+        "aliases": [
+          {
+            "candidate": "lr_candidate_extension1547_lr3e5__last",
+            "source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr3e5",
+            "run": "lr_candidate_extension1547_lr3e5",
+            "checkpoint_kind": "last",
+            "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr3e5/last_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_extension1547_lr3e5/last.pt"
+          }
+        ]
+      },
+      "lr_candidate_finetune460__last": {
+        "candidate": "lr_candidate_finetune460__last",
+        "source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460",
+        "run": "lr_candidate_finetune460",
+        "checkpoint_kind": "last",
+        "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460/last_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460/last.pt",
+        "sha256": "0e5a86b2d1d7e5b6c6d3d6187dfd407250f25d404c652f533710c54f4d17fe69",
+        "aliases": [
+          {
+            "candidate": "lr_candidate_finetune460__last",
+            "source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460",
+            "run": "lr_candidate_finetune460",
+            "checkpoint_kind": "last",
+            "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460/last_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460/last.pt"
+          }
+        ]
+      },
+      "lr_candidate_finetune460_continue1__last": {
+        "candidate": "lr_candidate_finetune460_continue1__last",
+        "source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue1",
+        "run": "lr_candidate_finetune460_continue1",
+        "checkpoint_kind": "last",
+        "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue1/last_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue1/last.pt",
+        "sha256": "b885f63380bf418cc555e4988cdc238f004715d492bd0c302d783c13cdd7e9c4",
+        "aliases": [
+          {
+            "candidate": "lr_candidate_finetune460_continue1__last",
+            "source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue1",
+            "run": "lr_candidate_finetune460_continue1",
+            "checkpoint_kind": "last",
+            "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue1/last_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue1/last.pt"
+          }
+        ]
+      },
+      "lr_candidate_finetune460_continue2__last": {
+        "candidate": "lr_candidate_finetune460_continue2__last",
+        "source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue2",
+        "run": "lr_candidate_finetune460_continue2",
+        "checkpoint_kind": "last",
+        "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue2/last_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue2/last.pt",
+        "sha256": "d919aed41505686fe2e590b6253defc4283585c02cc35ac0e368c72fd534679f",
+        "aliases": [
+          {
+            "candidate": "lr_candidate_finetune460_continue2__last",
+            "source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue2",
+            "run": "lr_candidate_finetune460_continue2",
+            "checkpoint_kind": "last",
+            "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue2/last_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_finetune460_continue2/last.pt"
+          }
+        ]
+      },
+      "lr_candidate_othermix100_5x__last": {
+        "candidate": "lr_candidate_othermix100_5x__last",
+        "source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix100_5x",
+        "run": "lr_candidate_othermix100_5x",
+        "checkpoint_kind": "last",
+        "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix100_5x/last_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix100_5x/last.pt",
+        "sha256": "efb1f88b9a420e9ac4224e47e59b1d3c5d445b43cd4e6ef482bb61b73f5a8108",
+        "aliases": [
+          {
+            "candidate": "lr_candidate_othermix100_5x__last",
+            "source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix100_5x",
+            "run": "lr_candidate_othermix100_5x",
+            "checkpoint_kind": "last",
+            "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix100_5x/last_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix100_5x/last.pt"
+          }
+        ]
+      },
+      "lr_candidate_othermix50_9x__last": {
+        "candidate": "lr_candidate_othermix50_9x__last",
+        "source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix50_9x",
+        "run": "lr_candidate_othermix50_9x",
+        "checkpoint_kind": "last",
+        "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix50_9x/last_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix50_9x/last.pt",
+        "sha256": "ca90b32d85d99a1f967f5d601b502c90dc8b6367866a5d0cf07da99d800d99db",
+        "aliases": [
+          {
+            "candidate": "lr_candidate_othermix50_9x__last",
+            "source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix50_9x",
+            "run": "lr_candidate_othermix50_9x",
+            "checkpoint_kind": "last",
+            "model_source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix50_9x/last_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/lr_candidate_othermix50_9x/last.pt"
+          }
+        ]
+      },
+      "main__last": {
+        "candidate": "main__last",
+        "source": "/scratch/evaluation2040-root/runs/main",
+        "run": "main",
+        "checkpoint_kind": "last",
+        "model_source": "/scratch/evaluation2040-root/runs/main/last_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/main/last.pt",
+        "sha256": "4d93c19132ca8530b28dd18eccbd50c68db5de57bf68fd03f7aabcbb9c2c6b4a",
+        "aliases": [
+          {
+            "candidate": "main__last",
+            "source": "/scratch/evaluation2040-root/runs/main",
+            "run": "main",
+            "checkpoint_kind": "last",
+            "model_source": "/scratch/evaluation2040-root/runs/main/last_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/main/last.pt"
+          }
+        ]
+      },
+      "no_aug__last": {
+        "candidate": "no_aug__last",
+        "source": "/scratch/evaluation2040-root/runs/no_aug",
+        "run": "no_aug",
+        "checkpoint_kind": "last",
+        "model_source": "/scratch/evaluation2040-root/runs/no_aug/last_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/no_aug/last.pt",
+        "sha256": "b9cabab87d4eb25a304e5a456ace6ab2dbaf5b2825b6a317e2626bf76c43b200",
+        "aliases": [
+          {
+            "candidate": "no_aug__last",
+            "source": "/scratch/evaluation2040-root/runs/no_aug",
+            "run": "no_aug",
+            "checkpoint_kind": "last",
+            "model_source": "/scratch/evaluation2040-root/runs/no_aug/last_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/no_aug/last.pt"
+          }
+        ]
+      },
+      "refine100__last": {
+        "candidate": "refine100__last",
+        "source": "/scratch/evaluation2040-root/runs/refine100",
+        "run": "refine100",
+        "checkpoint_kind": "last",
+        "model_source": "/scratch/evaluation2040-root/runs/refine100/last_model.pt",
+        "resume_source": "/scratch/evaluation2040-root/runs/refine100/last.pt",
+        "sha256": "001f24a435faf4475138300566704ecd891ceeca540fe96e63c55ee3bfda1f6e",
+        "aliases": [
+          {
+            "candidate": "refine100__last",
+            "source": "/scratch/evaluation2040-root/runs/refine100",
+            "run": "refine100",
+            "checkpoint_kind": "last",
+            "model_source": "/scratch/evaluation2040-root/runs/refine100/last_model.pt",
+            "resume_source": "/scratch/evaluation2040-root/runs/refine100/last.pt"
+          }
+        ]
+      }
+    },
+    "scores": {
+      "finetune460__best": {
+        "dev-clean": {
+          "wer": 0.15449799639719128,
+          "cer": 0.04836092852982777,
+          "word_errors": 8405,
+          "char_errors": 13950,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.227473612874746
+        },
+        "dev-other": {
+          "wer": 0.4050993169506163,
+          "cer": 0.16989219818688406,
+          "word_errors": 20639,
+          "char_errors": 45183,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.910108640789986
+        }
+      },
+      "lr_candidate_augmented460__best": {
+        "dev-clean": {
+          "wer": 0.14709018050806955,
+          "cer": 0.0464992927864215,
+          "word_errors": 8002,
+          "char_errors": 13413,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.246015617623925
+        },
+        "dev-other": {
+          "wer": 0.3962275261050483,
+          "cer": 0.16582001947727212,
+          "word_errors": 20187,
+          "char_errors": 44100,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.9294637851417065
+        }
+      },
+      "lr_candidate_extension1326_effective_v2__best": {
+        "dev-clean": {
+          "wer": 0.14407558545641705,
+          "cer": 0.04516113376043487,
+          "word_errors": 7838,
+          "char_errors": 13027,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.221940256655216
+        },
+        "dev-other": {
+          "wer": 0.39283190704247467,
+          "cer": 0.16406781700388418,
+          "word_errors": 20014,
+          "char_errors": 43634,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.911660777404904
+        }
+      },
+      "lr_candidate_extension1326_legacy__best": {
+        "dev-clean": {
+          "wer": 0.14514172273078196,
+          "cer": 0.045511273816457275,
+          "word_errors": 7896,
+          "char_errors": 13128,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.194582514464855
+        },
+        "dev-other": {
+          "wer": 0.3981510559786449,
+          "cer": 0.16645923497185572,
+          "word_errors": 20285,
+          "char_errors": 44270,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.929406950250268
+        }
+      },
+      "lr_candidate_extension1547_lr1e5__best": {
+        "dev-clean": {
+          "wer": 0.14137347891621632,
+          "cer": 0.044644590509471116,
+          "word_errors": 7691,
+          "char_errors": 12878,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.183993084356189
+        },
+        "dev-other": {
+          "wer": 0.38992698437622675,
+          "cer": 0.16311651394429802,
+          "word_errors": 19866,
+          "char_errors": 43381,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.918508872389793
+        }
+      },
+      "lr_candidate_extension1547_lr3e5__best": {
+        "dev-clean": {
+          "wer": 0.1437998602992537,
+          "cer": 0.04521660149208198,
+          "word_errors": 7823,
+          "char_errors": 13043,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.182161392644048
+        },
+        "dev-other": {
+          "wer": 0.3914383292769098,
+          "cer": 0.16413549864448715,
+          "word_errors": 19943,
+          "char_errors": 43652,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.8802174758166075
+        }
+      },
+      "lr_candidate_finetune460__best": {
+        "dev-clean": {
+          "wer": 0.1567773243630749,
+          "cer": 0.049473749895998,
+          "word_errors": 8529,
+          "char_errors": 14271,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.211885195225477
+        },
+        "dev-other": {
+          "wer": 0.41153725367040905,
+          "cer": 0.17165568093370584,
+          "word_errors": 20967,
+          "char_errors": 45652,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.901295794174075
+        }
+      },
+      "lr_candidate_finetune460_continue1__best": {
+        "dev-clean": {
+          "wer": 0.1491673100253667,
+          "cer": 0.046887566907951296,
+          "word_errors": 8115,
+          "char_errors": 13525,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.220932638272643
+        },
+        "dev-other": {
+          "wer": 0.39983905158200517,
+          "cer": 0.16771886550529985,
+          "word_errors": 20371,
+          "char_errors": 44605,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 5.162544833496213
+        }
+      },
+      "lr_candidate_finetune460_continue2__best": {
+        "dev-clean": {
+          "wer": 0.1506010808426161,
+          "cer": 0.0471441051668192,
+          "word_errors": 8193,
+          "char_errors": 13599,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.187346443533897
+        },
+        "dev-other": {
+          "wer": 0.40174295359974876,
+          "cer": 0.1686964892028983,
+          "word_errors": 20468,
+          "char_errors": 44865,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.931407701224089
+        }
+      },
+      "lr_candidate_othermix100_5x__best": {
+        "dev-clean": {
+          "wer": 0.1421822727105621,
+          "cer": 0.044342984718639934,
+          "word_errors": 7735,
+          "char_errors": 12791,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.182654766365886
+        },
+        "dev-other": {
+          "wer": 0.34862997566145876,
+          "cer": 0.14055972716778656,
+          "word_errors": 17762,
+          "char_errors": 37382,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.905510108917952
+        }
+      },
+      "lr_candidate_othermix50_9x__best": {
+        "dev-clean": {
+          "wer": 0.15438770633432594,
+          "cer": 0.04859666638932801,
+          "word_errors": 8399,
+          "char_errors": 14018,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.178846837952733
+        },
+        "dev-other": {
+          "wer": 0.38054486927848,
+          "cer": 0.15478791205898831,
+          "word_errors": 19388,
+          "char_errors": 41166,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.928938575088978
+        }
+      },
+      "main__best": {
+        "dev-clean": {
+          "wer": 0.2432631153266424,
+          "cer": 0.07926685525695426,
+          "word_errors": 13234,
+          "char_errors": 22865,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.1916471887379885
+        },
+        "dev-other": {
+          "wer": 0.5178024652586951,
+          "cer": 0.22343965617726574,
+          "word_errors": 26381,
+          "char_errors": 59424,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.914734896272421
+        }
+      },
+      "no_aug__best": {
+        "dev-clean": {
+          "wer": 0.28842689606999744,
+          "cer": 0.09885736472806944,
+          "word_errors": 15691,
+          "char_errors": 28516,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.229999991133809
+        },
+        "dev-other": {
+          "wer": 0.5777263091779854,
+          "cer": 0.26033367048817263,
+          "word_errors": 29434,
+          "char_errors": 69236,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.901593180373311
+        }
+      },
+      "refine100__best": {
+        "dev-clean": {
+          "wer": 0.25361199955883973,
+          "cer": 0.08259145242255318,
+          "word_errors": 13797,
+          "char_errors": 23824,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.181979713961482
+        },
+        "dev-other": {
+          "wer": 0.5208055272042083,
+          "cer": 0.2255941884031269,
+          "word_errors": 26534,
+          "char_errors": 59997,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.9215477872639894
+        }
+      },
+      "finetune460__last": {
+        "dev-clean": {
+          "wer": 0.15365243924855704,
+          "cer": 0.04822225920070999,
+          "word_errors": 8359,
+          "char_errors": 13910,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.250703223049641
+        },
+        "dev-other": {
+          "wer": 0.4069050796890948,
+          "cer": 0.17044869167628623,
+          "word_errors": 20731,
+          "char_errors": 45331,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.919981164857745
+        }
+      },
+      "lr_candidate_augmented460__last": {
+        "dev-clean": {
+          "wer": 0.14709018050806955,
+          "cer": 0.0464992927864215,
+          "word_errors": 8002,
+          "char_errors": 13413,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.226642578840256
+        },
+        "dev-other": {
+          "wer": 0.3962275261050483,
+          "cer": 0.16582001947727212,
+          "word_errors": 20187,
+          "char_errors": 44100,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.919052256271243
+        }
+      },
+      "lr_candidate_extension1326_effective_v2__last": {
+        "dev-clean": {
+          "wer": 0.14310135656777323,
+          "cer": 0.04495659649998613,
+          "word_errors": 7785,
+          "char_errors": 12968,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.206857124343514
+        },
+        "dev-other": {
+          "wer": 0.3921253042317657,
+          "cer": 0.16394749408725667,
+          "word_errors": 19978,
+          "char_errors": 43602,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.923100002110004
+        }
+      },
+      "lr_candidate_extension1326_legacy__last": {
+        "dev-clean": {
+          "wer": 0.14245799786772545,
+          "cer": 0.04472432537371384,
+          "word_errors": 7750,
+          "char_errors": 12901,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.202938117086887
+        },
+        "dev-other": {
+          "wer": 0.39251786134882627,
+          "cer": 0.16418813992051168,
+          "word_errors": 19998,
+          "char_errors": 43666,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.921319779008627
+        }
+      },
+      "lr_candidate_extension1547_lr1e5__last": {
+        "dev-clean": {
+          "wer": 0.14008676151612073,
+          "cer": 0.04421818232243392,
+          "word_errors": 7621,
+          "char_errors": 12755,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.227747933939099
+        },
+        "dev-other": {
+          "wer": 0.3897503336735495,
+          "cer": 0.16274050482983707,
+          "word_errors": 19857,
+          "char_errors": 43281,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.907649515196681
+        }
+      },
+      "lr_candidate_extension1547_lr3e5__last": {
+        "dev-clean": {
+          "wer": 0.14473732583360907,
+          "cer": 0.04516460049366281,
+          "word_errors": 7874,
+          "char_errors": 13028,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 8.211382880806923
+        },
+        "dev-other": {
+          "wer": 0.39236083850200204,
+          "cer": 0.16393245372267823,
+          "word_errors": 19990,
+          "char_errors": 43598,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.897007115185261
+        }
+      },
+      "lr_candidate_finetune460__last": {
+        "dev-clean": {
+          "wer": 0.1567773243630749,
+          "cer": 0.049473749895998,
+          "word_errors": 8529,
+          "char_errors": 14271,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.2453892827034
+        },
+        "dev-other": {
+          "wer": 0.41153725367040905,
+          "cer": 0.17165568093370584,
+          "word_errors": 20967,
+          "char_errors": 45652,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.905155427753925
+        }
+      },
+      "lr_candidate_finetune460_continue1__last": {
+        "dev-clean": {
+          "wer": 0.1496452336311165,
+          "cer": 0.047109437834539754,
+          "word_errors": 8141,
+          "char_errors": 13589,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.214789643883705
+        },
+        "dev-other": {
+          "wer": 0.39928947161812045,
+          "cer": 0.16780158751048124,
+          "word_errors": 20343,
+          "char_errors": 44627,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.925551131367683
+        }
+      },
+      "lr_candidate_finetune460_continue2__last": {
+        "dev-clean": {
+          "wer": 0.1465571118708871,
+          "cer": 0.0461110186648917,
+          "word_errors": 7973,
+          "char_errors": 13301,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.188868649303913
+        },
+        "dev-other": {
+          "wer": 0.39658082751040274,
+          "cer": 0.16578241856582604,
+          "word_errors": 20205,
+          "char_errors": 44090,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.917047696188092
+        }
+      },
+      "lr_candidate_othermix100_5x__last": {
+        "dev-clean": {
+          "wer": 0.14236608948200433,
+          "cer": 0.04451285464680922,
+          "word_errors": 7745,
+          "char_errors": 12840,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 7.13449171371758
+        },
+        "dev-other": {
+          "wer": 0.3511227133547931,
+          "cer": 0.1414621490424928,
+          "word_errors": 17889,
+          "char_errors": 37622,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.914312604814768
+        }
+      },
+      "lr_candidate_othermix50_9x__last": {
+        "dev-clean": {
+          "wer": 0.15438770633432594,
+          "cer": 0.04859666638932801,
+          "word_errors": 8399,
+          "char_errors": 14018,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.247142596170306
+        },
+        "dev-other": {
+          "wer": 0.38054486927848,
+          "cer": 0.15478791205898831,
+          "word_errors": 19388,
+          "char_errors": 41166,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.8977018762379885
+        }
+      },
+      "main__last": {
+        "dev-clean": {
+          "wer": 0.24449468769530533,
+          "cer": 0.07975219790886652,
+          "word_errors": 13301,
+          "char_errors": 23005,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.243629015982151
+        },
+        "dev-other": {
+          "wer": 0.5137983826646777,
+          "cer": 0.22214242473237553,
+          "word_errors": 26177,
+          "char_errors": 59079,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 5.638511719182134
+        }
+      },
+      "no_aug__last": {
+        "dev-clean": {
+          "wer": 0.2881511709128341,
+          "cer": 0.09891976592617245,
+          "word_errors": 15676,
+          "char_errors": 28534,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 7.005531743168831
+        },
+        "dev-other": {
+          "wer": 0.578884352673314,
+          "cer": 0.26060815714172914,
+          "word_errors": 29493,
+          "char_errors": 69309,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.876830602064729
+        }
+      },
+      "refine100__last": {
+        "dev-clean": {
+          "wer": 0.25443917503032976,
+          "cer": 0.0829658596111712,
+          "word_errors": 13842,
+          "char_errors": 23932,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.204770976677537
+        },
+        "dev-other": {
+          "wer": 0.5209429221951793,
+          "cer": 0.22593635669728634,
+          "word_errors": 26541,
+          "char_errors": 60088,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.888289345428348
+        }
+      }
+    }
+  },
+  "all_decoder_comparisons": {
+    "dev-clean": {
+      "checkpoint_sha256": "e05cdea14cb642968ffa30e87373d84bb13c6ffcb6a5b08f5a4cd9da66366e4f",
+      "utterances": 2703,
+      "decoders": {
+        "greedy": {
+          "wer": 0.1421822727105621,
+          "cer": 0.044342984718639934,
+          "word_errors": 7735,
+          "char_errors": 12791,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 6.215535601601005
+        },
+        "beam10": {
+          "wer": 0.1392595860446307,
+          "cer": 0.043517902210389106,
+          "word_errors": 7576,
+          "char_errors": 12553,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 19.349054193124175
+        },
+        "beam20": {
+          "wer": 0.1389287158560347,
+          "cer": 0.04346243447874199,
+          "word_errors": 7558,
+          "char_errors": 12537,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 9.774925796315074
+        },
+        "beam50": {
+          "wer": 0.13878166243888093,
+          "cer": 0.04341736694677871,
+          "word_errors": 7550,
+          "char_errors": 12524,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 14.8835479170084
+        },
+        "beam10_lm0.1_bonus1.0": {
+          "wer": 0.1342781515385464,
+          "cer": 0.04304989322461658,
+          "word_errors": 7305,
+          "char_errors": 12418,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 13.591721814125776
+        },
+        "beam10_lm0.2_bonus1.0": {
+          "wer": 0.13659424285871843,
+          "cer": 0.0438125745347644,
+          "word_errors": 7431,
+          "char_errors": 12638,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 12.623811785131693
+        },
+        "beam10_lm0.3_bonus1.0": {
+          "wer": 0.14527039447079151,
+          "cer": 0.0453344704218321,
+          "word_errors": 7903,
+          "char_errors": 13077,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 12.668915297836065
+        },
+        "beam20_lm0.1_bonus1.0": {
+          "wer": 0.13416786147568105,
+          "cer": 0.04306376015752836,
+          "word_errors": 7299,
+          "char_errors": 12422,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 20.877099139615893
+        },
+        "beam20_lm0.2_bonus1.0": {
+          "wer": 0.13666776956729532,
+          "cer": 0.043809107801536455,
+          "word_errors": 7435,
+          "char_errors": 12637,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 19.04019316472113
+        },
+        "beam20_lm0.3_bonus1.0": {
+          "wer": 0.1455093562736664,
+          "cer": 0.0453344704218321,
+          "word_errors": 7916,
+          "char_errors": 13077,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 20.25712593086064
+        },
+        "beam50_lm0.1_bonus1.0": {
+          "wer": 0.13422300650711372,
+          "cer": 0.043008292425881244,
+          "word_errors": 7302,
+          "char_errors": 12406,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 39.029943915084004
+        },
+        "beam50_lm0.2_bonus1.0": {
+          "wer": 0.13653909782728577,
+          "cer": 0.043791774135396734,
+          "word_errors": 7428,
+          "char_errors": 12632,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 38.490595903247595
+        },
+        "beam50_lm0.3_bonus1.0": {
+          "wer": 0.14561964633653174,
+          "cer": 0.04531367002246443,
+          "word_errors": 7922,
+          "char_errors": 13071,
+          "words": 54402,
+          "chars": 288456,
+          "utterances": 2703,
+          "seconds": 38.88136074133217
+        }
+      },
+      "lm_sha256": "71dd880667cb6ea3942bb1982988c91fb1208839a21911eeec7e31c857c4bdfb"
+    },
+    "dev-other": {
+      "checkpoint_sha256": "e05cdea14cb642968ffa30e87373d84bb13c6ffcb6a5b08f5a4cd9da66366e4f",
+      "utterances": 2864,
+      "decoders": {
+        "greedy": {
+          "wer": 0.34862997566145876,
+          "cer": 0.14055972716778656,
+          "word_errors": 17762,
+          "char_errors": 37382,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 4.895788231864572
+        },
+        "beam10": {
+          "wer": 0.3432126874460234,
+          "cer": 0.13848039676481758,
+          "word_errors": 17486,
+          "char_errors": 36829,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 17.71171733364463
+        },
+        "beam20": {
+          "wer": 0.3428790138965219,
+          "cer": 0.13822847065812877,
+          "word_errors": 17469,
+          "char_errors": 36762,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 7.9234868157655
+        },
+        "beam50": {
+          "wer": 0.3426434796262856,
+          "cer": 0.1380479862831875,
+          "word_errors": 17457,
+          "char_errors": 36714,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 12.996407816186547
+        },
+        "beam10_lm0.1_bonus1.0": {
+          "wer": 0.3345371751589856,
+          "cer": 0.13782990099680018,
+          "word_errors": 17044,
+          "char_errors": 36656,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 10.530708637088537
+        },
+        "beam10_lm0.2_bonus1.0": {
+          "wer": 0.3346549422941038,
+          "cer": 0.1388864866084354,
+          "word_errors": 17050,
+          "char_errors": 36937,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 10.354649996384978
+        },
+        "beam10_lm0.3_bonus1.0": {
+          "wer": 0.3429771531757871,
+          "cer": 0.14078909272760773,
+          "word_errors": 17474,
+          "char_errors": 37443,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 10.241451896727085
+        },
+        "beam20_lm0.1_bonus1.0": {
+          "wer": 0.3340072230509539,
+          "cer": 0.13765317671300353,
+          "word_errors": 17017,
+          "char_errors": 36609,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 15.873313507065177
+        },
+        "beam20_lm0.2_bonus1.0": {
+          "wer": 0.33483159299678106,
+          "cer": 0.13887896642614617,
+          "word_errors": 17059,
+          "char_errors": 36935,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 15.715654514729977
+        },
+        "beam20_lm0.3_bonus1.0": {
+          "wer": 0.34460626521158827,
+          "cer": 0.1411350211129118,
+          "word_errors": 17557,
+          "char_errors": 37535,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 16.19540391676128
+        },
+        "beam50_lm0.1_bonus1.0": {
+          "wer": 0.33369317735730547,
+          "cer": 0.13751405334065298,
+          "word_errors": 17001,
+          "char_errors": 36572,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 32.77904842980206
+        },
+        "beam50_lm0.2_bonus1.0": {
+          "wer": 0.33498861584360523,
+          "cer": 0.13883008524126625,
+          "word_errors": 17067,
+          "char_errors": 36922,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 32.22163731791079
+        },
+        "beam50_lm0.3_bonus1.0": {
+          "wer": 0.34546989086912144,
+          "cer": 0.14114254129520099,
+          "word_errors": 17601,
+          "char_errors": 37537,
+          "words": 50948,
+          "chars": 265951,
+          "utterances": 2864,
+          "seconds": 32.31034401245415
+        }
+      },
+      "lm_sha256": "71dd880667cb6ea3942bb1982988c91fb1208839a21911eeec7e31c857c4bdfb"
+    },
+    "test-clean": {
+      "checkpoint_sha256": "e05cdea14cb642968ffa30e87373d84bb13c6ffcb6a5b08f5a4cd9da66366e4f",
+      "utterances": 2620,
+      "decoders": {
+        "greedy": {
+          "wer": 0.14274573950091296,
+          "cer": 0.04402372748907754,
+          "word_errors": 7505,
+          "char_errors": 12394,
+          "words": 52576,
+          "chars": 281530,
+          "utterances": 2620,
+          "seconds": 6.255873151123524
+        },
+        "beam50": {
+          "wer": 0.13903682288496652,
+          "cer": 0.04306468227187156,
+          "word_errors": 7310,
+          "char_errors": 12124,
+          "words": 52576,
+          "chars": 281530,
+          "utterances": 2620,
+          "seconds": 26.308470897376537
+        },
+        "beam50_lm0.1_bonus1.0": {
+          "wer": 0.1355181071211199,
+          "cer": 0.04287997726707633,
+          "word_errors": 7125,
+          "char_errors": 12072,
+          "words": 52576,
+          "chars": 281530,
+          "utterances": 2620,
+          "seconds": 38.459175281226635
+        }
+      },
+      "lm_sha256": "71dd880667cb6ea3942bb1982988c91fb1208839a21911eeec7e31c857c4bdfb"
+    },
+    "test-other": {
+      "checkpoint_sha256": "e05cdea14cb642968ffa30e87373d84bb13c6ffcb6a5b08f5a4cd9da66366e4f",
+      "utterances": 2939,
+      "decoders": {
+        "greedy": {
+          "wer": 0.3688363295951703,
+          "cer": 0.1486849148329288,
+          "word_errors": 19306,
+          "char_errors": 40555,
+          "words": 52343,
+          "chars": 272758,
+          "utterances": 2939,
+          "seconds": 5.245827564969659
+        },
+        "beam50": {
+          "wer": 0.36251265689777046,
+          "cer": 0.1458838970809289,
+          "word_errors": 18975,
+          "char_errors": 39791,
+          "words": 52343,
+          "chars": 272758,
+          "utterances": 2939,
+          "seconds": 22.82799143344164
+        },
+        "beam50_lm0.1_bonus1.0": {
+          "wer": 0.3546797088435894,
+          "cer": 0.14545127915588177,
+          "word_errors": 18565,
+          "char_errors": 39673,
+          "words": 52343,
+          "chars": 272758,
+          "utterances": 2939,
+          "seconds": 32.615856755524874
+        }
+      },
+      "lm_sha256": "71dd880667cb6ea3942bb1982988c91fb1208839a21911eeec7e31c857c4bdfb"
+    }
+  },
+  "error_analysis": {
+    "dev-clean": {
+      "metrics": {
+        "wer": 0.13422300650711372,
+        "cer": 0.043008292425881244,
+        "word_errors": 7302,
+        "char_errors": 12406,
+        "words": 54402,
+        "chars": 288456,
+        "utterances": 2703
+      },
+      "alignment_rule": "minimum edit distance; diagonal, deletion, insertion tie order",
+      "error_counts": {
+        "substitution": 6178,
+        "deletion": 544,
+        "insertion": 580
+      },
+      "frequent_errors": [
+        {
+          "type": "substitution",
+          "reference": "and",
+          "prediction": "in",
+          "count": 67
+        },
+        {
+          "type": "substitution",
+          "reference": "in",
+          "prediction": "and",
+          "count": 60
+        },
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "a",
+          "count": 46
+        },
+        {
+          "type": "deletion",
+          "reference": "a",
+          "prediction": "",
+          "count": 37
+        },
+        {
+          "type": "substitution",
+          "reference": "a",
+          "prediction": "the",
+          "count": 35
+        },
+        {
+          "type": "substitution",
+          "reference": "and",
+          "prediction": "an",
+          "count": 33
+        },
+        {
+          "type": "deletion",
+          "reference": "the",
+          "prediction": "",
+          "count": 21
+        },
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "the",
+          "count": 21
+        },
+        {
+          "type": "deletion",
+          "reference": "and",
+          "prediction": "",
+          "count": 17
+        },
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "to",
+          "count": 17
+        },
+        {
+          "type": "deletion",
+          "reference": "of",
+          "prediction": "",
+          "count": 14
+        },
+        {
+          "type": "substitution",
+          "reference": "the",
+          "prediction": "a",
+          "count": 14
+        },
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "in",
+          "count": 13
+        },
+        {
+          "type": "substitution",
+          "reference": "is",
+          "prediction": "as",
+          "count": 13
+        },
+        {
+          "type": "substitution",
+          "reference": "in",
+          "prediction": "an",
+          "count": 13
+        },
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "i",
+          "count": 11
+        },
+        {
+          "type": "substitution",
+          "reference": "a",
+          "prediction": "of",
+          "count": 11
+        },
+        {
+          "type": "substitution",
+          "reference": "this",
+          "prediction": "the",
+          "count": 11
+        },
+        {
+          "type": "deletion",
+          "reference": "in",
+          "prediction": "",
+          "count": 10
+        },
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "of",
+          "count": 9
+        }
+      ],
+      "example_selection": "five largest absolute word-error counts; UID breaks ties",
+      "examples": [
+        {
+          "uid": "6313-76958-0021",
+          "target": "keep a going and if you're lucky you'll run plumb into them was the jeering answer as the sleepy cowmen spurred their ponies on toward camp muttering their disapproval of taking along a bunch of boys on a cattle drive",
+          "prediction": "keep agilic and if your luckegled run plom ento them was the jeerying answers the sleepy couten spured their ponies on n dord camp mudering their disupproval of taking a long a much on boys on the kedtle drive",
+          "word_errors": 22,
+          "words": 40
+        },
+        {
+          "uid": "5338-24615-0002",
+          "target": "occasionally indeed when such a consummation seemed inevitable a watchful old grandam with her close cap distaff and spindle rushed like a sibyl in frenzy out of one of these miserable cells dashed into the middle of the path and snatching up her own charge from among the sunburnt loiterers saluted him with a sound cuff and transported him back to his dungeon the little white headed varlet screaming all the while from the very top of his lungs a shrilly treble to the growling remonstrances of the enraged matron",
+          "prediction": "occasionally indeed when such a consummation seemed inevitable a watchfold grandamn with her close capt distaff and spindle rushed like a civil and frienzy out of one of these miserable scells dashed into the middle of the path and snatching up her own charge from among the sun burnt loiterers saluted him with the sound cuf and trnsported him back to his dungeon the little white headed varolet screaming all the while from the very topk of his lungs as shrily troaveble to the growling remonstrances of the enraged ma tron",
+          "word_errors": 20,
+          "words": 90
+        },
+        {
+          "uid": "1272-128104-0004",
+          "target": "linnell's pictures are a sort of up guards and at em paintings and mason's exquisite idylls are as national as a jingo poem mister birket foster's landscapes smile at one much in the same way that mister carker used to flash his teeth and mister john collier gives his sitter a cheerful slap on the back before he says like a shampooer in a turkish bath next man",
+          "prediction": "inills pictures are a sort of up guards and adom paintings and mason's exquisite itdles era's national as a gingl poem mister berketd foster's landscapes smile at one much in the same way that mister karker used to flashs teeth and mister joan colier give siscitor a cheerful slap on the back before he says like a shampio er in a turkish bath next man",
+          "word_errors": 18,
+          "words": 68
+        },
+        {
+          "uid": "6345-93306-0017",
+          "target": "i shall lock up all the doors and windows in the house and then i shall give you my latch key and you can let yourself in and stay the night here there is no one in the house",
+          "prediction": "i shallok f l th os and onos in the house and then i shall give mo m ach cene you can it yourself an in staye the mikh yer there is no one in the house",
+          "word_errors": 18,
+          "words": 39
+        },
+        {
+          "uid": "6313-66129-0026",
+          "target": "they saw his long hair almost brush the grass one of his hands swept down and up and once more tad butler rose standing in his stirrups uttering a cowboy yell as he waved the sombrero on high",
+          "prediction": "they saw his long hair almost brushed the grass oen at his hand swept down an up in once more ted butler rose standing in istrips utering a calable yell is he waved a some brarow one high",
+          "word_errors": 16,
+          "words": 38
+        }
+      ]
+    },
+    "dev-other": {
+      "metrics": {
+        "wer": 0.33369317735730547,
+        "cer": 0.13751405334065298,
+        "word_errors": 17001,
+        "char_errors": 36572,
+        "words": 50948,
+        "chars": 265951,
+        "utterances": 2864
+      },
+      "alignment_rule": "minimum edit distance; diagonal, deletion, insertion tie order",
+      "error_counts": {
+        "substitution": 14245,
+        "deletion": 1489,
+        "insertion": 1267
+      },
+      "frequent_errors": [
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "a",
+          "count": 98
+        },
+        {
+          "type": "substitution",
+          "reference": "and",
+          "prediction": "in",
+          "count": 78
+        },
+        {
+          "type": "deletion",
+          "reference": "a",
+          "prediction": "",
+          "count": 73
+        },
+        {
+          "type": "deletion",
+          "reference": "the",
+          "prediction": "",
+          "count": 72
+        },
+        {
+          "type": "substitution",
+          "reference": "the",
+          "prediction": "a",
+          "count": 69
+        },
+        {
+          "type": "substitution",
+          "reference": "a",
+          "prediction": "the",
+          "count": 51
+        },
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "the",
+          "count": 49
+        },
+        {
+          "type": "deletion",
+          "reference": "in",
+          "prediction": "",
+          "count": 40
+        },
+        {
+          "type": "substitution",
+          "reference": "in",
+          "prediction": "and",
+          "count": 37
+        },
+        {
+          "type": "deletion",
+          "reference": "to",
+          "prediction": "",
+          "count": 36
+        },
+        {
+          "type": "deletion",
+          "reference": "and",
+          "prediction": "",
+          "count": 30
+        },
+        {
+          "type": "deletion",
+          "reference": "of",
+          "prediction": "",
+          "count": 30
+        },
+        {
+          "type": "substitution",
+          "reference": "and",
+          "prediction": "an",
+          "count": 27
+        },
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "in",
+          "count": 26
+        },
+        {
+          "type": "deletion",
+          "reference": "he",
+          "prediction": "",
+          "count": 22
+        },
+        {
+          "type": "deletion",
+          "reference": "i",
+          "prediction": "",
+          "count": 21
+        },
+        {
+          "type": "substitution",
+          "reference": "the",
+          "prediction": "to",
+          "count": 20
+        },
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "to",
+          "count": 19
+        },
+        {
+          "type": "substitution",
+          "reference": "of",
+          "prediction": "off",
+          "count": 19
+        },
+        {
+          "type": "deletion",
+          "reference": "you",
+          "prediction": "",
+          "count": 19
+        }
+      ],
+      "example_selection": "five largest absolute word-error counts; UID breaks ties",
+      "examples": [
+        {
+          "uid": "6467-62797-0007",
+          "target": "a few years ago a scare arose in connection with an insect which was said to have taken up its abode in imported german glass bangles which compete with the indigenous industry of the gazula bangle makers the insect was reported to lie low in the bangle till it was purchased when it would come out and nip the wearer after warning her to get her affairs in order before succumbing",
+          "prediction": "marthew years ago as scared bettlws in connection with than insect which whs sake to have taken up its ablard an importar geman glass bangles mish completefort beig neegin us ndusti of the gazma bangaed makers muinsic was tu portec to ly larnd bang of delirdul spartes when it would come autd and lipd o etd o after warming her to get her affare an otder with usaccumbing",
+          "word_errors": 44,
+          "words": 71
+        },
+        {
+          "uid": "6267-53049-0019",
+          "target": "penelope was surprised as much as the tender sisterly heart could wish when doris flashed out upon her triumphantly on the evening of the party with the black skirt nicely pressed and re hung and the prettiest waist imaginable a waist that was a positive creation of dainty rose besprinkled silk with a girdle and knots of black velvet",
+          "prediction": "then it ot be was sor price as much as the den she storly hard could wishah went doris flysolt upun e dunfiondly and the evening on the partyn with the blackskirt nicely prass and we hung and the breakest waste imagineot a waste that was a positive creation off thank you ros bast bringk oed soup with the gerdoln atd nogts of black tothe",
+          "word_errors": 41,
+          "words": 59
+        },
+        {
+          "uid": "1585-131718-0030",
+          "target": "to sigmund bergmann who had worked previously with edison on telephone apparatus and phonographs and was already making edison specialties in a small way in a loft on wooster street new york was assigned the task of constructing sockets fixtures meters safety fuses and numerous other details",
+          "prediction": "to sick mandu birdman who had grored privously with atdison unstali fom the paragison follena graps and was aleady making atdison special itis in ai morl way in the loft un wooset tur street ewnork was a sislet has of ostroctend sockkets vixt re's peaters sifty ffuses nomerous other theet house",
+          "word_errors": 37,
+          "words": 47
+        },
+        {
+          "uid": "6267-65525-0021",
+          "target": "john lincoln wrote breezy accounts of ranch life and adventures on the far western plains so alien and remote from snug humdrum plainfield life that sidney always had the sensation of crossing a gulf when she opened a letter from the bar n as for sidney's own letter this is the way it read as she wrote it",
+          "prediction": "jumling gonrod brizya kounts ar frage life and the vantuers on the far westem plins so ahian and the mould ronc not harm dramp branfi life that seen they always headt o the senzation off crossing the godf hen she altened a later from the bar and as foreseed mhe's own letder this is the way it read as she iranty",
+          "word_errors": 36,
+          "words": 58
+        },
+        {
+          "uid": "6123-59150-0027",
+          "target": "on two opposite pages of the idiot one finds the following characters brought in by name general epanchin prince s adelaida ivanovna lizaveta prokofyevna yevgeny pavlovitch radomsky princess byelokonsky aglaia prince myshkin kolya ivolgin ippolit varya ferdyshchenko nastasya filippovna nina alexandrovna ganya ptitsyn and general ivolgin",
+          "prediction": "on two opposite pages of the idiot one finds the following carth is brought in by name general a pontion princeess addulata evenovna lizabetter procro fhena ye have ganni pavalovich radonski princess beelokronski a glaa princemiscin clai t e vogan eqpualete raya verdish enker this sarsi philipovona nina elexanjovna gona tissan and general ieveogan",
+          "word_errors": 34,
+          "words": 46
+        }
+      ]
+    },
+    "test-clean": {
+      "metrics": {
+        "wer": 0.1355181071211199,
+        "cer": 0.04287997726707633,
+        "word_errors": 7125,
+        "char_errors": 12072,
+        "words": 52576,
+        "chars": 281530,
+        "utterances": 2620
+      },
+      "alignment_rule": "minimum edit distance; diagonal, deletion, insertion tie order",
+      "error_counts": {
+        "substitution": 5970,
+        "deletion": 564,
+        "insertion": 591
+      },
+      "frequent_errors": [
+        {
+          "type": "substitution",
+          "reference": "and",
+          "prediction": "in",
+          "count": 77
+        },
+        {
+          "type": "substitution",
+          "reference": "in",
+          "prediction": "and",
+          "count": 45
+        },
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "a",
+          "count": 44
+        },
+        {
+          "type": "deletion",
+          "reference": "a",
+          "prediction": "",
+          "count": 36
+        },
+        {
+          "type": "substitution",
+          "reference": "a",
+          "prediction": "the",
+          "count": 28
+        },
+        {
+          "type": "substitution",
+          "reference": "the",
+          "prediction": "a",
+          "count": 25
+        },
+        {
+          "type": "deletion",
+          "reference": "and",
+          "prediction": "",
+          "count": 22
+        },
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "to",
+          "count": 21
+        },
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "and",
+          "count": 20
+        },
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "the",
+          "count": 19
+        },
+        {
+          "type": "substitution",
+          "reference": "and",
+          "prediction": "an",
+          "count": 19
+        },
+        {
+          "type": "deletion",
+          "reference": "in",
+          "prediction": "",
+          "count": 17
+        },
+        {
+          "type": "substitution",
+          "reference": "an",
+          "prediction": "and",
+          "count": 17
+        },
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "in",
+          "count": 16
+        },
+        {
+          "type": "deletion",
+          "reference": "to",
+          "prediction": "",
+          "count": 14
+        },
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "i",
+          "count": 14
+        },
+        {
+          "type": "substitution",
+          "reference": "is",
+          "prediction": "as",
+          "count": 12
+        },
+        {
+          "type": "substitution",
+          "reference": "bartley",
+          "prediction": "bartly",
+          "count": 12
+        },
+        {
+          "type": "deletion",
+          "reference": "or",
+          "prediction": "",
+          "count": 11
+        },
+        {
+          "type": "substitution",
+          "reference": "that",
+          "prediction": "at",
+          "count": 10
+        }
+      ],
+      "example_selection": "five largest absolute word-error counts; UID breaks ties",
+      "examples": [
+        {
+          "uid": "4992-41797-0001",
+          "target": "well as i say it's an awful queer world they clap all the burglars into jail and the murderers and the wife beaters i've allers thought a gentle reproof would be enough punishment for a wife beater cause he probably has a lot o provocation that nobody knows and the firebugs can't think o the right name something like cendenaries an the breakers o the peace an what not an yet the law has nothin to say to a man like hen lord",
+          "prediction": "well as i say it's an awful queer world they clap all the burglers and joing the murderers in the wife beaters a all es thought at gentl re proved would be enoug punishment for a wife beter cause he probably has a lot a provocation that nobody knows and the firebogs can't think of the right names of the like sandiaries and the breakers of the peace and what not and yet the law has nothin to say to a man like hand lord",
+          "word_errors": 26,
+          "words": 83
+        },
+        {
+          "uid": "4992-41806-0014",
+          "target": "thinks i to myself i never seen anything osh popham couldn't mend if he took time enough and glue enough so i carried this little feller home in a bushel basket one night last month an i've spent eleven evenin's puttin him together",
+          "prediction": "think sad on myself i'd never seen anything osed popl gooded men if he took time en uph and blee enough so i carried this little feller howe an a boushel bask at one night last monk and i've spent a lavb in eime and putin him to gather",
+          "word_errors": 26,
+          "words": 43
+        },
+        {
+          "uid": "1995-1836-0004",
+          "target": "as she awaited her guests she surveyed the table with both satisfaction and disquietude for her social functions were few tonight there were she checked them off on her fingers sir james creighton the rich english manufacturer and lady creighton mister and missus vanderpool mister harry cresswell and his sister john taylor and his sister and mister charles smith whom the evening papers mentioned as likely to be united states senator from new jersey a selection of guests that had been determined unknown to the hostess by the meeting of cotton interests earlier in the day",
+          "prediction": "as she awaited her gues she survey the table with both satisfaction and is quietude for her social functions were few to night there were she chacked them olf on her fingers sir james crigeten the rich english manufacturer and lady criten mister and missus vanderpool mister harry cress well in his sister john tailor and his sister and mister challe smith whom the evening papers mentioned as likely to be you hiede stay senator from new jersey a selection of guess at had been deturned unknown to the hostess by the meeting of cotdon interest earlier in the day",
+          "word_errors": 23,
+          "words": 96
+        },
+        {
+          "uid": "3570-5696-0003",
+          "target": "a reconciliation between the two conflicting requirements is effected by a resort to make believe many and intricate polite observances and social duties of a ceremonial nature are developed many organizations are founded with some specious object of amelioration embodied in their official style and title there is much coming and going and a deal of talk to the end that the talkers may not have occasion to reflect on what is the effectual economic value of their traffic",
+          "prediction": "a reconciliation between the two conflicting requiemance is affected by resort to make belief men an intricate polite observancisom social utis of a ceremonial nature are developed many organizations save founded with some specious object of amilieration and budded in their official stylen title there is much coming and going and a deal of talk to the end that the talk is may not havoccasion to reflect on what is the affectual economic value of their traffic",
+          "word_errors": 20,
+          "words": 79
+        },
+        {
+          "uid": "61-70968-0054",
+          "target": "mistress fitzooth had been carried off by the sheriff's daughter and her maids as soon as they had entered the house so that robin alone had the care of montfichet",
+          "prediction": "mistrest fitude had been carried off byr the sharift daughte in her madsas soonas they ad enterd the house thtat brob in anln at the car of mopdi hae",
+          "word_errors": 20,
+          "words": 30
+        }
+      ]
+    },
+    "test-other": {
+      "metrics": {
+        "wer": 0.3546797088435894,
+        "cer": 0.14545127915588177,
+        "word_errors": 18565,
+        "char_errors": 39673,
+        "words": 52343,
+        "chars": 272758,
+        "utterances": 2939
+      },
+      "alignment_rule": "minimum edit distance; diagonal, deletion, insertion tie order",
+      "error_counts": {
+        "substitution": 15513,
+        "deletion": 1702,
+        "insertion": 1350
+      },
+      "frequent_errors": [
+        {
+          "type": "deletion",
+          "reference": "a",
+          "prediction": "",
+          "count": 83
+        },
+        {
+          "type": "deletion",
+          "reference": "the",
+          "prediction": "",
+          "count": 69
+        },
+        {
+          "type": "substitution",
+          "reference": "and",
+          "prediction": "in",
+          "count": 65
+        },
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "a",
+          "count": 65
+        },
+        {
+          "type": "substitution",
+          "reference": "the",
+          "prediction": "a",
+          "count": 63
+        },
+        {
+          "type": "substitution",
+          "reference": "a",
+          "prediction": "the",
+          "count": 57
+        },
+        {
+          "type": "substitution",
+          "reference": "in",
+          "prediction": "and",
+          "count": 56
+        },
+        {
+          "type": "deletion",
+          "reference": "and",
+          "prediction": "",
+          "count": 42
+        },
+        {
+          "type": "deletion",
+          "reference": "i",
+          "prediction": "",
+          "count": 40
+        },
+        {
+          "type": "deletion",
+          "reference": "to",
+          "prediction": "",
+          "count": 38
+        },
+        {
+          "type": "substitution",
+          "reference": "and",
+          "prediction": "an",
+          "count": 36
+        },
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "the",
+          "count": 35
+        },
+        {
+          "type": "deletion",
+          "reference": "of",
+          "prediction": "",
+          "count": 34
+        },
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "and",
+          "count": 30
+        },
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "to",
+          "count": 28
+        },
+        {
+          "type": "insertion",
+          "reference": "",
+          "prediction": "in",
+          "count": 28
+        },
+        {
+          "type": "deletion",
+          "reference": "it",
+          "prediction": "",
+          "count": 26
+        },
+        {
+          "type": "deletion",
+          "reference": "in",
+          "prediction": "",
+          "count": 25
+        },
+        {
+          "type": "substitution",
+          "reference": "an",
+          "prediction": "and",
+          "count": 24
+        },
+        {
+          "type": "substitution",
+          "reference": "of",
+          "prediction": "a",
+          "count": 23
+        }
+      ],
+      "example_selection": "five largest absolute word-error counts; UID breaks ties",
+      "examples": [
+        {
+          "uid": "5442-41168-0009",
+          "target": "he forgot as sergey ivanovitch explained to him afterwards this syllogism that it was necessary for the public good to get rid of the marshal of the province that to get rid of the marshal it was necessary to have a majority of votes that to get a majority of votes it was necessary to secure flerov's right to vote that to secure the recognition of flerov's right to vote they must decide on the interpretation to be put on the act",
+          "prediction": "he forgot as so as even ofit explained to him afterwards this sellegisan that it was necorly for the public good togented of the marsial of the province that togetet on the martian it was necessaly to have a majority of wards that to get a magority o boads it was necilly to sicur furos drike thwad that to secured the r recognition of fher zlitaboat then was decided on the intempretation to be put on the act",
+          "word_errors": 36,
+          "words": 82
+        },
+        {
+          "uid": "367-293981-0010",
+          "target": "sancho got up with pain enough in his bones and went after the innkeeper in the dark and meeting the officer who was looking to see what had become of his enemy he said to him senor whoever you are do us the favour and kindness to give us a little rosemary oil salt and wine for it is wanted to cure one of the best knights errant on earth who lies on yonder bed wounded by the hands of the enchanted moor that is in this inn",
+          "prediction": "sanchea got up with pain enough in this boads and went aft o the inkeper in the dark and meaning the office who was looking to see what hebecome of henemy he said to him sinor whoever you are do as to favorite kinness to give us little rosmary oil sought and white for it is water to kee one of our best nights errn onferth who lies on younder bed w wouoed by the hands of the enthanted more that is in this it",
+          "word_errors": 35,
+          "words": 88
+        },
+        {
+          "uid": "5442-41169-0015",
+          "target": "if we're laying out a garden planning one before the house you know and there you've a tree that's stood for centuries in the very spot old and gnarled it may be and yet you don't cut down the old fellow to make room for the flowerbeds but lay out your beds so as to take advantage of the tree",
+          "prediction": "and we are lane now to gorden clowing one before the house you know on that they you have a tree that s took a centurties in the very spot old andnowleded may be and yet you lont ave down the olyfol to make him for the flowlof beds but le alteo beds so as the take and vamteit of the sre",
+          "word_errors": 35,
+          "words": 60
+        },
+        {
+          "uid": "6128-63240-0008",
+          "target": "and yet the reader who likes a complete image who desires to read with the senses as well as with the reason is entreated not to forget that he prolonged his consonants and swallowed his vowels that he was guilty of elisions and interpolations which were equally unexpected and that his discourse was pervaded by something sultry and vast something almost african in its rich basking tone something that suggested the teeming expanse of the cotton field",
+          "prediction": "and the the reader who lets a complete immage who desires to read with the senses s well as with the reason is entreated not to forget that he polonged his continence and swalowed his vowls that he was guil to vellesian soning tepiations which were equally in expected and that his this fos wash pirvated by something soltery and vastd some brng mom was that riceninuts rich baskin tone something that suggested the teamingless palecs ovher cottonfield",
+          "word_errors": 34,
+          "words": 77
+        },
+        {
+          "uid": "7902-96595-0016",
+          "target": "gurr turned away impatiently again and signing to his men to follow they all began to tramp up the steep track leading toward the hoze with the rabbits scuttling away among the furze and showing their white cottony tails for a moment as they darted down into their holes",
+          "prediction": "gerchr thewa inptiotn gain and sunding to his ment of follow they 'll be undto tramp up the steop chaqk leaging toar the hose with the rabit scuttlen yoway among the firs he contrny the way contny cenos for momens they darted down o the ols",
+          "word_errors": 32,
+          "words": 49
+        }
+      ]
+    }
+  },
+  "freeze_before_test_verified": true,
+  "actual_terminal_PID_proof": {
+    "all_four_owned_stage_pids_terminal": true,
+    "states": [
+      {
+        "container": "dla-asr-2026-extension5h",
+        "run": "/extended/runs/lr_candidate_extension1547_lr1e5",
+        "pid": 86,
+        "live_owned_trainer": false,
+        "event": "train_exit",
+        "step": 80611,
+        "status_utc": "2026-10-13T17:40:08.336697+00:00"
+      },
+      {
+        "container": "dla-asr-2026-extension5h",
+        "run": "/extended/runs/lr_candidate_extension1547_lr3e5",
+        "pid": 87,
+        "live_owned_trainer": false,
+        "event": "train_exit",
+        "step": 26295,
+        "status_utc": "2026-10-13T14:25:15.939918+00:00"
+      },
+      {
+        "container": "dla-asr-2026-othermix",
+        "run": "/scratch/runs/lr_candidate_othermix50_9x",
+        "pid": 199,
+        "live_owned_trainer": false,
+        "event": "train_exit",
+        "step": 6694,
+        "status_utc": "2026-10-13T14:50:19.309377+00:00"
+      },
+      {
+        "container": "dla-asr-2026-othermix",
+        "run": "/scratch/runs/lr_candidate_othermix100_5x",
+        "pid": 1416,
+        "live_owned_trainer": false,
+        "event": "train_exit",
+        "step": 47860,
+        "status_utc": "2026-10-13T17:40:06.646047+00:00"
+      }
+    ],
+    "verified_utc": "2026-10-13T17:40:14.546825+00:00",
+    "observer_pid": 2027696
+  },
+  "evaluation_archive_sha256": "f6f948ba1c7f8586c2048ba7625dbf9884b4a435790943b7190d43df06092593",
+  "evaluation_resume_acceptance": {
+    "selected": "lr_candidate_othermix100_5x__best",
+    "model_sha256": "e05cdea14cb642968ffa30e87373d84bb13c6ffcb6a5b08f5a4cd9da66366e4f",
+    "resume_sha256": "9d4afccb97075453b9edc263c6af8d67eb7d482eac40276e5b81d792ca233fd6",
+    "restored_state": {
+      "step": 46179,
+      "epoch": 20,
+      "batch_index": 2199,
+      "micro_count": 0,
+      "best_wer": 0.3504823151125402
+    },
+    "exact_model_optimizer_scheduler_rng_and_gradients": true,
+    "cuda_rng_checked": true,
+    "probe": "four shortest real training utterances, no augmentation, FP32 CPU; diagnostic update in RAM, no submission weights modified",
+    "probe_loss": 0.0068507008254528046,
+    "probe_gradient_norm": 0.8075560927391052,
+    "probe_uids": [
+      "2411-132532-0017",
+      "4133-6541-0027",
+      "497-129325-0061",
+      "2790-142824-0059"
+    ],
+    "scheduler_step_after": 46180,
+    "completed_utc": "2026-10-13T17:45:41Z"
+  },
+  "inference_acceptance": {
+    "anonymous_model_source_and_manifest_sha_verified": true,
+    "fresh_T4_project_initially_absent": true,
+    "original_12_cells_with_reference_passed": true,
+    "original_12_cells_without_reference_passed": true,
+    "without_reference_unique_ids": [
+      "original-16k",
+      "stereo-44k",
+      "stereo-8k"
+    ],
+    "without_reference_metrics_null": true,
+    "with_reference_notebook_sha256": "4147ed4d3dcf9ff2094bf4a79ff2aa5bf6ed63fb22d60bbb2e7cef893eed88f2",
+    "without_reference_notebook_sha256": "acbf1dd65da83642777dfb6b5a9637129242569e0f7563f1048c0b6943b20e6b",
+    "local_tests_passed": 105,
+    "clean_export_tests_passed": 105
+  }
+}
