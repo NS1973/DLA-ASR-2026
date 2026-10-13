@@ -20,6 +20,6 @@ model.pt — модель, resume.pt — соответствующий full che
 
 SHA256SUMS и manifest.json задают размеры и хеши файлов. source.bundle содержит полную Git-историю; восстановление: git clone --branch codex/hw1-asr source.bundle restored-source. Точный commit записан в manifest.json. Отсутствие публичного anonymous clone не скрывается: источник пока приватен, Git bundle служит согласованным резервным способом передачи.
 
-Обучающий рецепт исходного родителя — REPRODUCTION.md; параметры дополнительного этапа — REPORT_E640.md и закрытый config.json в extension-logs.zip. При новом запуске каталог должен быть новым, календарный cutoff отключается end_utc=null. Для возобновления собственного этапа используйте resume=/path/to/resume.pt; это отличается от init_checkpoint с созданием нового optimizer/scheduler.
+Обучающий рецепт исходного родителя — REPRODUCTION.md; параметры дополнительного этапа — REPORT_E640.md и закрытый config.json в extension-logs.zip. При новом запуске каталог должен быть новым, календарный cutoff отключается end_utc=null. Для возобновления собственного этапа используйте полную сохранённую конфигурацию вместе с resume=/path/to/resume.pt, как показано в RESUME_RECIPE.md; значения по умолчанию не заменяют рецепт исходного этапа. Это отличается от init_checkpoint с созданием нового optimizer/scheduler.
 
 Правила курса запрещают LLM. AI-помощь раскрыта; техническая проверка не подтверждает соблюдение этого правила.
