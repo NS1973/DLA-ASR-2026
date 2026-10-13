@@ -1,6 +1,25 @@
 import torch
 
 
+def test_initialization_snapshot_keeps_exact_loaded_parent_when_source_changes(tmp_path):
+    import hashlib
+    from src.asr.runtime import initialize_from_checkpoint
+    parent = torch.nn.Linear(2, 1)
+    source = tmp_path / 'changing-best.pt'
+    torch.save({'model': parent.state_dict(), 'state': {'step': 17, 'epoch': 3}}, source)
+    original = source.read_bytes()
+    destination = tmp_path / 'child'
+    destination.mkdir()
+    child = torch.nn.Linear(2, 1)
+    metadata = initialize_from_checkpoint(child, source, destination)
+    source.write_bytes(b'later checkpoint replaces the parent path')
+    assert metadata['source_sha256'] == hashlib.sha256(original).hexdigest()
+    assert metadata['source_state'] == {'step': 17, 'epoch': 3}
+    from pathlib import Path
+    assert Path(metadata['snapshot']).read_bytes() == original
+    assert all(torch.equal(value, child.state_dict()[key]) for key, value in parent.state_dict().items())
+
+
 def test_checkpoint_restores_optimizer_scheduler_and_rng(tmp_path):
     from src.asr.runtime import save_checkpoint, restore_checkpoint
     model = torch.nn.Linear(2, 1)

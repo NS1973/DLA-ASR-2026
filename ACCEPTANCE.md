@@ -13,8 +13,8 @@ This ledger records verified evidence and remaining gates. It is not a declarati
 | Optional external LM | Own ARPA fusion; same main10 emissions: clean 33.73%, other 58.87% with weight 0.1 | Choose final LM settings on dev and repeat measured comparison |
 | CustomDirDataset / Hydra / IDs | WAV/FLAC/MP3, sample-rate/stereo, optional references, short audio tests pass | Run final checkpoint on fresh custom input and preserve IDs |
 | Corpus WER/CER script | Known edit-distance examples, strict ID matching, sum(errors)/sum(reference units) tests pass | Final dev/test metric JSON and counts |
-| Checkpoint / resume | Exact next-step regression including dropout, partial gradients and RNG; real H200 resume | Publish matching safe model-only and trusted full resume checkpoints |
-| Clean environment | Isolated CPU environment with no inherited packages: install, pip check, train/inference checks; 45 current tests pass | Repeat final installation and final checkpoint inference from source archive |
+| Checkpoint / resume | Exact next-step regression including dropout, partial gradients and RNG; real H200 resume; immutable initialization regression and CPU resume without parent path | Publish matching safe model-only and trusted full resume checkpoints |
+| Clean environment | Isolated CPU environment with no inherited packages: install, pip check, train/inference checks; 46 current tests pass | Repeat final installation and final checkpoint inference from source archive |
 | Downloadable resources | Public example anonymously downloaded and SHA-verified; Drive/HTTP downloader tests pass | Populate resources.json with final model, LM when selected and complete logs, verify anonymous downloads |
 | Fresh Colab | Actual fresh T4 preflight: installation, 23 tests, greedy/beam, metrics; executed notebook retained | Execute all final demo cells with final resources and a user link; record any source-access setup accurately |
 | Repeated notebook inputs | Regression with two sequential archives passes; each run has independent data and prediction workspace | Final notebook run with and without references |

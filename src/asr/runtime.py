@@ -1,5 +1,7 @@
 """Training, trusted resume checkpoints and evaluation."""
 from datetime import datetime, timezone
+import hashlib
+import io
 import json
 import math
 import os
@@ -71,6 +73,26 @@ def load_model(checkpoint, device):
     model = DeepSpeech2CTC(**payload["model_spec"]).to(device)
     model.load_state_dict(payload["model"])
     return model.eval()
+
+
+def initialize_from_checkpoint(model, checkpoint, directory):
+    # Read once: another trainer may atomically replace its best-model path.
+    content = Path(checkpoint).read_bytes()
+    initial = torch.load(io.BytesIO(content), map_location='cpu', weights_only=True)
+    model.load_state_dict(initial['model'])
+    digest = hashlib.sha256(content).hexdigest()
+    snapshot = Path(directory) / f'initial_model-{digest}.pt'
+    temporary = Path(str(snapshot) + '.tmp')
+    try:
+        with temporary.open('wb') as stream:
+            stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
+        temporary.replace(snapshot)
+    finally:
+        temporary.unlink(missing_ok=True)
+    return {'path': str(checkpoint), 'snapshot': str(snapshot),
+            'source_sha256': digest, 'source_state': initial.get('state')}
 
 
 class RunLog:
@@ -219,10 +241,9 @@ def train(config):
         except FileNotFoundError:
             logger.emit({"event": "validation_pending", "split": part})
     model = DeepSpeech2CTC(**config["model"]).to(device)
-    if config.get("init_checkpoint"):
-        initial = torch.load(config["init_checkpoint"], map_location="cpu", weights_only=True)
-        model.load_state_dict(initial["model"])
-        logger.emit({"event": "initialize_from_model", "path": config["init_checkpoint"], "source_state": initial.get("state")})
+    if config.get("init_checkpoint") and not config.get('resume'):
+        metadata = initialize_from_checkpoint(model, config['init_checkpoint'], directory)
+        logger.emit({'event': 'initialize_from_model', **metadata})
     optimizer = torch.optim.AdamW(model.parameters(), lr=config["lr"], weight_decay=config["weight_decay"])
     total_steps = config["epochs"] * max(1, math.ceil(len(loader) / config["accumulation"]))
     def lr_factor(step):
