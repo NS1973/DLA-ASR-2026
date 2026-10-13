@@ -8,9 +8,11 @@ import hashlib
 import io
 import json
 import multiprocessing
+import os
 from pathlib import Path
 import sys
 import time
+import zipfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import numpy as np
@@ -32,6 +34,19 @@ def decode_job(job):
 def cache_emissions(checkpoint_bytes, root, part, limit, destination, device, batch_size, workers):
     digest = hashlib.sha256(checkpoint_bytes).hexdigest()
     cache = destination / f'{part}-{digest[:16]}-{limit}.npz'
+    if cache.exists():
+        try:
+            with np.load(cache, allow_pickle=False) as saved:
+                lengths = saved['lengths']
+                emissions = saved['emissions']
+                if (str(saved['checkpoint_sha256']) != digest or emissions.ndim != 2
+                        or emissions.shape[1] != len(Codec()) or (lengths < 0).any()
+                        or int(lengths.sum()) != len(emissions)
+                        or len(lengths) != len(saved['uids']) or len(lengths) != len(saved['references'])):
+                    raise ValueError('Invalid cached emissions metadata')
+        except (OSError, ValueError, EOFError, KeyError, zipfile.BadZipFile):
+            cache.unlink()
+            print(json.dumps({'event':'invalid_cache_rebuild','path':str(cache)}), flush=True)
     if not cache.exists():
         entries = librispeech_entries(root, part)
         if limit:
@@ -51,8 +66,16 @@ def cache_emissions(checkpoint_bytes, root, part, limit, destination, device, ba
             uids.extend(batch['uids'])
             references.extend(batch['texts'])
             print(json.dumps({'event':'cache_progress','split':part,'decoded':len(uids),'total':len(entries)}), flush=True)
-        np.savez_compressed(cache, emissions=np.concatenate(arrays), lengths=lengths,
-                            uids=uids, references=references, checkpoint_sha256=digest)
+        temporary = Path(str(cache)+'.tmp')
+        try:
+            with temporary.open('wb') as stream:
+                np.savez_compressed(stream, emissions=np.concatenate(arrays), lengths=lengths,
+                                    uids=uids, references=references, checkpoint_sha256=digest)
+                stream.flush()
+                os.fsync(stream.fileno())
+            temporary.replace(cache)
+        finally:
+            temporary.unlink(missing_ok=True)
     return cache
 
 

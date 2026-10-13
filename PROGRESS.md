@@ -64,3 +64,8 @@ Full-corpus training, dev/test evaluation, full artifact download, fresh Colab v
 - Train360 transfer acknowledged 16.75/23.05 GB at 05:06 and continues with four channels; local download is fully hash-verified. Inclusion still requires extraction/readiness before 06:00.
 - Detached LR-candidate controller PID 12814 was verified live. It waits until 06:00 and until the own no_aug trainer exits, then trains on GPU 1 at initial LR 3e-4 with the same data gate and 12:30 cutoff. It does not terminate any process. Candidate selection records actual parent checkpoints; this is a further dev candidate, not an assertion of an isolated LR effect.
 - 36 tests passed locally (5.14s) and in the clean offline GMC environment (2.37s). The routing regression first failed on the missing API, then a Windows path expectation was corrected; the complete rerun passed.
+
+### 2026-10-13 05:23 MSK final-evaluation controller
+- Detached controller PID 13185 is live. It waits until 12:30 MSK, then snapshots run candidates, chooses by full dev-clean greedy WER, selects decoder on pooled full-dev corpus WER, and only then evaluates full test-clean/test-other. Final results have not been produced yet.
+- Independent review caught non-atomic snapshot/cache writes that would poison restart after truncation. A regression reproduced the failure; atomic replace and validation/rebuild now pass. Matching full resume is checked against all frozen model tensors and training state. Focused re-review found no remaining substantial issue.
+- Complete suite: 41 local tests passed in 5.19s; 41 clean offline GMC tests passed in 1.74s. The pipeline-order test uses isolated fixtures, not real test data.
