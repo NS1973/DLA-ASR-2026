@@ -18,7 +18,7 @@ python inference.py checkpoint=artifacts/model.pt custom_dir=/path/to/dataset ou
 
 model.pt — модель, resume.pt — соответствующий full checkpoint. initializations.zip и extension-initializations.zip содержат собственную цепочку родителей. logs.zip и extension-logs.zip — полные закрытые журналы двух кампаний; evaluation-e640.tar.gz — полные dev/test сравнения и предсказания. acceptance-e640.zip содержит исполненные notebook и проверки с эталонами и без них. Исторические проверки baseline явно отделены.
 
-SHA256SUMS и manifest.json задают размеры и хеши файлов. source.bundle содержит полную Git-историю; восстановление: git clone source.bundle restored-source. Точный commit записан в manifest.json. Отсутствие публичного anonymous clone не скрывается: источник пока приватен, Git bundle служит согласованным резервным способом передачи.
+SHA256SUMS и manifest.json задают размеры и хеши файлов. source.bundle содержит полную Git-историю; восстановление: git clone --branch codex/hw1-asr source.bundle restored-source. Точный commit записан в manifest.json. Отсутствие публичного anonymous clone не скрывается: источник пока приватен, Git bundle служит согласованным резервным способом передачи.
 
 Обучающий рецепт исходного родителя — REPRODUCTION.md; параметры дополнительного этапа — REPORT_E640.md и закрытый config.json в extension-logs.zip. При новом запуске каталог должен быть новым, календарный cutoff отключается end_utc=null. Для возобновления собственного этапа используйте resume=/path/to/resume.pt; это отличается от init_checkpoint с созданием нового optimizer/scheduler.
 
