@@ -17,6 +17,27 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
+def export_source(root, output, source_ref=None):
+    root,output=Path(root).resolve(),Path(output).resolve()
+    if source_ref is None:
+        try:
+            source_ref=subprocess.check_output(['git','symbolic-ref','--short','HEAD'],cwd=root,text=True).strip()
+        except subprocess.CalledProcessError as error:
+            raise RuntimeError('Detached HEAD requires an explicit named source-ref') from error
+    reference=source_ref if source_ref.startswith('refs/heads/') else 'refs/heads/'+source_ref
+    subprocess.run(['git','check-ref-format',reference],cwd=root,check=True,capture_output=True)
+    commit=subprocess.check_output(['git','rev-parse','--verify',reference+'^{commit}'],cwd=root,text=True).strip()
+    head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()
+    if commit!=head:
+        raise RuntimeError('source-ref must identify frozen HEAD so copied report/resources match source')
+    output.mkdir(parents=True,exist_ok=True)
+    if (output/'source.zip').exists() or (output/'source.bundle').exists():
+        raise FileExistsError('Existing source export preserved; use a new delivery directory')
+    subprocess.run(['git','archive','--format=zip',f'--output={output / "source.zip"}',reference],cwd=root,check=True)
+    subprocess.run(['git','bundle','create',str(output/'source.bundle'),reference],cwd=root,check=True)
+    return {'commit':commit,'source_ref':reference,'source_branch':reference.removeprefix('refs/heads/')}
+
+
 def write_logs_zip(destination, directory=None, logs_archive=None):
     """Stream a captured TAR directly, or support the original directory input."""
     if (directory is None) == (logs_archive is None):
@@ -62,15 +83,15 @@ def main():
     p.add_argument('--resume-checkpoint', help='Full matching checkpoint with optimizer, scheduler and RNG states')
     p.add_argument('--lm', help='Frozen external LM, when selected by dev evaluation')
     p.add_argument('--output', default='delivery/final')
+    p.add_argument('--source-ref', help='Named branch at frozen HEAD; defaults to current branch')
     args = p.parse_args()
     root = Path(__file__).resolve().parents[1]
     output = Path(args.output).resolve()
     output.mkdir(parents=True, exist_ok=True)
-    commit = subprocess.check_output(['git','rev-parse','HEAD'], cwd=root, text=True).strip()
     if subprocess.check_output(['git','status','--porcelain'], cwd=root, text=True).strip():
         raise RuntimeError('Commit the final source changes before packaging')
-    subprocess.run(['git','archive','--format=zip',f'--output={output / "source.zip"}','HEAD'],cwd=root,check=True)
-    subprocess.run(['git','bundle','create',str(output/'source.bundle'),'codex/hw1-asr'],cwd=root,check=True)
+    source=export_source(root,output,args.source_ref)
+    commit=source['commit']
     shutil.copy2(args.model, output/'model.pt')
     if args.resume_checkpoint:
         shutil.copy2(args.resume_checkpoint, output/'resume.pt')
@@ -82,7 +103,7 @@ def main():
             shutil.copy2(root/name,output/name)
     files = {path.name:{'bytes':path.stat().st_size,'sha256':digest(path)}
              for path in sorted(output.iterdir()) if path.is_file() and path.name not in {'SHA256SUMS','manifest.json','reproduction.zip'}}
-    (output/'manifest.json').write_text(json.dumps({'commit':commit,'files':files},indent=2),encoding='utf-8')
+    (output/'manifest.json').write_text(json.dumps({**source,'files':files},indent=2),encoding='utf-8')
     (output/'SHA256SUMS').write_text(''.join(f'{meta["sha256"]}  {name}\n' for name,meta in files.items()),encoding='ascii')
     with zipfile.ZipFile(output/'reproduction.zip','w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as archive:
         for path in sorted(output.iterdir()):
