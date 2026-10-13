@@ -39,6 +39,12 @@ assert Path('artifacts/model.pt').is_file()
  markdown('## 3. Пример использования\nНебольшой настоящий пример показывает инференс и отдельный расчёт метрик.'),
  code('''subprocess.run([sys.executable,'inference.py','checkpoint=artifacts/model.pt','custom_dir=artifacts/example','output_dir=predictions/example','decoder=greedy','workers=0'],check=True)
 subprocess.run([sys.executable,'calc_metrics.py','--reference-dir','artifacts/example/transcriptions','--prediction-dir','predictions/example'],check=True)
+from IPython.display import Audio, display
+audio = next(Path('artifacts/example/audio').iterdir())
+display(Audio(filename=str(audio)))
+uid = audio.stem
+print('Эталон:', Path(f'artifacts/example/transcriptions/{uid}.txt').read_text().strip())
+print('Распознано:', Path(f'predictions/example/{uid}.txt').read_text().strip())
 '''),
  markdown('## 4. Ваш набор данных\nПоддерживаются прямая ссылка на архив и публичная ссылка Google Drive. Архив может содержать одну внешнюю папку.'),
  code('''if not DATASET_URL.strip():
