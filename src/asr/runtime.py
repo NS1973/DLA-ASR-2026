@@ -285,7 +285,8 @@ def train(config):
                     repeats.append(int((seq[1:] == seq[:-1]).sum()))
                     offset += n
                 if (output_lengths < batch["target_lengths"] + torch.tensor(repeats)).any():
-                    raise ValueError("CTC target requires more timesteps than output")
+                    invalid = output_lengths < batch["target_lengths"] + torch.tensor(repeats)
+                    raise ValueError(f"CTC target requires more timesteps than output: {[uid for uid,bad in zip(batch['uids'],invalid) if bad]}")
                 with torch.autocast(device_type=device.type, dtype=torch.bfloat16, enabled=mixed):
                     result = model(batch["spectrogram"].to(device, non_blocking=True), batch["spectrogram_length"])
                 loss = criterion(result["log_probs"].transpose(0, 1).float(), batch["targets"].to(device),

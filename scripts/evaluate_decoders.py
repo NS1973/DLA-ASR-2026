@@ -29,9 +29,7 @@ def decode_job(job):
 
 
 @torch.inference_mode()
-def cache_emissions(checkpoint, root, part, limit, destination, device, batch_size, workers):
-    # Read one immutable inode snapshot even if training atomically replaces best.
-    checkpoint_bytes = Path(checkpoint).read_bytes()
+def cache_emissions(checkpoint_bytes, root, part, limit, destination, device, batch_size, workers):
     digest = hashlib.sha256(checkpoint_bytes).hexdigest()
     cache = destination / f'{part}-{digest[:16]}-{limit}.npz'
     if not cache.exists():
@@ -122,8 +120,11 @@ def main():
     output.mkdir(parents=True, exist_ok=True)
     if any(part.startswith('test') for part in args.parts) and (len(args.widths) != 1 or (args.lm_path and len(args.lm_weights)!=1)):
         p.error('Select a single width on dev before evaluating test splits')
+    # Freeze once for the entire sweep, including every split. Training can
+    # replace best_model.pt while CPU beam search is still processing split one.
+    checkpoint_bytes = Path(args.checkpoint).read_bytes()
     for part in args.parts:
-        cache = cache_emissions(args.checkpoint, args.data_root, part, args.limit, output,
+        cache = cache_emissions(checkpoint_bytes, args.data_root, part, args.limit, output,
                                 torch.device(args.device), args.batch_size, min(4,args.workers))
         compare(cache, output / part, args.widths, args.token_topk, args.workers,args.lm_path,args.lm_weights,args.word_bonus)
 

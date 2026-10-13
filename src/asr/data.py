@@ -24,7 +24,7 @@ def load_audio(path):
     return wave.clamp(-1, 1)
 
 
-def augment_waveform(wave, kind, rng=None, generator=None):
+def augment_waveform(wave, kind, rng=None, generator=None, min_samples=0):
     rng = rng or random
     if kind == "gain":
         result = wave * rng.uniform(.75, 1.25)
@@ -35,7 +35,7 @@ def augment_waveform(wave, kind, rng=None, generator=None):
     elif kind == "speed":
         speed = rng.uniform(.90, 1.10)
         # Interpolation avoids thousands of resampling kernels for random ratios.
-        result = torch.nn.functional.interpolate(wave[None, None], size=max(1, int(len(wave) / speed)), mode="linear", align_corners=False)[0, 0]
+        result = torch.nn.functional.interpolate(wave[None, None], size=max(1, min_samples, int(len(wave) / speed)), mode="linear", align_corners=False)[0, 0]
     elif kind == "reverb":
         duration = rng.uniform(.1, .3)
         n = int(duration * 16000)
@@ -66,21 +66,26 @@ class SpeechDataset(Dataset):
     def __getitem__(self, index):
         entry = self.entries[index]
         wave = load_audio(entry["path"])
+        text = entry.get("text")
+        encoded = torch.tensor(self.codec.encode(text), dtype=torch.long) if text is not None else torch.empty(0, dtype=torch.long)
+        required = len(encoded) + int((encoded[1:] == encoded[:-1]).sum())
+        # Centered Mel has floor(samples/160)+1 frames; two stride-2
+        # convolutions yield ceil(frames/4). Cap speed-up at feasible CTC time.
+        min_samples = max(400, 160 * (4 * required - 4))
         if self.augment:
             seed = self.seed + int(self.epoch[0]) * 1000003 + index
             rng = random.Random(seed)
             generator = torch.Generator().manual_seed(seed)
             for kind in ("gain", "noise", "speed", "reverb"):
                 if rng.random() < .35:
-                    wave = augment_waveform(wave, kind, rng, generator)
+                    wave = augment_waveform(wave, kind, rng, generator, min_samples=min_samples if kind=='speed' else 0)
         # For very short files reflect-padding can fail, so pad to an FFT window.
         if len(wave) < 400:
             wave = torch.nn.functional.pad(wave, (0, 400 - len(wave)))
         spec = self.mel(wave).clamp_min(1e-10).log()
         spec = (spec - spec.mean()) / spec.std().clamp_min(1e-5)
-        text = entry.get("text")
         return {"spectrogram": spec, "waveform": wave, "text": text, "uid": entry["uid"],
-                "encoded": torch.tensor(self.codec.encode(text), dtype=torch.long) if text is not None else torch.empty(0, dtype=torch.long)}
+                "encoded": encoded}
 
 
 class CustomDirDataset(SpeechDataset):
