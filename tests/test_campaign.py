@@ -59,11 +59,12 @@ def test_secondary_candidate_uses_own_gpu_names_and_lr_after_data_gate(tmp_path)
         return True
     campaign.continue_training(run,tmp_path,lambda:Path('/frozen.pt'),
                                now=lambda:current[0],gpu=1,prefix='lr_candidate_',
-                               initial_lr=3e-4)
+                               initial_lr=3e-4,batch_size=128)
     assert len(calls)==1
     name,gpu,options=calls[0]
     assert (name,gpu)==('lr_candidate_finetune460',1)
     assert 'lr=0.0003' in options
+    assert 'batch_size=128' in options
     assert f'init_checkpoint={Path("/frozen.pt")}' in options
     assert 'train_parts=[train-clean-100,train-clean-360]' in options
     assert f'end_utc={campaign.END}' in options

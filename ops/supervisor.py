@@ -7,17 +7,23 @@ import subprocess
 import sys
 import time
 
-from campaign import CUTOFF, END, continue_training
+if __package__:
+    from .campaign import CUTOFF, END, continue_training
+else:
+    from campaign import CUTOFF, END, continue_training
 
 ROOT = Path('/work')
 CODE = ROOT / 'code'
 PYTHON = '/work/env/bin/python'
 RUNS = ROOT / 'runs'
-RUNS.mkdir(exist_ok=True)
 
 
 def run(name, gpu, overrides):
     batch = 4 if name == 'overfit' else 32
+    requested = [option for option in overrides if option.startswith('batch_size=')]
+    if requested:
+        batch = int(requested[-1].split('=',1)[1])
+        overrides = [option for option in overrides if not option.startswith('batch_size=')]
     accumulation = 1
     recovery_scale = 1.0
     for attempt in range(5):
@@ -106,6 +112,7 @@ def wait_for_secondary_slot():
 
 
 if __name__ == '__main__':
+    RUNS.mkdir(exist_ok=True)
     mode = sys.argv[1]
     if mode == 'main':
         wait_for(ROOT / 'data/bootstrap.ready')
@@ -122,7 +129,7 @@ if __name__ == '__main__':
     elif mode == 'lr_candidate':
         if wait_for_secondary_slot():
             continue_training(run,ROOT/'data',best_checkpoint,gpu=1,
-                              prefix='lr_candidate_',initial_lr=3e-4)
+                              prefix='lr_candidate_',initial_lr=3e-4,batch_size=128)
     elif mode == 'ablation':
         for part in ['train-clean-100','dev-clean','dev-other']:
             wait_for(ROOT / f'data/{part}.ready')

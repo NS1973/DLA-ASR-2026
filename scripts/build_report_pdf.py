@@ -16,7 +16,7 @@ from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import mm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, PageBreak
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, PageBreak, KeepTogether
 
 
 def markup(text):
@@ -97,9 +97,9 @@ def main():
     if args.metrics:
         plot = Path(args.output).parent/'report_curves.png'
         curves(args.metrics,plot)
-        story.extend([Paragraph('Кривые из локальных журналов',heading),
+        story.append(KeepTogether([Paragraph('Кривые из локальных журналов',heading),
                       Paragraph('Источник: '+html.escape(', '.join(str(Path(x)) for x in args.metrics))+'. Только измеренные значения; пилотные запуски не заменяют итоговую оценку.',body),
-                      Image(str(plot),width=166*mm,height=116.2*mm)])
+                      Image(str(plot),width=166*mm,height=116.2*mm)]))
     def footer(canvas,doc):
         canvas.saveState(); canvas.setFont('Report',8); canvas.setFillColor(colors.HexColor('#64747b'))
         canvas.drawString(22*mm,13*mm,'DLA 2026 / HW1 ASR')

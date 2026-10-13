@@ -69,3 +69,13 @@ Full-corpus training, dev/test evaluation, full artifact download, fresh Colab v
 - Detached controller PID 13185 is live. It waits until 12:30 MSK, then snapshots run candidates, chooses by full dev-clean greedy WER, selects decoder on pooled full-dev corpus WER, and only then evaluates full test-clean/test-other. Final results have not been produced yet.
 - Independent review caught non-atomic snapshot/cache writes that would poison restart after truncation. A regression reproduced the failure; atomic replace and validation/rebuild now pass. Matching full resume is checked against all frozen model tensors and training state. Focused re-review found no remaining substantial issue.
 - Complete suite: 41 local tests passed in 5.19s; 41 clean offline GMC tests passed in 1.74s. The pipeline-order test uses isolated fixtures, not real test data.
+
+### 2026-10-13 05:47 MSK data and batch checkpoint
+- Train360 archive SHA-256 verified remotely and fully extracted. Ready marker actual mtime2026-10-13T02:43:45.177223Z, strictly before06:00MSK. Metadata/CTC audit passed all104014 records; min margin2, mono16kHz. Train100 audit passed all28539, min margin6. Free remote space50.30GiB after extraction.
+- Batch benchmark completed on GPU1, finite BF16 CTC backward/optimizer at32/64/128/256:310/495/579/621 utterances/sec, allocated1.83/3.28/6.22/12.12GiB. Audio I/O excluded. Candidate uses128; main stays32. Own waiting controller12814 was replaced safely before06:00; new controller14917 is live. No trainer was stopped.
+- OOM regression reproduced duplicate overrides preventing batch backoff; parsing the requested batch once now gives128 ->64 and accumulation1 ->2. Complete suite42tests passed locally5.32s and clean offline1.92s.
+- Main completed60epochs/53520steps normally at05:45:50 and automatically started refinement trainer14995. Exact main60 snapshot SHA4d93c19132ca8530b28dd18eccbd50c68db5de57bf68fd03f7aabcbb9c2c6b4a saved beside no_aug60. Full-dev greedy ablation comparison is running on free GPU1. Initial upload to root-owned run directory failed; upload via user-owned incoming then copy inside project container succeeded.
+- Working report rebuilt and all5pages visually inspected; graph heading/caption now stays with the figure. .gitattributes preserves PDF bytes across Windows/Linux checkouts.
+
+### Full 60-epoch augmentation ablation
+- All2703 dev-clean and2864 dev-other records evaluated with exact last checkpoints from53520 steps. Main WER24.4495%/51.3798%; no_aug28.8151%/57.8884%. Main CER7.9752%/22.2142%; no_aug9.8920%/26.0608%. Actual model hashes in logs/ablation60-model-hashes.json; configs/counts in four logs/ablation60-*.json files. One seed only; no seed variance claim. Test sets remain unused.

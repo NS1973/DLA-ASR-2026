@@ -6,17 +6,20 @@ END = '2026-10-13T09:30:00+00:00'
 
 
 def continue_training(run, data_directory, best_checkpoint, now=None, *,
-                      gpu=0, prefix='', initial_lr=1e-4):
+                      gpu=0, prefix='', initial_lr=1e-4, batch_size=None):
     now = now or (lambda:datetime.now(timezone.utc))
     def phase(name, deadline, parts, epochs):
         iteration=0
         result=True
         while now() < deadline:
             run_name=prefix+(name if iteration==0 else f'{name}_continue{iteration}')
-            result=run(run_name,gpu,['data_root=/work/data/datasets',f'train_parts={parts}',
+            options=['data_root=/work/data/datasets',f'train_parts={parts}',
                                   f'init_checkpoint={best_checkpoint()}',f'epochs={epochs}',
                                   f'lr={initial_lr if iteration==0 else 0.00005}',
-                                  'warmup_steps=100',f'end_utc={deadline.isoformat()}'])
+                                  'warmup_steps=100',f'end_utc={deadline.isoformat()}']
+            if batch_size is not None:
+                options.append(f'batch_size={batch_size}')
+            result=run(run_name,gpu,options)
             iteration+=1
         return result
     phase('refine100',CUTOFF,'[train-clean-100]',120)
