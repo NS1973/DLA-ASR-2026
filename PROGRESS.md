@@ -136,3 +136,7 @@ Full-corpus training, dev/test evaluation, full artifact download, fresh Colab v
 - Following audit, finalmodel selectionnowpooled full-devclean+other sumerrors/sumwords, deterministicclean/other/nameties; trainingbest256policyunchanged. Teststillunused. Two regressioncases failedoldclean-onlypriority ->GREEN61local5.59s/61cleanGMC1.95s. Independentreview no substantialissues.
 - Threeactualtrainerslive10:32; newv2step240 finite, checkpoints103/119/119sec. EarlysharedGPU0 windowsmain194+v2293utt/s, secondary507; differentwindows/notisolatedspeedbenchmark. Fullv2epoch/devpending.
 - Waitingcontroller13185stillloadedoldpolicy; replaceonlyafter exactownership/status/precutoff guards. No trainingprocessis stopped.
+
+### 2026-10-13 10:39 MSK policy applied and v2 first epoch
+- Exactguarded waitingcontroller13185(SIGTERM onlyafterownedcmd/status/precutoff/no-test checks) replaced by24767. Newstatuswaiting12:30 verified; allthree trainPIDs15949/22624/24215 remainedlive. logs/final-selection-policy.json declares pooledfull-dev policy/source4c4a6a1 beforeanytestresult.
+- V2candidatefirstfull132553-recordepoch complete: dev256seed1clean14.2246%/other40.0092%; no establishedqualityimprovement vsbaseline. At10:38 step1180 finite loss.1073/grad.5342, checkpoint59sec. GPUsharingaffects speed, expectroughly15moreepochs withinremainingcutoffbudget basedfirstwarmup-inclusiveepoch; forecastonly. Currentbaselinecontinue1clean13.8743%/other40.0551%, bothcontinue.
