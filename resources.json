@@ -1,7 +1,7 @@
 {
-  "status": "verified_preserved_candidate",
-  "model_sha256": "d919aed41505686fe2e590b6253defc4283585c02cc35ac0e368c72fd534679f",
-  "selected": "lr_candidate_finetune460_continue2__last",
+  "status": "frozen_final_inference_resources; delivery_acceptance_separate",
+  "model_sha256": "e05cdea14cb642968ffa30e87373d84bb13c6ffcb6a5b08f5a4cd9da66366e4f",
+  "selected": "lr_candidate_othermix100_5x__best",
   "inference_overrides": [
     "decoder=beam",
     "beam_width=50",
@@ -13,10 +13,10 @@
   ],
   "resources": [
     {
-      "url": "https://drive.google.com/file/d/1g7rW0X75vfSYDLC3yhLhy-RYTM2mbLpu/view",
+      "url": "https://drive.google.com/file/d/1VSmjUfUtmZBIRtqBB2EAAXB29dvT_645/view",
       "filename": "model.pt",
       "bytes": 97898508,
-      "sha256": "d919aed41505686fe2e590b6253defc4283585c02cc35ac0e368c72fd534679f"
+      "sha256": "e05cdea14cb642968ffa30e87373d84bb13c6ffcb6a5b08f5a4cd9da66366e4f"
     },
     {
       "url": "https://drive.google.com/file/d/1JGya3yQFvHgqNRhqS5CT7tlsuN-6s4I8/view",
@@ -30,13 +30,7 @@
       "url": "https://www.openslr.org/resources/11/3-gram.pruned.1e-7.arpa.gz",
       "sha256": "71dd880667cb6ea3942bb1982988c91fb1208839a21911eeec7e31c857c4bdfb",
       "bytes": 34094057
-    },
-    {
-      "filename": "logs.zip",
-      "url": "https://drive.google.com/file/d/1CTePHacX1rowRL0KE071nyZpC0QtgMJ_/view",
-      "sha256": "fcaee6a15e80133e4c27bd72267ce14f9b4ab3928d53495eecda93dcedaa3e8d",
-      "bytes": 707817314,
-      "scope": "All closed first-campaign training/evaluation logs from step0; additional extension stages are separate experiments"
     }
-  ]
+  ],
+  "training_logs_delivery": "Complete closed logs, parents and evaluation evidence are separate members of the reproducibility archive; see delivery manifest."
 }

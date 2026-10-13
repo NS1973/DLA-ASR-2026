@@ -1,0 +1,62 @@
+{
+  "model_sha256": "d919aed41505686fe2e590b6253defc4283585c02cc35ac0e368c72fd534679f",
+  "selected": "lr_candidate_finetune460_continue2__last",
+  "decoder": {
+    "name": "beam50_lm0.1_bonus1.0",
+    "wer": 0.2564594209776934,
+    "selection": "pooled full dev-clean/dev-other corpus WER",
+    "decoder": "beam",
+    "width": 50,
+    "lm_weight": 0.1,
+    "word_bonus": 1.0,
+    "checkpoint_sha256": "d919aed41505686fe2e590b6253defc4283585c02cc35ac0e368c72fd534679f"
+  },
+  "dev": {
+    "dev-clean": {
+      "wer": 0.1392595860446307,
+      "cer": 0.04482139390409629,
+      "word_errors": 7576,
+      "char_errors": 12929,
+      "words": 54402,
+      "chars": 288456,
+      "utterances": 2703,
+      "seconds": 122.20025336742401
+    },
+    "dev-other": {
+      "wer": 0.38160477349454347,
+      "cer": 0.16243593744712373,
+      "word_errors": 19442,
+      "char_errors": 43200,
+      "words": 50948,
+      "chars": 265951,
+      "utterances": 2864,
+      "seconds": 98.9465343374759
+    }
+  },
+  "test": {
+    "test-clean": {
+      "wer": 0.14169963481436396,
+      "cer": 0.045146165595140834,
+      "word_errors": 7450,
+      "char_errors": 12710,
+      "words": 52576,
+      "chars": 281530,
+      "utterances": 2620,
+      "seconds": 116.01244833320379
+    },
+    "test-other": {
+      "wer": 0.40461952887683167,
+      "cer": 0.1714963447451587,
+      "word_errors": 21179,
+      "char_errors": 46777,
+      "words": 52343,
+      "chars": 272758,
+      "utterances": 2939,
+      "seconds": 102.83466212265193
+    }
+  },
+  "quality_targets_met": {
+    "test-clean": true,
+    "test-other": false
+  }
+}
