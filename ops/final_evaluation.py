@@ -35,18 +35,24 @@ def atomic_write(path, content):
 
 
 def freeze_model(source, destination):
+    # An existing derived snapshot must not hide a missing/corrupt source.
+    content = source.read_bytes()
+    try:
+        payload = torch.load(io.BytesIO(content), map_location='cpu', weights_only=True)
+        if 'model' not in payload or 'state' not in payload:
+            raise ValueError('Incomplete model snapshot')
+    except Exception as error:
+        raise ValueError(f'Invalid model checkpoint {source}: {error}') from error
     if destination.exists():
         try:
-            content = destination.read_bytes()
-            payload = torch.load(io.BytesIO(content), map_location='cpu', weights_only=True)
+            snapshot = destination.read_bytes()
+            payload = torch.load(io.BytesIO(snapshot), map_location='cpu', weights_only=True)
             if 'model' not in payload or 'state' not in payload:
                 raise ValueError('Incomplete model snapshot')
-            return content
+            return snapshot
         except Exception:
             # This derived snapshot can always be rebuilt from the original.
             pass
-    content = source.read_bytes()
-    torch.load(io.BytesIO(content), map_location='cpu', weights_only=True)
     atomic_write(destination, content)
     return content
 
@@ -99,15 +105,57 @@ def choose_decoder(scores):
     return result
 
 
-def copy_matching_resume(model_path, resume_path, destination):
+def matching_resume_bytes(model_path, resume_path):
     """Only load trusted full checkpoints made by this project."""
     model = torch.load(model_path, map_location='cpu', weights_only=True)
     content = Path(resume_path).read_bytes()
-    resume = torch.load(io.BytesIO(content), map_location='cpu', weights_only=False)
-    if (model['state'] != resume['state'] or model['model'].keys() != resume['model'].keys()
-            or any(not torch.equal(value, resume['model'][name]) for name, value in model['model'].items())):
-        raise ValueError('Full resume checkpoint does not match frozen model')
-    atomic_write(destination, content)
+    try:
+        resume = torch.load(io.BytesIO(content), map_location='cpu', weights_only=False)
+        if (model['state'] != resume['state'] or model['model'].keys() != resume['model'].keys()
+                or any(not torch.equal(value, resume['model'][name]) for name, value in model['model'].items())):
+            raise ValueError('Full resume checkpoint does not match frozen model')
+    except Exception as error:
+        raise ValueError(f'Invalid full resume checkpoint {resume_path}: {error}') from error
+    return content
+
+
+def copy_matching_resume(model_path, resume_path, destination):
+    atomic_write(destination, matching_resume_bytes(model_path, resume_path))
+
+
+def freeze_candidates(runs, output):
+    """Validate both checkpoint pairs, then collapse identical model bytes.
+
+    Best aliases take precedence, followed by lexicographic run order. Keep all
+    aliases in the manifest so every source checkpoint remains traceable.
+    """
+    candidates = sorted(p for p in runs.iterdir() if p.is_dir() and
+                        (p.name in ('main', 'no_aug') or p.name.startswith(
+                            ('refine100', 'finetune100', 'finetune460', 'lr_candidate_'))))
+    sources, by_sha = {}, {}
+    for kind in ('best', 'last'):
+        for candidate in candidates:
+            key = f'{candidate.name}__{kind}'
+            source = candidate/f'{kind}_model.pt'
+            resume = candidate/f'{kind}.pt'
+            for path in (source, resume):
+                if not path.is_file():
+                    raise FileNotFoundError(f'Missing checkpoint source: {path}')
+            destination = output/'candidates'/key
+            destination.mkdir(parents=True, exist_ok=True)
+            frozen = freeze_model(source, destination/'model.pt')
+            # Validate even duplicate/unselected aliases before any test access.
+            matching_resume_bytes(destination/'model.pt', resume)
+            sha = hashlib.sha256(frozen).hexdigest()
+            alias = {'candidate': key, 'source': str(candidate), 'run': candidate.name,
+                     'checkpoint_kind': kind, 'model_source': str(source),
+                     'resume_source': str(resume)}
+            if sha in by_sha:
+                sources[by_sha[sha]]['aliases'].append(alias)
+            else:
+                by_sha[sha] = key
+                sources[key] = {**alias, 'sha256': sha, 'aliases': [alias]}
+    return sources
 
 
 def emit(output, event, **values):
@@ -159,30 +207,24 @@ def main():
         torch.set_num_threads(2)
         from scripts.evaluate_decoders import cache_emissions, compare
         runs = root/'runs'
-        candidates = [p for p in runs.iterdir() if p.is_dir() and
-                      (p.name in ('main', 'no_aug') or p.name.startswith(
-                          ('refine100', 'finetune100', 'finetune460', 'lr_candidate_')))
-                      and (p/'best_model.pt').exists()]
-        scores, sources = {}, {}
-        for candidate in sorted(candidates):
-            destination = output/'candidates'/candidate.name
-            destination.mkdir(parents=True, exist_ok=True)
+        sources = freeze_candidates(runs, output)
+        scores = {}
+        for candidate in sources:
+            destination = output/'candidates'/candidate
             model = destination/'model.pt'
-            frozen = freeze_model(candidate/'best_model.pt', model)
-            sources[candidate.name] = {'source': str(candidate),
-                                        'sha256': hashlib.sha256(frozen).hexdigest()}
-            scores[candidate.name] = {}
+            frozen = model.read_bytes()
+            scores[candidate] = {}
             for part in DEV:
                 cache = cache_emissions(frozen, root/'data/datasets', part, 0,
                                         destination, torch.device('cuda'), 16, 4)
                 summary = compare(cache, destination/part, [], 8, 1)
-                scores[candidate.name][part] = summary['decoders']['greedy']
-            emit(output, 'candidate_evaluated', candidate=candidate.name, scores=scores[candidate.name])
+                scores[candidate][part] = summary['decoders']['greedy']
+            emit(output, 'candidate_evaluated', candidate=candidate, scores=scores[candidate])
         selected = choose_checkpoint(scores)
         model = output/'candidates'/selected/'model.pt'
         frozen = model.read_bytes()
         atomic_write(output/'selected_model.pt', frozen)
-        copy_matching_resume(model, Path(sources[selected]['source'])/'best.pt', output/'selected_resume.pt')
+        copy_matching_resume(model, Path(sources[selected]['resume_source']), output/'selected_resume.pt')
         selection = {'selected': selected, 'selection': 'pooled full dev-clean/dev-other greedy corpus WER',
                      'candidates': sources, 'scores': scores}
         atomic_write(output/'selection.json', json.dumps(selection, indent=2).encode())
