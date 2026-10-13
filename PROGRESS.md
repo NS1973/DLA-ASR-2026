@@ -79,3 +79,20 @@ Full-corpus training, dev/test evaluation, full artifact download, fresh Colab v
 
 ### Full 60-epoch augmentation ablation
 - All2703 dev-clean and2864 dev-other records evaluated with exact last checkpoints from53520 steps. Main WER24.4495%/51.3798%; no_aug28.8151%/57.8884%. Main CER7.9752%/22.2142%; no_aug9.8920%/26.0608%. Actual model hashes in logs/ablation60-model-hashes.json; configs/counts in four logs/ablation60-*.json files. One seed only; no seed variance claim. Test sets remain unused.
+
+### 2026-10-13 06:01 MSK expanded-corpus startup
+- Both detached trainers started on132553 utterances. GPU0finetune460 PID15949 batch32/LR1e-4 (4143batches); GPU1lr_candidate_finetune460 PID16298 batch128/LR3e-4 (1036batches). Same own main best parent step52628/epoch58. Initial checkpoints exist; first loss/gradients finite. Full epoch speed and dev results pending.
+- Source d220b62655489fe137d9f28e719e8394dab11378 is available on private codex/hw1-asr after successful Actions run38339521521. Original template ancestry retained. Git PDF bytes identical to inspected working artifact.
+
+### 2026-10-13 06:06 MSK first expanded-data epoch and no-reference fixture
+- GPU1 candidate completed one full132553-record epoch: train_start03:00:24Z, epoch_end03:05:12Z (~288s including initialization/media). Monitoring256-record seed1 dev: cleanWER25.2773%,other50.4364%; not full-dev/test. GPU0 remains in epoch0, step2580; both last checkpoints younger than45s at06:06.
+- Public no-reference fixture prepared from own train example374-180298-0000: mono16kFLAC,stereo8kWAV,stereo44.1kMP3. Archive694252bytes SHA80693d40e670df1df7c24c4d5c92931960a3fe3fe912f16ce1ab9bb6f2ccbf51. Anonymous Drive download verified; preflight own saved model decoded all3 preserved IDs, metricsnull. Final-checkpoint/fresh-Colab repeat remains pending.
+
+### 2026-10-13 06:09 MSK measured epoch budget
+- Main completed first full expanded-data epoch at06:09:26 (~546s from train_start includinginit/media), monitoring256 cleanWER24.5184%/other50.1148%. Candidate completed second epoch at06:09:24 (252s since prior epoch_end), clean24.2460%/other50.2297%. Both actual PIDs15949/16298 live and continuing. About380minutes remain until12:30, sufficient for many measured full passes.
+- GPU claims refreshed at06:08:42/43, expire07:08. Heartbeat ACTIVE until16:00 verified. Full/test/finaldecoder selection remains scheduled12:30.
+
+### 2026-10-13 06:15 MSK measured error analysis
+- New scripts/analyze_errors.py decomposes minimum word edit alignments, validates corpus sums and optional inference summary, rejects missing references/duplicateIDs. Three initialtests failed on missingmodule; implemented ->3passed0.16s. Documented full command python -m pytest tests -q ->45passed5.46s local and45passed1.81s cleanGMC. A broad pytest without tests scope collected the restored packaging copy and failed on duplicate module imports; rerun at documented tests scope succeeded without deleting artifacts.
+- Exact main60 full-dev predictions: clean S11145/D1055/I1101 =13301errors/54402words; other S22005/D2236/I1936 =26177/50948. Analysis JSONs match original summaries includingCER. Frequentpairs and deterministic high-error examples retained, rawfrequency limitations stated.
+- Working report now6pages with erroranalysis; all6rendered pages inspected. Optional pypdf page-count command unavailable locally; actual rendered PNG count6 verified, rendering succeeded. Finalreport/analysis remainpending selectedmodel.
