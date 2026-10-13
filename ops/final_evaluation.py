@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 import hashlib
 import io
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -19,6 +20,29 @@ import torch
 
 DEV = ('dev-clean', 'dev-other')
 CUTOFF = datetime(2026, 10, 13, 9, 30, tzinfo=timezone.utc)
+
+
+def read_cached_dev_comparison(path, checkpoint_sha, split, settings, lm_sha=None):
+    """Reuse only an exact frozen model's complete, internally consistent dev result."""
+    expected = {'dev-clean': (2703, 54402, 288456), 'dev-other': (2864, 50948, 265951)}
+    if split not in expected:
+        raise ValueError('Only full official dev results can be reused')
+    result = json.loads(Path(path).read_text())
+    utterances, words, chars = expected[split]
+    if (result.get('checkpoint_sha256') != checkpoint_sha or result.get('utterances') != utterances
+            or set(result.get('decoders', {})) != set(settings)):
+        raise ValueError('Cached dev model, corpus size or decoder settings mismatch')
+    if lm_sha is not None and result.get('lm_sha256') != lm_sha:
+        raise ValueError('Cached dev LM SHA mismatch')
+    for metrics in result['decoders'].values():
+        if (metrics.get('utterances'), metrics.get('words'), metrics.get('chars')) != (utterances, words, chars):
+            raise ValueError('Cached dev reference counts mismatch')
+        for rate, errors, units in [('wer', 'word_errors', words), ('cer', 'char_errors', chars)]:
+            count = metrics.get(errors)
+            if (type(count) is not int or count < 0 or not isinstance(metrics.get(rate), (int, float))
+                    or not math.isclose(metrics[rate], count/units, rel_tol=1e-12, abs_tol=1e-12)):
+                raise ValueError('Cached dev error rate is inconsistent with its counts')
+    return result
 
 
 def atomic_write(path, content):
