@@ -145,7 +145,8 @@ def worker_seed(worker_id):
 
 def make_loader(entries, config, augment=False, shuffle=False):
     sampler = LengthBatchSampler(entries, config["batch_size"], config["seed"], shuffle)
-    return DataLoader(SpeechDataset(entries, augment, config["seed"]), batch_sampler=sampler, collate_fn=collate,
+    return DataLoader(SpeechDataset(entries, augment, config["seed"],config.get('augmentation_profile','legacy')),
+                      batch_sampler=sampler, collate_fn=collate,
                       generator=torch.Generator().manual_seed(config["seed"]),
                       num_workers=config["workers"], pin_memory=True, worker_init_fn=worker_seed,
                       persistent_workers=config["workers"] > 0)
@@ -179,7 +180,7 @@ def evaluate(model, loader, device, max_batches=None, bf16=True):
     return corpus_metrics(references, predictions), examples
 
 
-def log_media(entries, directory, logger, namespace="train"):
+def log_media(entries, directory, logger, namespace="train", augmentation_profile='legacy'):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -191,7 +192,7 @@ def log_media(entries, directory, logger, namespace="train"):
     for i, entry in enumerate(entries[:3]):
         original = load_audio(entry["path"])
         for kind in ["original", "gain", "noise", "speed", "reverb"]:
-            wave = original if kind == "original" else augment_waveform(original, kind)
+            wave = original if kind == "original" else augment_waveform(original, kind,profile=augmentation_profile)
             wav_path, image_path = media / f"{i}_{kind}.wav", media / f"{i}_{kind}.png"
             sf.write(wav_path, wave.numpy(), 16000)
             mel = mel_transform(wave).clamp_min(1e-10).log().numpy()
@@ -208,7 +209,8 @@ def log_media(entries, directory, logger, namespace="train"):
                                       f"spectrogram/{namespace}/{i}_{kind}": wandb.Image(str(image_path))})
                 except Exception:
                     pass
-    logger.emit({"event": "augmentation_media_saved", "path": str(media), "waveform_augmentations": 4})
+    logger.emit({"event": "augmentation_media_saved", "path": str(media), "waveform_augmentations": 4,
+                 'augmentation_profile':augmentation_profile})
 
 
 def train(config):
@@ -257,9 +259,10 @@ def train(config):
     criterion = torch.nn.CTCLoss(blank=0, zero_infinity=False)
     logger.emit({"event": "train_start", "parameters": sum(p.numel() for p in model.parameters()),
                  "utterances": len(entries), "batches": len(loader), "device": str(device), "step": state["step"]})
-    log_media(entries, directory, logger)
+    log_media(entries, directory, logger,augmentation_profile=config.get('augmentation_profile','legacy'))
     for part, valid_loader in validations.items():
-        log_media(valid_loader.dataset.entries[:1], directory, logger, namespace=part)
+        log_media(valid_loader.dataset.entries[:1], directory, logger, namespace=part,
+                  augmentation_profile=config.get('augmentation_profile','legacy'))
     optimizer.zero_grad(set_to_none=True)
     if config.get("resume"):
         state.update(restore_checkpoint(config["resume"], model, optimizer, scheduler))
@@ -290,8 +293,9 @@ def train(config):
         for epoch in range(state["epoch"], config["epochs"]):
             if time.time() >= deadline or (config["max_steps"] and state["step"] >= config["max_steps"]):
                 break
-            loader.batch_sampler.epoch = epoch
-            loader.dataset.epoch[0] = epoch
+            data_epoch = epoch + config.get('data_epoch_offset',0)
+            loader.batch_sampler.epoch = data_epoch
+            loader.dataset.epoch[0] = data_epoch
             model.train()
             epoch_loss = count = 0
             resume_batch = state.get("batch_index", 0) if epoch == state["epoch"] else 0

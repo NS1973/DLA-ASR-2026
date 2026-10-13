@@ -24,10 +24,20 @@ def load_audio(path):
     return wave.clamp(-1, 1)
 
 
-def augment_waveform(wave, kind, rng=None, generator=None, min_samples=0):
+def augment_waveform(wave, kind, rng=None, generator=None, min_samples=0, profile='legacy'):
+    if profile not in {'legacy', 'effective_v2'}:
+        raise ValueError(f'Unknown augmentation profile: {profile}')
     rng = rng or random
     if kind == "gain":
         result = wave * rng.uniform(.75, 1.25)
+        if profile == 'effective_v2':
+            # A smooth local envelope survives utterance-wide log-Mel normalization.
+            knots = [rng.uniform(.65, 1.35) for _ in range(5)]
+            if max(knots)-min(knots) < .25:
+                knots[0], knots[-1] = .75, 1.25
+            envelope = torch.nn.functional.interpolate(
+                wave.new_tensor(knots)[None, None], size=len(wave), mode='linear', align_corners=True)[0, 0]
+            result = result * envelope
     elif kind == "noise":
         snr = rng.uniform(20, 35)
         noise = torch.randn(wave.shape, generator=generator)
@@ -41,9 +51,12 @@ def augment_waveform(wave, kind, rng=None, generator=None, min_samples=0):
         n = int(duration * 16000)
         impulse = torch.randn(n, generator=generator) * torch.exp(-torch.arange(n) / (n / 6))
         impulse[0] = 0
-        impulse /= impulse.abs().sum().clamp_min(1e-8)
+        impulse /= (impulse.square().sum().sqrt() if profile == 'effective_v2'
+                    else impulse.abs().sum()).clamp_min(1e-8)
         size = 1 << (len(wave) + n - 2).bit_length()
         reflected = torch.fft.irfft(torch.fft.rfft(wave, size) * torch.fft.rfft(impulse, size), size)[:len(wave)]
+        if profile == 'effective_v2':
+            reflected *= wave.square().mean().sqrt() / reflected.square().mean().sqrt().clamp_min(1e-8)
         result = wave + rng.uniform(.1, .2) * reflected
     else:
         raise ValueError(kind)
@@ -51,10 +64,11 @@ def augment_waveform(wave, kind, rng=None, generator=None, min_samples=0):
 
 
 class SpeechDataset(Dataset):
-    def __init__(self, entries, augment=False, seed=1):
+    def __init__(self, entries, augment=False, seed=1, augmentation_profile='legacy'):
         self.entries = entries
         self.augment = augment
         self.seed = seed
+        self.augmentation_profile = augmentation_profile
         self.epoch = torch.zeros(1, dtype=torch.int64).share_memory_()
         self.codec = Codec()
         self.mel = torchaudio.transforms.MelSpectrogram(sample_rate=16000, n_fft=400, win_length=400,
@@ -78,7 +92,8 @@ class SpeechDataset(Dataset):
             generator = torch.Generator().manual_seed(seed)
             for kind in ("gain", "noise", "speed", "reverb"):
                 if rng.random() < .35:
-                    wave = augment_waveform(wave, kind, rng, generator, min_samples=min_samples if kind=='speed' else 0)
+                    wave = augment_waveform(wave, kind, rng, generator, min_samples=min_samples if kind=='speed' else 0,
+                                            profile=self.augmentation_profile)
         # For very short files reflect-padding can fail, so pad to an FFT window.
         if len(wave) < 400:
             wave = torch.nn.functional.pad(wave, (0, 400 - len(wave)))

@@ -124,3 +124,10 @@ Full-corpus training, dev/test evaluation, full artifact download, fresh Colab v
 ### 2026-10-13 08:23 MSK first continuation and matching backup
 - Candidate40 completed41440steps normally08:19:38; fixeddev256seed1 finalWER14.9056%/40.8360%. Automatic continue1 PID22624 starts08:19:55, batch128 LR5e-5, same464.20h. At08:20 actualprocesslive step60 finite loss/grad, lastcheckpoint29sec. Exact parentSHAa51d1268802190790766736a6e97f8f23a17de78787dec8e7d349f8a21204fa5 and stateverified from immutable snapshot. Startup folder/metrics creation race resolved by re-poll, no restart.
 - Both completed candidate40 model97898508bytes and fullresume293733105bytes downloaded to data/safety-snapshots/candidate40-*.pt. AllremotelocalSHA/size checks and everytensor/state matchpass. Resume contains optimizer/scheduler/RNG/gradients. Evidence logs/candidate40-backup-verification.json. No final selection/testclaim.
+
+### 2026-10-13 10:27 MSK audit correction validation
+- Audit found gain cancellation, weakreverb and possible repeatingcontinuation trajectory. Added opt-in effective_v2 whilelegacy default unchanged: localgain envelope and energycontrolledreverb.4 regressiontests include featureeffect, boundedreverb, exactlegacygain and realCPUtrain withdata_epoch_offset80 keepingseed1dev. REDmissingprofile/offset ->GREEN59tests5.77s local,59cleanGMC1.94s.
+- Real4trainFLAC×3seed v2validated: gainfeaturedelta0.0307–0.0988, reverb0.0744–0.1617, allfiniteandbounded. Evidence logs/augmentation-v2-validation.json. SeparateGMC augmentation-proof-v2 completed10:26:25,3records×original+4 transforms WAV/PNG/offlineW&B.
+- Prepared bounded separateGPU0 B128 LR5e-5 candidate lr_candidate_augmented460, offset80,cutoff12:30; baseline trainers unchanged. Launch and devbenefit not yet claimed.
+
+- Independentreview verifiedexactlegacyoutputs for all4augs andsilencefinite, flaggedrunnerfailedcompletion wronglytreatedassuccess. Newlifecycle regression reproducedfalsecomplete ->fixedcheckprocess_succeeded;60tests5.58s local/60cleanGMCpassed. Operator recordsactualsourcecommit and per-fileSHA.

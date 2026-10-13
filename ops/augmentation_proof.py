@@ -1,5 +1,6 @@
 """Separate offline run showing all four augmentations on real training audio."""
 import json
+import argparse
 from pathlib import Path
 import sys
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
@@ -9,14 +10,17 @@ from src.asr.runtime import RunLog,log_media,seed_all
 
 torch.set_num_threads(2)
 seed_all(42)
-directory = Path('/work/runs/augmentation-proof')
-logger = RunLog(directory,{'purpose':'separate augmentation demonstration','seed':42})
+parser=argparse.ArgumentParser()
+parser.add_argument('--profile',choices=['legacy','effective_v2'],default='legacy')
+args=parser.parse_args()
+directory = Path('/work/runs/augmentation-proof' + ('-v2' if args.profile=='effective_v2' else ''))
+logger = RunLog(directory,{'purpose':'separate augmentation demonstration','seed':42,'augmentation_profile':args.profile})
 entries = CustomDirDataset('/work/data/bootstrap').entries[:3]
-log_media(entries,directory,logger)
+log_media(entries,directory,logger,augmentation_profile=args.profile)
 for entry in entries:
     original = load_audio(entry['path'])
     for kind in ['gain','noise','speed','reverb']:
-        wave = augment_waveform(original,kind)
+        wave = augment_waveform(original,kind,profile=args.profile)
         assert torch.isfinite(wave).all()
         assert wave.shape != original.shape or not torch.equal(wave,original)
         logger.emit({'event':'augmentation_check','uid':entry['uid'],'kind':kind,
