@@ -1,0 +1,3 @@
+_target_: src.datasets.CustomDirDataset
+directory: ${custom_dir}
+augment: false

@@ -1,0 +1,3 @@
+# Optional PDF report rendering; not needed for training/inference.
+reportlab==4.5.1
+matplotlib==3.11.2

@@ -1,0 +1,9 @@
+{
+  "url": "https://www.openslr.org/resources/11/3-gram.pruned.1e-7.arpa.gz",
+  "source": "OpenSLR SLR11",
+  "license": "Public domain",
+  "sha256": "71dd880667cb6ea3942bb1982988c91fb1208839a21911eeec7e31c857c4bdfb",
+  "bytes": 34094057,
+  "order": 3,
+  "ngrams": 3786486
+}
