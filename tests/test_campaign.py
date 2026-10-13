@@ -45,3 +45,25 @@ def test_final_epoch_budget_ending_early_repeats_until_deadline(tmp_path):
         current[0]=datetime(2026,10,13,4 if len(calls)==1 else 9,30,tzinfo=timezone.utc)
     campaign.continue_training(run,tmp_path,lambda:Path('/best.pt'),now=lambda:current[0])
     assert calls==['finetune100','finetune100_continue1']
+
+
+def test_secondary_candidate_uses_own_gpu_names_and_lr_after_data_gate(tmp_path):
+    marker = tmp_path/'train-clean-360.ready'
+    marker.touch()
+    os.utime(marker, (campaign.CUTOFF.timestamp()-1,)*2)
+    current=[campaign.CUTOFF]
+    calls=[]
+    def run(name,gpu,options):
+        calls.append((name,gpu,options))
+        current[0]=datetime.fromisoformat(campaign.END)
+        return True
+    campaign.continue_training(run,tmp_path,lambda:Path('/frozen.pt'),
+                               now=lambda:current[0],gpu=1,prefix='lr_candidate_',
+                               initial_lr=3e-4)
+    assert len(calls)==1
+    name,gpu,options=calls[0]
+    assert (name,gpu)==('lr_candidate_finetune460',1)
+    assert 'lr=0.0003' in options
+    assert f'init_checkpoint={Path("/frozen.pt")}' in options
+    assert 'train_parts=[train-clean-100,train-clean-360]' in options
+    assert f'end_utc={campaign.END}' in options

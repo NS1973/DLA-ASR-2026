@@ -7,7 +7,7 @@ import subprocess
 import sys
 import time
 
-from campaign import continue_training
+from campaign import CUTOFF, END, continue_training
 
 ROOT = Path('/work')
 CODE = ROOT / 'code'
@@ -65,6 +65,46 @@ def staging_initialization():
     return []
 
 
+def best_checkpoint():
+    import torch
+    choices=[]
+    for candidate in RUNS.iterdir():
+        if candidate.name not in ['main','no_aug'] and not candidate.name.startswith(
+                ('refine100','finetune100','finetune460','lr_candidate_')):
+            continue
+        path=candidate/'best_model.pt'
+        if path.exists():
+            state=torch.load(path,map_location='cpu',weights_only=True)['state']
+            choices.append((state['best_wer'],path))
+    if not choices:
+        raise RuntimeError('No dev-selected checkpoint is available')
+    wer,path=min(choices,key=lambda item:item[0])
+    print(f'Selected initialization {path}: dev-clean WER={wer}',flush=True)
+    return path
+
+
+def wait_for_secondary_slot():
+    """Wait for the project's ablation trainer, without touching any process."""
+    end=datetime.fromisoformat(END)
+    while datetime.now(timezone.utc) < end:
+        current=datetime.now(timezone.utc)
+        process_file=RUNS/'no_aug/process.json'
+        active=False
+        if process_file.exists():
+            pid=json.loads(process_file.read_text())['pid']
+            process_path=Path('/proc')/str(pid)
+            try:
+                command=(process_path/'cmdline').read_bytes()
+                state=(process_path/'stat').read_text().split(') ',1)[1].split()[0]
+                active=b'train.py' in command and b'/work/runs/no_aug' in command and state!='Z'
+            except FileNotFoundError:
+                pass
+        if current >= CUTOFF and not active:
+            return True
+        time.sleep(10)
+    return False
+
+
 if __name__ == '__main__':
     mode = sys.argv[1]
     if mode == 'main':
@@ -78,22 +118,11 @@ if __name__ == '__main__':
         wait_for(ROOT / 'data/dev-clean.ready')
         wait_for(ROOT / 'data/dev-other.ready')
         run('main', 0, ['data_root=/work/data/datasets','end_utc=2026-10-13T03:00:00+00:00', *staging_initialization()])
-        def best_checkpoint():
-            import torch
-            choices=[]
-            for candidate in RUNS.iterdir():
-                if candidate.name not in ['main','no_aug'] and not candidate.name.startswith(('refine100','finetune100','finetune460')):
-                    continue
-                path=candidate/'best_model.pt'
-                if path.exists():
-                    state=torch.load(path,map_location='cpu',weights_only=True)['state']
-                    choices.append((state['best_wer'],path))
-            if not choices:
-                raise RuntimeError('No dev-selected checkpoint is available')
-            wer,path=min(choices,key=lambda item:item[0])
-            print(f'Selected initialization {path}: dev-clean WER={wer}',flush=True)
-            return path
         continue_training(run,ROOT/'data',best_checkpoint)
+    elif mode == 'lr_candidate':
+        if wait_for_secondary_slot():
+            continue_training(run,ROOT/'data',best_checkpoint,gpu=1,
+                              prefix='lr_candidate_',initial_lr=3e-4)
     elif mode == 'ablation':
         for part in ['train-clean-100','dev-clean','dev-other']:
             wait_for(ROOT / f'data/{part}.ready')

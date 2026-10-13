@@ -5,16 +5,17 @@ CUTOFF = datetime(2026,10,13,3,tzinfo=timezone.utc)
 END = '2026-10-13T09:30:00+00:00'
 
 
-def continue_training(run, data_directory, best_checkpoint, now=None):
+def continue_training(run, data_directory, best_checkpoint, now=None, *,
+                      gpu=0, prefix='', initial_lr=1e-4):
     now = now or (lambda:datetime.now(timezone.utc))
     def phase(name, deadline, parts, epochs):
         iteration=0
         result=True
         while now() < deadline:
-            run_name=name if iteration==0 else f'{name}_continue{iteration}'
-            result=run(run_name,0,['data_root=/work/data/datasets',f'train_parts={parts}',
+            run_name=prefix+(name if iteration==0 else f'{name}_continue{iteration}')
+            result=run(run_name,gpu,['data_root=/work/data/datasets',f'train_parts={parts}',
                                   f'init_checkpoint={best_checkpoint()}',f'epochs={epochs}',
-                                  f'lr={0.0001 if iteration==0 else 0.00005}',
+                                  f'lr={initial_lr if iteration==0 else 0.00005}',
                                   'warmup_steps=100',f'end_utc={deadline.isoformat()}'])
             iteration+=1
         return result
