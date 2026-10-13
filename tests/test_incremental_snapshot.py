@@ -27,9 +27,11 @@ def test_cached_blobs_restore_exact_files_without_retransmission(tmp_path,materi
     store=tmp_path/'store'
     a=ingest_snapshot(first,store,tmp_path/'one')
     assert a['new_blobs']==2 and a['all_blobs_and_logical_files_sha_verified']
+    assert a['self_contained_archive'] and not a['requires_cached_blobs']
     second=tmp_path/'second.tar.gz';packet(second,files,False)
     b=ingest_snapshot(second,store,tmp_path/'two',materialize=materialize)
     assert b['new_blobs']==0
+    assert not b['self_contained_archive'] and b['requires_cached_blobs']
     assert Path(b['resolved_files']['run/metrics.jsonl']).read_bytes()==files['run/metrics.jsonl']
     digest=records['run/config.json']['sha256']
     (store/digest).write_bytes(b'corrupted')
@@ -61,3 +63,21 @@ def test_full_checkpoint_pair_is_verified_after_cached_restore(tmp_path):
     path=tmp_path/'pairs.tar.gz';packet(path,files,True,pairs=[pair])
     proof=ingest_snapshot(path,tmp_path/'store',tmp_path/'restored')
     assert proof['all_model_full_pairs_tensor_state_verified'] and proof['states']==[pair]
+
+
+def test_parallel_collectors_do_not_collide_in_blob_cache(tmp_path,monkeypatch):
+    from concurrent.futures import ThreadPoolExecutor
+    import threading
+    path=tmp_path/'parallel.tar.gz';packet(path,{'run/payload.bin':b'x'*(3*2**20)},True)
+    store=tmp_path/'store';barrier=threading.Barrier(2)
+    original=Path.replace;temporary_names=[]
+    def synchronized_replace(self,target):
+        if self.parent==store and '.partial' in self.name:
+            temporary_names.append(self.name);barrier.wait(timeout=5)
+        return original(self,target)
+    monkeypatch.setattr(Path,'replace',synchronized_replace)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        futures=[pool.submit(ingest_snapshot,path,store,tmp_path/str(i),False) for i in range(2)]
+        results=[f.result() for f in futures]
+    assert all(result['all_blobs_and_logical_files_sha_verified'] for result in results)
+    assert len(temporary_names)==2 and len(set(temporary_names))==2

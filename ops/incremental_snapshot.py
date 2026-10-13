@@ -5,6 +5,7 @@ from pathlib import Path, PurePosixPath
 import re
 import shutil
 import tarfile
+import uuid
 
 
 def sha(path):
@@ -14,7 +15,7 @@ def sha(path):
 def ingest_snapshot(archive_path, store, output, materialize=True):
     store,output=Path(store),Path(output)
     store.mkdir(parents=True,exist_ok=True);output.mkdir(parents=True,exist_ok=True)
-    new_blobs=0;manifest=None
+    new_blobs=0;manifest=None;received=set()
     with tarfile.open(archive_path,'r|*') as archive:
         for member in archive:
             if not member.isfile():raise ValueError('Unsafe snapshot member type')
@@ -23,12 +24,20 @@ def ingest_snapshot(archive_path, store, output, materialize=True):
             if not member.name.startswith('blobs/') or not re.fullmatch('[a-f0-9]{64}',member.name[6:]):
                 raise ValueError('Unsafe blob member name')
             digest=member.name[6:];target=store/digest
-            temporary=Path(str(target)+'.partial')
+            temporary=Path(str(target)+'.partial-'+uuid.uuid4().hex)
             h=hashlib.sha256();count=0
             with archive.extractfile(member) as source,temporary.open('wb') as destination:
                 while block:=source.read(2**20):destination.write(block);h.update(block);count+=len(block)
             if count!=member.size or h.hexdigest()!=digest:raise ValueError('Blob SHA or size mismatch')
-            temporary.replace(target);new_blobs+=1
+            try:
+                temporary.replace(target)
+            except PermissionError:
+                # Another collector may have published this immutable blob while
+                # a Windows reader holds it open. Accept only the exact content.
+                if not target.is_file() or target.stat().st_size!=count or sha(target)!=digest:
+                    raise
+                temporary.unlink()
+            new_blobs+=1;received.add(digest)
     if manifest is None:raise ValueError('Missing snapshot manifest')
     verified={};resolved={}
     for name,item in manifest['files'].items():
@@ -61,10 +70,11 @@ def ingest_snapshot(archive_path, store, output, materialize=True):
             if not {'optimizer','scheduler','rng_python','rng_numpy','rng_torch','rng_cuda','gradients'}<=set(full):
                 raise ValueError('Incomplete full resume state')
             del model,full
+    self_contained={item['sha256'] for item in manifest['files'].values()}<=received
     proof={'bytes':Path(archive_path).stat().st_size,'sha256':sha(archive_path),'new_blobs':new_blobs,
            'all_blobs_and_logical_files_sha_verified':True,'all_model_full_pairs_tensor_state_verified':True,
            'states':pairs,'files':manifest['files'],'resolved_files':resolved,'blob_store':str(store),
-           'requires_cached_blobs':True,'self_contained_archive':False}
+           'requires_cached_blobs':not self_contained,'self_contained_archive':self_contained}
     (output/'manifest.json').write_text(json.dumps(manifest,indent=2))
     (output/'verification.json').write_text(json.dumps(proof,indent=2))
     return proof
