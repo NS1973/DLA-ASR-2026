@@ -34,6 +34,7 @@ def main():
     loader = make_loader(entries, cfg, augment=True, shuffle=True)
     device = torch.device('cuda')
     model = load_model(cfg['init_checkpoint'], device).train()
+    model.packed_stack = bool(cfg.get('packed_stack', False))
     optimizer = torch.optim.AdamW(model.parameters(), lr=cfg['lr'])
     loss_fn = torch.nn.CTCLoss(blank=0, zero_infinity=False)
     records = []

@@ -41,10 +41,18 @@ class DeepSpeech2CTC(nn.Module):
         output_lengths = self.transform_input_lengths(lengths)
         x = x.permute(0, 3, 1, 2).flatten(2)
         x = self.input_norm(x)
-        for rnn, norm in zip(self.rnns, self.norms):
+        if self.training and getattr(self, 'packed_stack', False):
+            total_length = x.shape[1]
             packed = pack_padded_sequence(x, output_lengths, batch_first=True, enforce_sorted=False)
-            packed, _ = rnn(packed)
-            x, _ = pad_packed_sequence(packed, batch_first=True, total_length=x.shape[1])
-            x = self.dropout(norm(x))
+            for rnn, norm in zip(self.rnns, self.norms):
+                packed, _ = rnn(packed)
+                packed = packed._replace(data=self.dropout(norm(packed.data)))
+            x, _ = pad_packed_sequence(packed, batch_first=True, total_length=total_length)
+        else:
+            for rnn, norm in zip(self.rnns, self.norms):
+                packed = pack_padded_sequence(x, output_lengths, batch_first=True, enforce_sorted=False)
+                packed, _ = rnn(packed)
+                x, _ = pad_packed_sequence(packed, batch_first=True, total_length=x.shape[1])
+                x = self.dropout(norm(x))
         log_probs = self.head(x).float().log_softmax(-1)
         return {"log_probs": log_probs, "log_probs_length": output_lengths}

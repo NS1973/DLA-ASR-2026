@@ -247,6 +247,11 @@ def train(config):
         except FileNotFoundError:
             logger.emit({"event": "validation_pending", "split": part})
     model = DeepSpeech2CTC(**config["model"]).to(device)
+    model.packed_stack = bool(config.get('packed_stack', False))
+    feature_augment = None
+    if config.get('specaugment', False):
+        from src.asr.specaugment import MildSpecAugment
+        feature_augment = MildSpecAugment().to(device).train()
     if config.get("init_checkpoint") and not config.get('resume'):
         metadata = initialize_from_checkpoint(model, config['init_checkpoint'], directory)
         logger.emit({'event': 'initialize_from_model', **metadata})
@@ -316,8 +321,11 @@ def train(config):
                 if (output_lengths < batch["target_lengths"] + torch.tensor(repeats)).any():
                     invalid = output_lengths < batch["target_lengths"] + torch.tensor(repeats)
                     raise ValueError(f"CTC target requires more timesteps than output: {[uid for uid,bad in zip(batch['uids'],invalid) if bad]}")
+                spectrogram = batch["spectrogram"].to(device, non_blocking=True)
+                if feature_augment is not None:
+                    spectrogram = feature_augment(spectrogram, batch['spectrogram_length'])
                 with torch.autocast(device_type=device.type, dtype=torch.bfloat16, enabled=mixed):
-                    result = model(batch["spectrogram"].to(device, non_blocking=True), batch["spectrogram_length"])
+                    result = model(spectrogram, batch["spectrogram_length"])
                 loss = criterion(result["log_probs"].transpose(0, 1).float(), batch["targets"].to(device),
                                  result["log_probs_length"], batch["target_lengths"])
                 if not torch.isfinite(loss):
