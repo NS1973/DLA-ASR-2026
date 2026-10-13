@@ -5,6 +5,7 @@ custom_train: null
 train_parts: [train-clean-100]
 valid_parts: [dev-clean, dev-other]
 valid_limit: 256
+checkpoint_monitor: dev-clean
 limit_train: null
 run_dir: runs/main
 model:

@@ -359,7 +359,7 @@ def train(config):
             for part, valid_loader in validations.items():
                 metrics, examples = evaluate(model, valid_loader, device,bf16=mixed)
                 logger.emit({"event": "validation", "split": part, "epoch": epoch, "step": state["step"], **metrics, "examples": examples})
-                if part == "dev-clean" and metrics["wer"] < state["best_wer"]:
+                if part == config.get("checkpoint_monitor", "dev-clean") and metrics["wer"] < state["best_wer"]:
                     state["best_wer"] = metrics["wer"]
                     save_checkpoint(directory / "best.pt", model, optimizer, scheduler, state, config)
                     export_model(model, directory / "best_model.pt", state)
