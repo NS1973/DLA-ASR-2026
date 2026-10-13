@@ -4,6 +4,15 @@ import soundfile as sf
 import torch
 
 
+def test_t4_uses_fp32_and_ampere_supports_native_bf16(monkeypatch):
+    from src.asr.runtime import supports_native_bf16
+    monkeypatch.setattr(torch.cuda,'get_device_capability',lambda device:(7,5))
+    assert not supports_native_bf16(torch.device('cuda'))
+    assert not supports_native_bf16(torch.device('cpu'))
+    monkeypatch.setattr(torch.cuda,'get_device_capability',lambda device:(8,0))
+    assert supports_native_bf16(torch.device('cuda'))
+
+
 def test_metrics_reject_missing_prediction(tmp_path):
     from calc_metrics import directory_metrics
     refs, preds = tmp_path / 'refs', tmp_path / 'preds'

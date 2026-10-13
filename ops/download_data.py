@@ -13,6 +13,18 @@ BASE = "https://www.openslr.org/resources/12/"
 PARTS = ["train-clean-100", "dev-clean", "dev-other", "test-clean", "test-other"]
 
 
+def finalize_archive(temp, dest):
+    # Windows readers may momentarily deny rename. Do not return to HTTP Range
+    # downloading after the complete archive has already been verified.
+    for attempt in range(150):
+        try:
+            temp.replace(dest)
+            return
+        except PermissionError:
+            time.sleep(.2)
+    raise PermissionError(f'Complete archive could not be renamed: {temp}')
+
+
 def download(part, root):
     dest = root / f"{part}.tar.gz"
     marker = dest.with_suffix(dest.suffix + ".sha256")
@@ -47,7 +59,7 @@ def download(part, root):
                 for member in archive:
                     if member.name.endswith(".trans.txt"):
                         archive.extractfile(member).read()
-            temp.replace(dest)
+            finalize_archive(temp, dest)
             h = hashlib.file_digest(dest.open("rb"), "sha256").hexdigest()
             marker.write_text(h + "\n", encoding="ascii")
             print(json.dumps({"downloaded": part, "bytes": dest.stat().st_size, "sha256": h}), flush=True)

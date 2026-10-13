@@ -43,6 +43,11 @@ def test_custom_dataset_resamples_stereo_and_accepts_missing_text(tmp_path):
     assert item["waveform"].numel() == 16000
     batch = collate([item])
     assert batch["spectrogram"].shape[0] == 1
+    from hydra.utils import instantiate
+    from omegaconf import OmegaConf
+    config = OmegaConf.create({'custom_dir':str(tmp_path),
+                              'dataset':OmegaConf.load('src/configs/datasets/custom_dir.yaml')})
+    assert instantiate(config.dataset)[0]['uid'] == 'sample'
 
 
 def test_augmentations_preserve_valid_audio():

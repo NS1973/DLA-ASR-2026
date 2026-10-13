@@ -33,11 +33,15 @@ import torch
 print('PyTorch:',torch.__version__,'GPU:',torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU')
 '''),
  markdown('## 2. Загрузка модели\nСкрипт проверяет SHA-256 весов по манифесту сдачи.'),
- code('''subprocess.run([sys.executable,'scripts/download_resources.py'],check=True)
+ code('''import json
+subprocess.run([sys.executable,'scripts/download_resources.py'],check=True)
 assert Path('artifacts/model.pt').is_file()
+manifest = json.loads(Path('resources.json').read_text())
+INFERENCE_OPTIONS = manifest.get('inference_overrides', ['decoder=greedy'])
+print('Настройки сдаваемой модели:', INFERENCE_OPTIONS)
 '''),
  markdown('## 3. Пример использования\nНебольшой настоящий пример показывает инференс и отдельный расчёт метрик.'),
- code('''subprocess.run([sys.executable,'inference.py','checkpoint=artifacts/model.pt','custom_dir=artifacts/example','output_dir=predictions/example','decoder=greedy','workers=0'],check=True)
+ code('''subprocess.run([sys.executable,'inference.py','checkpoint=artifacts/model.pt','custom_dir=artifacts/example','output_dir=predictions/example','workers=0',*INFERENCE_OPTIONS],check=True)
 subprocess.run([sys.executable,'calc_metrics.py','--reference-dir','artifacts/example/transcriptions','--prediction-dir','predictions/example'],check=True)
 from IPython.display import Audio, display
 audio = next(Path('artifacts/example/audio').iterdir())
@@ -51,7 +55,7 @@ print('Распознано:', Path(f'predictions/example/{uid}.txt').read_text(
     raise ValueError('Вставьте ссылку на ваш набор в поле DATASET_URL первой ячейки.')
 subprocess.run([sys.executable,'scripts/prepare_custom_dataset.py','--url',DATASET_URL,'--output-dir','data/user_dataset'],check=True)
 dataset = Path('data/user_dataset/dataset_path.txt').read_text().strip()
-subprocess.run([sys.executable,'inference.py','checkpoint=artifacts/model.pt',f'custom_dir={dataset}','output_dir=predictions/user','decoder=greedy','workers=0'],check=True)
+subprocess.run([sys.executable,'inference.py','checkpoint=artifacts/model.pt',f'custom_dir={dataset}','output_dir=predictions/user','workers=0',*INFERENCE_OPTIONS],check=True)
 if (Path(dataset)/'transcriptions').is_dir():
     subprocess.run([sys.executable,'calc_metrics.py','--reference-dir',str(Path(dataset)/'transcriptions'),'--prediction-dir','predictions/user','--output','predictions/user/metrics.json'],check=True)
 else:

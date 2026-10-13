@@ -91,7 +91,10 @@ if __name__ == '__main__':
     elif mode == 'ablation':
         for part in ['train-clean-100','dev-clean','dev-other']:
             wait_for(ROOT / f'data/{part}.ready')
-        run('no_aug', 1, ['data_root=/work/data/datasets','augment=false','epochs=10','end_utc=2026-10-13T04:00:00+00:00', *staging_initialization()])
+        # 28,539 train-clean-100 utterances / batch 32 => 892 batches/epoch.
+        # Keep the main run's 60-epoch scheduler and compare at ten epochs.
+        run('no_aug', 1, ['data_root=/work/data/datasets','augment=false','epochs=60','max_steps=8920',
+                          'end_utc=2026-10-13T04:00:00+00:00', *staging_initialization()])
     elif mode == 'staging':
         wait_for(ROOT/'data/staging.ready')
         run('staging', 0, ['custom_train=/work/data/datasets/staging','data_root=/work/data/datasets','epochs=100','warmup_steps=50',

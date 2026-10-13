@@ -9,12 +9,24 @@ from omegaconf import OmegaConf
 from src.asr.codec import Codec
 from src.asr.data import CustomDirDataset, SpeechDataset, collate, librispeech_entries
 from src.asr.metrics import corpus_metrics
-from src.asr.runtime import load_model, worker_seed
+from src.asr.runtime import load_model, worker_seed, supports_native_bf16
+
+
+_WORKER_LM = None
+
+
+def initialize_decoder(lm_path=None):
+    global _WORKER_LM
+    if lm_path:
+        from src.asr.lm import ArpaLM
+        _WORKER_LM = ArpaLM(lm_path)
+    else:
+        _WORKER_LM = None
 
 
 def decode_beam(argument):
-    probabilities, width, topk = argument
-    return Codec().beam_search(probabilities, width, topk)
+    probabilities, width, topk, lm_weight, word_bonus = argument
+    return Codec().beam_search(probabilities, width, topk, _WORKER_LM, lm_weight, word_bonus)
 
 
 @torch.inference_mode()
@@ -36,17 +48,21 @@ def infer(config):
     codec = Codec()
     references, predictions, records = [], [], []
     start = time.monotonic()
-    pool = ProcessPoolExecutor(max_workers=config["beam_workers"], mp_context=multiprocessing.get_context("spawn")) if config["decoder"] == "beam" and config["beam_workers"] > 1 else None
+    lm_path = config.get('lm_path')
+    pool = ProcessPoolExecutor(max_workers=config["beam_workers"], mp_context=multiprocessing.get_context("spawn"),
+                               initializer=initialize_decoder,initargs=(lm_path,)) if config["decoder"] == "beam" and config["beam_workers"] > 1 else None
+    if config['decoder']=='beam' and pool is None:
+        initialize_decoder(lm_path)
     try:
         for batch in loader:
-            with torch.autocast(device_type=device.type, dtype=torch.bfloat16, enabled=config["bf16"] and device.type == "cuda"):
+            with torch.autocast(device_type=device.type, dtype=torch.bfloat16, enabled=config["bf16"] and supports_native_bf16(device)):
                 result = model(batch["spectrogram"].to(device), batch["spectrogram_length"])
             log_probs = result["log_probs"].float().cpu()
             arrays = [p[:int(n)].numpy() for p, n in zip(log_probs, result["log_probs_length"])]
             if config["decoder"] == "greedy":
                 texts = [codec.greedy(p.argmax(-1)) for p in arrays]
             elif config["decoder"] == "beam":
-                arguments = [(p, config["beam_width"], config["token_topk"]) for p in arrays]
+                arguments = [(p, config["beam_width"], config["token_topk"], config.get('lm_weight',.5),config.get('word_bonus',1.0)) for p in arrays]
                 texts = list(pool.map(decode_beam, arguments)) if pool else [decode_beam(a) for a in arguments]
             else:
                 raise ValueError(f"Unknown decoder {config['decoder']}")

@@ -86,6 +86,7 @@ def main():
                 time.sleep(.05)
         else:
             sftp = paramiko.SFTPClient.from_transport(t)
+            sftp.get_channel().settimeout(60)
             if args.action == "push":
                 upload(sftp, args.local, args.remote)
             else:

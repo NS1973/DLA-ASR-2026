@@ -18,6 +18,8 @@ python -m pytest tests -q
 
 Windows: activate with `.venv\Scripts\Activate.ps1`.
 
+The fully pinned CPU verification environment is in `requirements-lock-cpu.txt` (install its PyTorch wheels from the official CPU index). H200 training uses native BF16; T4 and CPU inference automatically use FP32.
+
 ## Resources and inference
 
 The final release `resources.json` contains exact artifact URLs and SHA-256 digests. Once the release is finalized:
@@ -80,6 +82,14 @@ python train.py custom_train=data/downloads/bootstrap overfit=true augment=false
 
 Four waveform augmentations are gain, additive noise, speed change and weak reverberation. Each experiment saves original/transformed audio and spectrograms under `media/`. Training logs include loss, LR, gradient norm, predictions, WER and CER from the beginning. W&B is offline; `metrics.jsonl` remains authoritative if W&B is unavailable.
 
+`ops/augmentation_proof.py` creates a separate offline demonstration run on the GMC project data. W&B text tables contain random target/prediction samples with CER/WER; dev-clean and dev-other have distinct metric namespaces.
+
+Optional word LM fusion is implemented in the same own prefix beam. The source, license and checksum of the OpenSLR trigram are in `lm_sources.json`. It is experimental until the final dev comparison; no bonus is claimed from implementation alone.
+
+```bash
+python inference.py checkpoint=artifacts/model.pt custom_dir=/path/to/dataset decoder=beam lm_path=/path/to/3-gram.pruned.1e-7.arpa.gz lm_weight=0.5 word_bonus=1.0
+```
+
 ## Colab demo
 
 Open `DLA_ASR_Demo.ipynb` in Google Colab, select a GPU, enter only your dataset archive link, and run all cells. It installs the project, downloads and verifies model resources, runs a built-in example, processes your dataset and calculates metrics when ground truth exists. The repository must be publicly accessible for anonymous cloning after the deadline.
@@ -87,6 +97,8 @@ Open `DLA_ASR_Demo.ipynb` in Google Colab, select a GPU, enter only your dataset
 ## Reproducibility and artifacts
 
 The delivery includes source history, model-only weights for safe `weights_only=True` loading, trusted full resume checkpoints, configuration files, logs, predictions, measured metrics, augmentation evidence, report and SHA-256 manifests. Training checkpoints contain Python/NumPy RNG state and must only be loaded from trusted sources.
+
+The current report is a draft. To rebuild its PDF from measured logs, install `requirements-report.txt` separately and run `python scripts/build_report_pdf.py --metrics /path/to/run/metrics.jsonl`. A Cyrillic Arial or DejaVu Sans font must be available. `scripts/package_delivery.py` packages a committed source tree and explicitly selected, locally collected artifacts with SHA-256 digests.
 
 On GMC, training uses a separate container and an isolated virtual environment based on the already-installed CUDA image. Host system packages and other services are not modified. `ops/gmc.py` is a local operator utility that uses an existing protected credential loader; it contains no credentials and is not needed to run the submitted project.
 

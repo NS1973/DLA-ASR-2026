@@ -24,6 +24,11 @@ def seed_all(seed):
     torch.cuda.manual_seed_all(seed)
 
 
+def supports_native_bf16(device):
+    # Colab T4 (compute 7.5) needs FP32; H200/Ampere support native BF16.
+    return device.type == 'cuda' and torch.cuda.get_device_capability(device)[0] >= 8
+
+
 def save_checkpoint(path, model, optimizer, scheduler, state, config):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -79,6 +84,8 @@ class RunLog:
             os.environ["WANDB_MODE"] = "offline"
             self.wandb = wandb.init(project="dla-asr-2026", name=self.directory.name, config=config,
                                     dir=str(self.directory), mode="offline")
+            self.wandb.define_metric('train/*', step_metric='optimizer_step')
+            self.wandb.define_metric('valid/*', step_metric='optimizer_step')
         except Exception as exc:
             self.emit({"event": "wandb_unavailable", "error": str(exc)})
 
@@ -93,7 +100,16 @@ class RunLog:
         print(line, flush=True)
         if self.wandb is not None:
             try:
-                self.wandb.log({key: value for key, value in record.items() if isinstance(value, (int, float))})
+                import wandb
+                prefix = 'train/' if record.get('event')=='train' else f"valid/{record['split']}/" if record.get('event')=='validation' else ''
+                values = {prefix+key: value for key, value in record.items() if isinstance(value, (int, float))}
+                if 'step' in record:
+                    values['optimizer_step'] = record['step']
+                rows = record.get('samples') or record.get('examples')
+                if rows:
+                    values[prefix+'text_samples'] = wandb.Table(columns=['target','prediction','CER','WER'],
+                        data=[[row['target'],row['prediction'],row['cer'],row['wer']] for row in rows])
+                self.wandb.log(values)
             except Exception as exc:
                 print(f"W&B logging error; JSONL preserved: {type(exc).__name__}", flush=True)
 
@@ -114,14 +130,15 @@ def make_loader(entries, config, augment=False, shuffle=False):
 
 
 @torch.inference_mode()
-def evaluate(model, loader, device, max_batches=None):
+def evaluate(model, loader, device, max_batches=None, bf16=True):
     model.eval()
     codec = Codec()
     references, predictions, examples = [], [], []
+    example_rng = random.Random(42)
     for index, batch in enumerate(loader):
         if max_batches is not None and index >= max_batches:
             break
-        with torch.autocast(device_type=device.type, dtype=torch.bfloat16, enabled=device.type == "cuda"):
+        with torch.autocast(device_type=device.type, dtype=torch.bfloat16, enabled=bf16 and supports_native_bf16(device)):
             result = model(batch["spectrogram"].to(device), batch["spectrogram_length"])
         paths = result["log_probs"].argmax(-1).cpu()
         for uid, reference, path, length in zip(batch["uids"], batch["texts"], paths, result["log_probs_length"]):
@@ -129,9 +146,14 @@ def evaluate(model, loader, device, max_batches=None):
             if reference is not None:
                 references.append(reference)
                 predictions.append(prediction)
+                example = {"uid": uid, "target": reference, "prediction": prediction,
+                           **corpus_metrics([reference], [prediction])}
                 if len(examples) < 10:
-                    examples.append({"uid": uid, "target": reference, "prediction": prediction,
-                                     **corpus_metrics([reference], [prediction])})
+                    examples.append(example)
+                else:
+                    replace = example_rng.randrange(len(references))
+                    if replace < 10:
+                        examples[replace] = example
     return corpus_metrics(references, predictions), examples
 
 
@@ -238,7 +260,7 @@ def train(config):
     signal.signal(signal.SIGTERM, stop)
     signal.signal(signal.SIGINT, stop)
     start = last_save = time.monotonic()
-    mixed = config["bf16"] and device.type == "cuda"
+    mixed = config["bf16"] and supports_native_bf16(device)
     deadline = datetime.fromisoformat(config["end_utc"]).timestamp() if config.get("end_utc") else math.inf
     last = directory / "last.pt"
     save_checkpoint(last, model, optimizer, scheduler, state, config)
@@ -291,10 +313,12 @@ def train(config):
                         codec = Codec()
                         predictions = [codec.greedy(p[:int(n)]) for p, n in zip(paths, output_lengths)]
                         metrics = corpus_metrics(batch["texts"], predictions)
+                        sample_indices = random.Random(config['seed']+state['step']).sample(range(len(predictions)),min(3,len(predictions)))
                         logger.emit({"event": "train", "epoch": epoch, "step": state["step"], "loss": loss.item(),
                                      "lr": optimizer.param_groups[0]["lr"], "gradient_norm": float(norm),
                                      "train_wer": metrics["wer"], "train_cer": metrics["cer"], "elapsed_seconds": time.monotonic()-start,
-                                     "samples": [{"target": r, "prediction": p, **corpus_metrics([r],[p])} for r,p in list(zip(batch["texts"], predictions))[:3]]})
+                                     "samples": [{"target": batch['texts'][i], "prediction": predictions[i],
+                                                  **corpus_metrics([batch['texts'][i]],[predictions[i]])} for i in sample_indices]})
                 if time.monotonic()-last_save >= config["checkpoint_seconds"]:
                     save_checkpoint(last, model, optimizer, scheduler, state, config)
                     export_model(model, directory / "last_model.pt", state)
@@ -302,12 +326,12 @@ def train(config):
                 if stopping or time.time() >= deadline or (config["max_steps"] and state["step"] >= config["max_steps"]):
                     break
             if config["overfit"] and (epoch % 20 == 0 or stopping):
-                metrics, examples = evaluate(model, loader, device, max_batches=1)
+                metrics, examples = evaluate(model, loader, device, max_batches=1,bf16=mixed)
                 logger.emit({"event": "overfit_eval", "step": state["step"], **metrics, "examples": examples})
                 if metrics["wer"] <= config["overfit_target"]:
                     stopping = True
             for part, valid_loader in validations.items():
-                metrics, examples = evaluate(model, valid_loader, device)
+                metrics, examples = evaluate(model, valid_loader, device,bf16=mixed)
                 logger.emit({"event": "validation", "split": part, "epoch": epoch, "step": state["step"], **metrics, "examples": examples})
                 if part == "dev-clean" and metrics["wer"] < state["best_wer"]:
                     state["best_wer"] = metrics["wer"]
