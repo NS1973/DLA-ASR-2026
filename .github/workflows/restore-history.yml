@@ -1,0 +1,21 @@
+name: Restore original project history
+on:
+  push:
+    branches: [codex/hw1-asr, codex/api-snapshots]
+    paths:
+      - history/DLA-ASR-2026.bundle
+      - .github/workflows/restore-history.yml
+permissions:
+  contents: write
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - name: Verify and import the original local history
+        run: |
+          git bundle verify history/DLA-ASR-2026.bundle
+          git fetch history/DLA-ASR-2026.bundle refs/heads/codex/hw1-asr:refs/remotes/bundle/hw1-asr
+          git push origin refs/remotes/bundle/hw1-asr:refs/heads/codex/original-history
+          git rev-parse refs/remotes/bundle/hw1-asr
