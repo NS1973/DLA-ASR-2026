@@ -1,5 +1,5 @@
 {
-  "status": "frozen_candidate_acceptance_in_progress",
+  "status": "verified_preserved_candidate",
   "model_sha256": "d919aed41505686fe2e590b6253defc4283585c02cc35ac0e368c72fd534679f",
   "selected": "lr_candidate_finetune460_continue2__last",
   "inference_overrides": [
