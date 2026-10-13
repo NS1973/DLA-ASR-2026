@@ -226,7 +226,8 @@ def train(config):
     if config.get('training_manifest_path'):
         from ops.build_mixed_manifest import load_manifest
         entries = load_manifest(config['training_manifest_path'], config['data_root'],
-                                config['training_manifest_sha256'])
+                                config['training_manifest_sha256'],
+                                intern_entries=config.get('intern_manifest_entries', False))
     elif config.get("custom_train"):
         entries = CustomDirDataset(config["custom_train"]).entries
     else:

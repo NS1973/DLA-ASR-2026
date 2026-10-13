@@ -52,17 +52,31 @@ def build_manifest(clean, other, other_fraction, seed=10, excluded_ids=()):
                 'unique_utterances': len(seen), 'exposure_utterances': len(rows)}}
 
 
-def load_manifest(path, data_root, expected_sha256):
+def load_manifest(path, data_root, expected_sha256, intern_entries=False):
     content = Path(path).read_bytes()
     if hashlib.sha256(content).hexdigest() != expected_sha256:
         raise ValueError('Training manifest SHA mismatch')
-    document = json.loads(content)
+    canonical = {}
+    def intern(row):
+        if not isinstance(row.get('uid'), str) or 'path' not in row:
+            return row
+        versions = canonical.setdefault(row['uid'], [])
+        for existing in versions:
+            if existing == row and list(existing) == list(row):
+                return existing
+        versions.append(row)
+        return row
+    document = json.loads(content, object_hook=intern if intern_entries else None)
     if document['schema_version'] != 1:
         raise ValueError('Unsupported training manifest version')
     rows = document['entries']
     root = Path(data_root).resolve()
     result = []
+    resolved_rows = {}
     for row in rows:
+        if intern_entries and id(row) in resolved_rows:
+            result.append(resolved_rows[id(row)])
+            continue
         relative = PurePosixPath(row['path'])
         if relative.is_absolute() or '..' in relative.parts or ':' in row['path'] or '\\' in row['path']:
             raise ValueError('Manifest paths must be safe relative POSIX paths')
@@ -71,7 +85,10 @@ def load_manifest(path, data_root, expected_sha256):
         resolved = root.joinpath(*relative.parts)
         if not resolved.is_relative_to(root):
             raise ValueError('Manifest path escapes data_root')
-        result.append({**row, 'path': str(resolved)})
+        entry = {**row, 'path': str(resolved)}
+        result.append(entry)
+        if intern_entries:
+            resolved_rows[id(row)] = entry
     return result
 
 
