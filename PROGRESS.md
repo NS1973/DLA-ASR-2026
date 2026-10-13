@@ -37,7 +37,7 @@ Own CTC ASR, measured WER/CER, own beam, four audio augmentations, complete logs
 
 ## Verification
 - SSH authenticated host `kv-ai-00.gmc.local`; GPU memory used 14 MiB per device.
-- Private repository NS1973/DLA-ASR-2026 was created and its private visibility verified. Git CLI authentication requires the user's GitHub sudo confirmation; local Git bundle remains available while publication is pending.
+- Private repository NS1973/DLA-ASR-2026 was created and its private visibility verified. Git CLI authentication remains unavailable. The connected GitHub app published all 116 source/history files on private codex/hw1-asr; remote train.py and the bundle blob SHA were verified. API snapshot commit 8c9b44904c0a211b9916fa0f0e0357f6ea0125b8 represents local d8c9398; full original ancestry is preserved in history/DLA-ASR-2026.bundle.
 - Fresh Colab preflight was actually executed; the final demo remains pending final weights and resource links.
 
 ## Remaining
@@ -48,3 +48,8 @@ Full-corpus training, dev/test evaluation, full artifact download, fresh Colab v
 - 34 regression tests passed locally and in the clean GMC environment. Transfer recovery now handles missing temporary files, an already-renamed final archive, and acknowledged-prefix truncation. A real remote retry proof preserved the original readiness timestamp rather than moving it past the data cutoff.
 - Four-channel resumable train360 transfer PID 7200 is active; 8.69 GB acknowledged at 04:21, local download 20.59/23.05 GB. Data inclusion remains conditional on complete verification/extraction before 06:00.
 - Full intermediate dev evaluation on the immutable main10 model is saved locally: all 2,703 dev-clean and 2,864 dev-other records, same emissions for every decoder. Dev-other greedy WER 60.75%, beam20 60.05%, beam20 + LM weight 0.1 WER 58.87%. These are development results, not final test results.
+
+### 2026-10-13 04:38 MSK acceptance checkpoint
+- Fresh user datasets in the demo now receive separate workspace and prediction folders on every execution. A regression first reproduced contamination from two sequential archives, then passed after the notebook fix. 35 tests pass locally (8.45s) and in the clean offline GMC environment (1.79s).
+- Official train-clean-360 download completed and archive validation passed: 23,049,477,885 bytes, SHA-256 146a56496217e96c14334a160df97fffedd6e0a04e66b9c5af0d40be3c792ecf. Resumable upload remains active and must finish before 06:00 to join training.
+- Completed training/evaluation evidence was downloaded as data/completed-evidence-0432.tar.gz, 125,275,596 bytes, SHA-256 fde411d3ede865ed828e5fa88debabf66959e047ea0de41721ad12f49cbe4a62. Root-owned W&B debug symlinks are excluded from local extraction; real metrics, offline run files and media are preserved.

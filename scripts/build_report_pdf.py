@@ -29,7 +29,7 @@ def curves(paths, destination):
     fig, axes = plt.subplots(2,2,figsize=(10,7))
     for path in paths:
         records = [json.loads(line) for line in Path(path).read_text(encoding='utf-8').splitlines() if line.strip()]
-        name = Path(path).parent.name
+        name = Path(path).stem if Path(path).parent.name == 'logs' else Path(path).parent.name
         train = [r for r in records if r.get('event')=='train']
         for ax,key,title in [(axes[0,0],'loss','CTC loss'),(axes[0,1],'lr','Learning rate'),(axes[1,0],'gradient_norm','Gradient norm')]:
             if train:
@@ -97,7 +97,7 @@ def main():
     if args.metrics:
         plot = Path(args.output).parent/'report_curves.png'
         curves(args.metrics,plot)
-        story.extend([PageBreak(),Paragraph('Кривые из локальных журналов',heading),
+        story.extend([Paragraph('Кривые из локальных журналов',heading),
                       Paragraph('Источник: '+html.escape(', '.join(str(Path(x)) for x in args.metrics))+'. Только измеренные значения; пилотные запуски не заменяют итоговую оценку.',body),
                       Image(str(plot),width=166*mm,height=116.2*mm)])
     def footer(canvas,doc):
