@@ -47,3 +47,39 @@ def test_fast_training_padding_rng_restore_and_legacy_eval():
     reference = model(spec, lengths)['log_probs']
     model.packed_stack = False
     torch.testing.assert_close(reference, model(spec, lengths)['log_probs'], atol=0, rtol=0)
+
+
+def test_full_resume_reproduces_packed_training_with_specaugment(tmp_path):
+    from src.asr.runtime import save_checkpoint, restore_checkpoint
+    from src.asr.specaugment import MildSpecAugment
+    torch.manual_seed(31)
+    model = DeepSpeech2CTC(n_feats=8, n_tokens=6, hidden=8, layers=2, conv_channels=2, dropout=.1)
+    model.packed_stack = True
+    optimizer = torch.optim.AdamW(model.parameters(), lr=3e-5)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=.9)
+    spec = torch.ones(2, 8, 80)
+    lengths = torch.tensor([80, 47])
+    augment = MildSpecAugment()
+    def step(network, opt, sched):
+        opt.zero_grad(set_to_none=True)
+        out = network(augment(spec, lengths), lengths)
+        loss = out['log_probs'][:, :10].square().mean()
+        loss.backward()
+        opt.step()
+        sched.step()
+        return loss.detach()
+    step(model, optimizer, scheduler)
+    checkpoint = tmp_path / 'full.pt'
+    save_checkpoint(checkpoint, model, optimizer, scheduler, {'step': 1},
+                    {'model': model.spec, 'packed_stack': True, 'specaugment': True})
+    expected = step(model, optimizer, scheduler)
+    resumed = DeepSpeech2CTC(**model.spec)
+    resumed.packed_stack = True
+    restored_opt = torch.optim.AdamW(resumed.parameters(), lr=3e-5)
+    restored_sched = torch.optim.lr_scheduler.StepLR(restored_opt, step_size=1, gamma=.9)
+    assert restore_checkpoint(checkpoint, resumed, restored_opt, restored_sched) == {'step': 1}
+    actual = step(resumed, restored_opt, restored_sched)
+    torch.testing.assert_close(actual, expected, atol=0, rtol=0)
+    for name, tensor in model.state_dict().items():
+        torch.testing.assert_close(resumed.state_dict()[name], tensor, atol=0, rtol=0)
+    assert restored_sched.state_dict() == scheduler.state_dict()
