@@ -53,17 +53,21 @@ print('Распознано:', Path(f'predictions/example/{uid}.txt').read_text(
  markdown('## 4. Ваш набор данных\nПоддерживаются прямая ссылка на архив и публичная ссылка Google Drive. Архив может содержать одну внешнюю папку.'),
  code('''if not DATASET_URL.strip():
     raise ValueError('Вставьте ссылку на ваш набор в поле DATASET_URL первой ячейки.')
-subprocess.run([sys.executable,'scripts/prepare_custom_dataset.py','--url',DATASET_URL,'--output-dir','data/user_dataset'],check=True)
-dataset = Path('data/user_dataset/dataset_path.txt').read_text().strip()
-subprocess.run([sys.executable,'inference.py','checkpoint=artifacts/model.pt',f'custom_dir={dataset}','output_dir=predictions/user','workers=0',*INFERENCE_OPTIONS],check=True)
+from tempfile import mkdtemp
+Path('data').mkdir(exist_ok=True)
+USER_WORKSPACE = Path(mkdtemp(prefix='user-',dir='data')).resolve()
+USER_PREDICTIONS = USER_WORKSPACE / 'predictions'
+subprocess.run([sys.executable,'scripts/prepare_custom_dataset.py','--url',DATASET_URL,'--output-dir',str(USER_WORKSPACE/'dataset')],check=True)
+dataset = (USER_WORKSPACE/'dataset/dataset_path.txt').read_text(encoding='utf-8').strip()
+subprocess.run([sys.executable,'inference.py','checkpoint=artifacts/model.pt',f'custom_dir={dataset}',f'output_dir={USER_PREDICTIONS}','workers=0',*INFERENCE_OPTIONS],check=True)
 if (Path(dataset)/'transcriptions').is_dir():
-    subprocess.run([sys.executable,'calc_metrics.py','--reference-dir',str(Path(dataset)/'transcriptions'),'--prediction-dir','predictions/user','--output','predictions/user/metrics.json'],check=True)
+    subprocess.run([sys.executable,'calc_metrics.py','--reference-dir',str(Path(dataset)/'transcriptions'),'--prediction-dir',str(USER_PREDICTIONS),'--output',str(USER_PREDICTIONS/'metrics.json')],check=True)
 else:
-    print('Эталонов нет: метрики не рассчитываются. Предсказания сохранены в predictions/user/.')
+    print('Эталонов нет: метрики не рассчитываются. Предсказания:', USER_PREDICTIONS)
 '''),
  markdown('## 5. Скачать результат'),
  code('''import shutil
-shutil.make_archive('/content/asr_predictions','zip','predictions/user')
+shutil.make_archive('/content/asr_predictions','zip',str(USER_PREDICTIONS))
 from google.colab import files
 files.download('/content/asr_predictions.zip')
 '''),
