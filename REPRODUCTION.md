@@ -101,3 +101,13 @@ python scripts/build_report_pdf.py --source REPORT.md --output REPORT.pdf --metr
 ```
 
 The origin is the earliest recorded UTC timestamp across the supplied logs. Counter resets split lines rather than connecting unrelated steps. Solid dev curves denote dev-clean; dashed curves denote dev-other. These training-monitoring curves use the logged subsets and do not replace full dev/test evaluation. The default `--time-axis step` remains available for comparable schedules such as the augmentation ablation. Report rendering uses the separate `requirements-report.txt` dependencies.
+
+## Exact initialization archive
+
+After training stops, collect all campaign initialization events and their immutable parent weights, deduplicated by SHA-256:
+
+```sh
+python scripts/collect_initializations.py --runs /work/runs --legacy-evidence /work/runs/initialization-evidence/legacy-parents-expanded.json --output /work/incoming/initializations-final.zip
+```
+
+The collector preserves original events, labels retrospective evidence explicitly and checks every parent hash and training state. Historical retries have separate evidence records for each actual initialization timestamp. A retry initialization event may precede loading a full resume checkpoint; it is not presented as a fresh training start. New continuation phases record their own immutable parent snapshot at initialization. Re-run collection after the final phase exits; the intermediate archive cannot contain future phases.
