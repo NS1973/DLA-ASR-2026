@@ -223,3 +223,32 @@ def test_completed_run_preserves_artifacts_without_reopening_test(pipeline):
     assert (pipeline.output/'selected_model.pt').read_bytes() == model
     assert pipeline.candidate_calls == calls
     assert pipeline.test_calls == ['test-clean', 'test-other']
+
+
+@pytest.mark.parametrize('update_resume', [False, True])
+def test_existing_snapshot_cannot_mask_changed_current_pair(pipeline, update_resume):
+    directory = pipeline.root/'runs/main'
+    destination = pipeline.output/'candidates/main__last'
+    destination.mkdir(parents=True)
+    snapshot = destination/'model.pt'
+    frozen = freeze_model(directory/'last_model.pt', snapshot)
+    old_resume = (directory/'last.pt').read_bytes()
+    write_pair(directory, 'last', 3.)
+    if not update_resume:
+        (directory/'last.pt').write_bytes(old_resume)
+    expected = 'SHA256' if update_resume else 'match'
+    with pytest.raises(ValueError, match=expected):
+        pipeline.run()
+    assert snapshot.read_bytes() == frozen
+    assert pipeline.test_calls == []
+    assert not (pipeline.output/'complete.json').exists()
+
+
+def test_unchanged_sources_reuse_snapshot_on_restart(pipeline):
+    from ops.final_evaluation import freeze_candidates
+    first = freeze_candidates(pipeline.root/'runs', pipeline.output)
+    paths = list((pipeline.output/'candidates').glob('*/model.pt'))
+    snapshots = {path: (path.read_bytes(), path.stat().st_mtime_ns) for path in paths}
+    second = freeze_candidates(pipeline.root/'runs', pipeline.output)
+    assert first == second
+    assert {path: (path.read_bytes(), path.stat().st_mtime_ns) for path in paths} == snapshots

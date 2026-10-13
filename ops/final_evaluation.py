@@ -49,10 +49,17 @@ def freeze_model(source, destination):
             payload = torch.load(io.BytesIO(snapshot), map_location='cpu', weights_only=True)
             if 'model' not in payload or 'state' not in payload:
                 raise ValueError('Incomplete model snapshot')
-            return snapshot
         except Exception:
             # This derived snapshot can always be rebuilt from the original.
             pass
+        else:
+            source_sha = hashlib.sha256(content).hexdigest()
+            snapshot_sha = hashlib.sha256(snapshot).hexdigest()
+            if source_sha != snapshot_sha:
+                raise ValueError(f'Checkpoint source SHA256 changed after freeze: {source} '
+                                 f'(source={source_sha}, snapshot={snapshot_sha}); '
+                                 f'preserving frozen snapshot {destination}')
+            return snapshot
     atomic_write(destination, content)
     return content
 
@@ -107,7 +114,10 @@ def choose_decoder(scores):
 
 def matching_resume_bytes(model_path, resume_path):
     """Only load trusted full checkpoints made by this project."""
-    model = torch.load(model_path, map_location='cpu', weights_only=True)
+    try:
+        model = torch.load(model_path, map_location='cpu', weights_only=True)
+    except Exception as error:
+        raise ValueError(f'Invalid model checkpoint {model_path}: {error}') from error
     content = Path(resume_path).read_bytes()
     try:
         resume = torch.load(io.BytesIO(content), map_location='cpu', weights_only=False)
@@ -143,9 +153,10 @@ def freeze_candidates(runs, output):
                     raise FileNotFoundError(f'Missing checkpoint source: {path}')
             destination = output/'candidates'/key
             destination.mkdir(parents=True, exist_ok=True)
+            # Check the current pair independently; a cached snapshot must not
+            # hide a mismatch between today's model and its full resume source.
+            matching_resume_bytes(source, resume)
             frozen = freeze_model(source, destination/'model.pt')
-            # Validate even duplicate/unselected aliases before any test access.
-            matching_resume_bytes(destination/'model.pt', resume)
             sha = hashlib.sha256(frozen).hexdigest()
             alias = {'candidate': key, 'source': str(candidate), 'run': candidate.name,
                      'checkpoint_kind': kind, 'model_source': str(source),
