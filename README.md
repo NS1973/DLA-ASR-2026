@@ -80,7 +80,7 @@ python ops/download_data.py --bootstrap
 python train.py custom_train=data/downloads/bootstrap overfit=true augment=false valid_parts=[] batch_size=4 workers=0 epochs=2000 max_steps=1500 warmup_steps=10 run_dir=runs/overfit end_utc=null
 ```
 
-Four waveform augmentations are gain, additive noise, speed change and weak reverberation. Each experiment saves original/transformed audio and spectrograms under `media/`. Training logs include loss, LR, gradient norm, predictions, WER and CER from the beginning. W&B is offline; `metrics.jsonl` remains authoritative if W&B is unavailable.
+Four waveform augmentations are gain, additive noise, speed change and weak reverberation. The default `augmentation_profile=legacy` preserves prior experiments exactly. The separate `effective_v2` profile adds a smooth gain envelope and energy-controlled reverberation; it retains noise, speed and the CTC-length guard. `data_epoch_offset=80` changes training order/augmentation epochs while keeping the fixed dev subset unchanged. These settings are recorded in each config; use the saved phase config when reproducing a run. Each experiment saves original/transformed audio and spectrograms under `media/`. Training logs include loss, LR, gradient norm, predictions, WER and CER from the beginning. W&B is offline; `metrics.jsonl` remains authoritative if W&B is unavailable.
 
 `ops/augmentation_proof.py` creates a separate offline demonstration run on the GMC project data. W&B text tables contain random target/prediction samples with CER/WER; dev-clean and dev-other have distinct metric namespaces.
 
@@ -105,3 +105,8 @@ On GMC, training uses a separate container and an isolated virtual environment b
 ## Evaluation integrity
 
 Model/checkpoint selection and decoder tuning use dev data. Test data are reserved for final evaluation. No pretrained acoustic model or downloaded ASR implementation is used. Course instructions prohibit LLM use; technical reproducibility does not establish compliance with that rule.
+
+
+Final selection uses best **and** last checkpoints of the campaign runs, validates each corresponding trusted full checkpoint, and deduplicates exact model-file SHA-256 values. The ranking is pooled full dev-clean/dev-other word errors divided by pooled reference words, with clean WER, other WER and candidate name as deterministic ties. Decoder widths 10/20/50 and LM weights 0.1/0.2/0.3 (word bonus 1) are compared on both full dev sets. Test sets are evaluated only after model and decoder are frozen.
+
+Before changing a trainer, preserve the campaign with `python scripts/preserve_runs.py --runs /work/runs --output /work/incoming/NEW_UNIQUE_SNAPSHOT --parts 4`. This command creates content-addressed TAR parts, a logical file manifest and exact model/full checkpoint pair evidence, while retaining a 20-GiB free-space reserve. An existing destination is rejected. Download each archive, verify its SHA-256 and each content member, and recheck model/full tensor and state equality. Active log snapshots must be supplemented after a trainer exits. Full backup archives are separate from the compact submission logs and must not be deleted when packaging.
