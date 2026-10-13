@@ -70,19 +70,29 @@ def word_rate(metrics):
     return metrics['word_errors'] / metrics['words']
 
 
-def choose_checkpoint(scores):
+def choose_checkpoint(scores, objective='pooled'):
+    if objective not in ('pooled', 'other'):
+        raise ValueError('Unknown dev selection objective')
     if not scores or any(set(parts) != set(DEV) for parts in scores.values()):
         raise ValueError('Checkpoint selection requires both dev splits only')
     for parts in scores.values():
         for metrics in parts.values():
             word_rate(metrics)
+    if objective == 'other':
+        eligible = [name for name in scores if word_rate(scores[name]['dev-clean']) <= .20]
+        if not eligible:
+            raise ValueError('No checkpoint satisfies full dev-clean WER <=20%')
+        return min(eligible, key=lambda name: (word_rate(scores[name]['dev-other']),
+                                              word_rate(scores[name]['dev-clean']), name))
     return min(scores, key=lambda name: (sum(scores[name][part]['word_errors'] for part in DEV) /
                                         sum(scores[name][part]['words'] for part in DEV),
                                         word_rate(scores[name]['dev-clean']),
                                         word_rate(scores[name]['dev-other']), name))
 
 
-def choose_decoder(scores):
+def choose_decoder(scores, objective='pooled'):
+    if objective not in ('pooled', 'other'):
+        raise ValueError('Unknown dev selection objective')
     if set(scores) != set(DEV):
         raise ValueError('Decoder selection requires both dev splits only')
     if len({part['checkpoint_sha256'] for part in scores.values()}) != 1:
@@ -96,11 +106,25 @@ def choose_decoder(scores):
         for item in metrics:
             word_rate(item)
         pooled[name] = sum(x['word_errors'] for x in metrics) / sum(x['words'] for x in metrics)
-    name = min(pooled, key=lambda x: (pooled[x], x))
+    eligible = names
+    if objective == 'other':
+        eligible = {name for name in names if word_rate(scores['dev-clean']['decoders'][name]) <= .20}
+        if not eligible:
+            raise ValueError('No decoder satisfies full dev-clean WER <=20%')
+    def rank(setting):
+        if objective == 'other':
+            return (word_rate(scores['dev-other']['decoders'][setting]),
+                    word_rate(scores['dev-clean']['decoders'][setting]), setting)
+        return (pooled[setting], setting)
+    name = min(eligible, key=rank)
     result = {'name': name, 'wer': pooled[name], 'selection': 'pooled full dev-clean/dev-other corpus WER'}
+    if objective == 'other':
+        result.update(wer=word_rate(scores['dev-other']['decoders'][name]), pooled_wer=pooled[name],
+                      dev_clean_wer=word_rate(scores['dev-clean']['decoders'][name]),
+                      selection='full dev-other corpus WER, with full dev-clean WER <=20%')
     if name == 'greedy':
-        plain = [setting for setting in names if re.fullmatch(r'beam\d+', setting)]
-        width = int(min(plain, key=lambda x: (pooled[x], x))[4:]) if plain else 20
+        plain = [setting for setting in eligible if re.fullmatch(r'beam\d+', setting)]
+        width = int(min(plain, key=rank)[4:]) if plain else 20
         result.update(decoder='greedy', width=width, lm_weight=None)
     else:
         match = re.fullmatch(r'beam(\d+)(?:_lm([\d.]+)_bonus([\d.]+))?', name)
@@ -197,6 +221,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--root', type=Path, default=Path('/work'))
     parser.add_argument('--workers', type=int, default=8)
+    parser.add_argument('--objective', choices=('pooled', 'other'), default='pooled')
     args = parser.parse_args()
     root = args.root.resolve()
     output = root/'runs/final-evaluation'
@@ -231,12 +256,14 @@ def main():
                 summary = compare(cache, destination/part, [], 8, 1)
                 scores[candidate][part] = summary['decoders']['greedy']
             emit(output, 'candidate_evaluated', candidate=candidate, scores=scores[candidate])
-        selected = choose_checkpoint(scores)
+        selected = choose_checkpoint(scores, objective=args.objective)
         model = output/'candidates'/selected/'model.pt'
         frozen = model.read_bytes()
         atomic_write(output/'selected_model.pt', frozen)
         copy_matching_resume(model, Path(sources[selected]['resume_source']), output/'selected_resume.pt')
-        selection = {'selected': selected, 'selection': 'pooled full dev-clean/dev-other greedy corpus WER',
+        criterion = ('full dev-other greedy corpus WER, with full dev-clean WER <=20%'
+                     if args.objective == 'other' else 'pooled full dev-clean/dev-other greedy corpus WER')
+        selection = {'selected': selected, 'selection': criterion,
                      'candidates': sources, 'scores': scores}
         atomic_write(output/'selection.json', json.dumps(selection, indent=2).encode())
         emit(output, 'model_frozen', selected=selected, sha256=hashlib.sha256(frozen).hexdigest())
@@ -248,7 +275,7 @@ def main():
             decoded[part] = compare(cache, output/'dev-decoders'/part,
                                     [10, 20, 50], 8, args.workers,
                                     str(lm), [.1, .2, .3], 1.0)
-        decoder = choose_decoder(decoded)
+        decoder = choose_decoder(decoded, objective=args.objective)
         decoder['checkpoint_sha256'] = hashlib.sha256(frozen).hexdigest()
         atomic_write(output/'frozen_decoder.json', json.dumps(decoder, indent=2).encode())
         emit(output, 'decoder_frozen', **decoder)

@@ -108,14 +108,21 @@ def pipeline(tmp_path, monkeypatch):
                            test_calls=test_calls, candidate_calls=candidate_calls)
 
 
-def test_final_pipeline_freezes_model_and_decoder_before_test(pipeline):
+@pytest.mark.parametrize('objective', ['pooled', 'other'])
+def test_final_pipeline_freezes_model_and_decoder_before_test(pipeline, monkeypatch, objective):
     import json
+    import sys
+    monkeypatch.setattr(sys, 'argv', [*sys.argv, '--objective', objective])
     pipeline.run()
     output = pipeline.output
     assert pipeline.test_calls == ['test-clean', 'test-other']
     complete = json.loads((output/'complete.json').read_text())
     assert complete['selected'] == 'lr_candidate_finetune460__best'
     assert complete['decoder']['name'] == 'beam20_lm0.1_bonus1.0'
+    selection = json.loads((output/'selection.json').read_text())
+    if objective == 'other':
+        assert selection['selection'] == 'full dev-other greedy corpus WER, with full dev-clean WER <=20%'
+        assert complete['decoder']['wer'] == .08
 
 
 def test_checkpoint_selection_uses_total_words_instead_of_mean_split_rates():
