@@ -5,9 +5,10 @@ The caller supplies a frozen model and run artifacts; this does not select a mod
 import argparse
 import hashlib
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import shutil
 import subprocess
+import tarfile
 import zipfile
 
 
@@ -16,10 +17,48 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
+def write_logs_zip(destination, directory=None, logs_archive=None):
+    """Stream a captured TAR directly, or support the original directory input."""
+    if (directory is None) == (logs_archive is None):
+        raise ValueError('Supply exactly one log directory or archive')
+    destination = Path(destination)
+    temporary = Path(str(destination) + '.tmp')
+    excluded = {'.pt', '.pth', '.tmp', '.npz', '.partial'}
+    try:
+        with zipfile.ZipFile(temporary, 'w', compression=zipfile.ZIP_DEFLATED,
+                             compresslevel=6, strict_timestamps=False) as archive:
+            if logs_archive is not None:
+                with tarfile.open(logs_archive, 'r|*') as source:
+                    for member in source:
+                        if member.isdir():
+                            continue
+                        name = PurePosixPath(member.name)
+                        if (not member.isfile() or not name.parts or name.is_absolute()
+                                or '..' in name.parts or '\\' in member.name or ':' in name.parts[0]):
+                            raise ValueError(f'Unsafe log archive member: {member.name}')
+                        if name.suffix in excluded:
+                            continue
+                        with source.extractfile(member) as incoming, archive.open(
+                                member.name, 'w', force_zip64=member.size >= zipfile.ZIP64_LIMIT) as outgoing:
+                            shutil.copyfileobj(incoming, outgoing, length=2**20)
+            else:
+                root = Path(directory).resolve()
+                if not root.is_dir():
+                    raise ValueError(f'Logs directory missing: {root}')
+                for path in sorted(root.rglob('*')):
+                    if path.is_file() and not path.is_symlink() and path.suffix not in excluded:
+                        archive.write(path, path.relative_to(root))
+        temporary.replace(destination)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('--model', required=True)
-    p.add_argument('--runs', required=True)
+    logs = p.add_mutually_exclusive_group(required=True)
+    logs.add_argument('--runs', help='Directory of collected run artifacts')
+    logs.add_argument('--logs-archive', help='Captured TAR/TAR.GZ; streams without unpacking many files')
     p.add_argument('--resume-checkpoint', help='Full matching checkpoint with optimizer, scheduler and RNG states')
     p.add_argument('--lm', help='Frozen external LM, when selected by dev evaluation')
     p.add_argument('--output', default='delivery/final')
@@ -37,11 +76,7 @@ def main():
         shutil.copy2(args.resume_checkpoint, output/'resume.pt')
     if args.lm:
         shutil.copy2(args.lm, output/Path(args.lm).name)
-    with zipfile.ZipFile(output/'logs.zip','w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as archive:
-        runs = Path(args.runs).resolve()
-        for path in sorted(runs.rglob('*')):
-            if path.is_file() and path.suffix not in {'.pt','.pth','.tmp'}:
-                archive.write(path,path.relative_to(runs))
+    write_logs_zip(output/'logs.zip', directory=args.runs, logs_archive=args.logs_archive)
     for name in ['REPORT.md','REPORT.pdf','DLA_ASR_Demo.ipynb','requirements.txt','requirements-lock-cpu.txt','requirements-report.txt','resources.json','lm_sources.json']:
         if (root/name).exists():
             shutil.copy2(root/name,output/name)
