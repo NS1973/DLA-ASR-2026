@@ -42,3 +42,9 @@ Own CTC ASR, measured WER/CER, own beam, four audio augmentations, complete logs
 
 ## Remaining
 Full-corpus training, dev/test evaluation, full artifact download, fresh Colab verification, publication, packaging.
+
+### 2026-10-13 04:23 MSK checkpoint
+- Campaign v9 supervisor PID 12072 is active. Both initial refinement and final finetuning repeat fresh schedules when an epoch budget ends early, preserving the 06:00/12:30 cutoffs. Main step 17,840: dev-clean 32.07%, dev-other 56.29% WER on the fixed 256-record monitoring subsets. No_aug step 21,408: 33.61% / 61.83%.
+- 34 regression tests passed locally and in the clean GMC environment. Transfer recovery now handles missing temporary files, an already-renamed final archive, and acknowledged-prefix truncation. A real remote retry proof preserved the original readiness timestamp rather than moving it past the data cutoff.
+- Four-channel resumable train360 transfer PID 7200 is active; 8.69 GB acknowledged at 04:21, local download 20.59/23.05 GB. Data inclusion remains conditional on complete verification/extraction before 06:00.
+- Full intermediate dev evaluation on the immutable main10 model is saved locally: all 2,703 dev-clean and 2,864 dev-other records, same emissions for every decoder. Dev-other greedy WER 60.75%, beam20 60.05%, beam20 + LM weight 0.1 WER 58.87%. These are development results, not final test results.

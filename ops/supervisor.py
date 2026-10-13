@@ -81,8 +81,10 @@ if __name__ == '__main__':
         def best_checkpoint():
             import torch
             choices=[]
-            for candidate in ['main','no_aug','refine100']:
-                path=RUNS/candidate/'best_model.pt'
+            for candidate in RUNS.iterdir():
+                if candidate.name not in ['main','no_aug'] and not candidate.name.startswith(('refine100','finetune100','finetune460')):
+                    continue
+                path=candidate/'best_model.pt'
                 if path.exists():
                     state=torch.load(path,map_location='cpu',weights_only=True)['state']
                     choices.append((state['best_wer'],path))

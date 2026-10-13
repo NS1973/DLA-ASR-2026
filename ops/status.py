@@ -6,7 +6,7 @@ import sys
 root = Path(__file__).resolve().parents[1]
 for path in sorted((root/'data/downloads').glob('*.partial')):
     print('DOWNLOADING',path.name,round(path.stat().st_size/2**30,2),'GiB',flush=True)
-for log in ['data-download','data-transfer','dev-transfer','staging-transfer','train360-download-parallel','train360-transfer-stream']:
+for log in ['data-download','data-transfer','dev-transfer','staging-transfer','train360-download-parallel','train360-transfer-parallel4-v2']:
     path=root/'logs'/f'{log}.log'
     if path.exists():
         print(log, '\n'.join(path.read_text(errors='replace').splitlines()[-2:]),flush=True)
