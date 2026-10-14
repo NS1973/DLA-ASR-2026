@@ -6,11 +6,11 @@
 
 | Проверка | Фактическое состояние / доказательство |
 |---|---|
-| История шаблона, текущая ветка | source-checkpoint-20261014-100931/verification.json: commit54312b8,187файлов ZIP/clone побайтово совпали, template ancestor e9ca57d |
+| История шаблона, текущая ветка | source-checkpoint-20261014-115600/verification.json: commitdd37d9e,219файлов ZIP/clone побайтово совпали, template ancestor e9ca57d |
 | Чистая CPU установка | clean-install-acceptance-20261014-0744.zip:162passed2skipped,pipcheckRC0; не доказательство нового GPU Colab |
 | Полный train-other и replayclean | frozen-training-inputs-stage004-20261014-072227.tar.gz;496.8568895uniqueotherh и464.196488clean,не500ровно |
-| Сохранность родителей | overnight-parent-chain-audit-20261014-100508.json:22runs/8resumeedges,missing=[]; после16обновить |
-| Промежуточный выбор | full-dev-registry-selection-audit-20261014-101301.json:29SHA,толькоfull-dev,greedy e16e9c81 clean13.61898460/other31.05911910%; не окончательная оценка |
+| Сохранность родителей | overnight-parent-chain-audit-20261014-115647.json:22runs/8resumeedges,missing=[]; после16обновить |
+| Промежуточный выбор | 37SHA в проверенном full-dev-monitor; greedy b2d1e664 clean13.27892357/other30.23082358%; отдельный более ранний6b97 +beam50LM.1 clean12.60431602/other29.18465887% подтверждён независимым подсчётом; не окончательная оценка |
 | Обязательный CustomDirDataset/Hydra | src/datasets/custom_dir_dataset.py экспортирует рабочий класс; inference.py использует src/configs/asr_inference.yaml; calc_metrics.py отдельный |
 | Ускорение | worker8-e2e-audio-throughput-20261014-083138.json:+16.43%аудиочасов/час,наблюдательное сравнение; не переносить loader-only+33% на всё обучение |
 | Полные закрытые логи | Компоненты закрытых этапов сохраняются; новые живые этапы требуют финального capture после фактического train_exit |
@@ -21,3 +21,5 @@
 | Публикация | Новая ветка приватная до фактической сдачи; Gitbundle fallback разрешён,но не равен публичному gitрепозиторию; anonymousclone только после реальной проверки |
 
 Все тяжёлые доказательства находятся в E:\DLA-ASR-2026-backups\01a13245-8e70-7373-8dae-fbd7d26072df\20261013-1115. Архивы Apple и другие каталоги E не затрагиваются. Цель остаётся активной до обязательной приёмки.
+
+14 октября12:05: текущий tests/169passed2skipped; это локальная CPU регрессия, не новый чистый GPU/Colab запуск. Actual runtime source ZIP18files включает фактический receiver с резервом24GiB. Очередь guarded cutoff45336/evaluator45397/server37656; ресурсная проверка послеactualexit, без изменения обучения.
