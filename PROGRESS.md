@@ -435,3 +435,13 @@ Full-corpus training, dev/test evaluation, full artifact download, fresh Colab v
 
 ### 2026-10-14T07:01:12.619947 approved policy and automation aligned
 - Existing heartbeat1-asr-10 updated ACTIVE every10minutes with authorized24GiB host reserve and new full-dev31.95807/14.05647; training cutoff14October16MSK and full acceptance scope unchanged. Plan RAM requirement updated, historical observations preserved. Transfer progressed469790720new TAR bytes; both400h trainers remain active.
+
+### 2026-10-14T07:03:18.0886134+03:00 source/operator restore verified
+- New bundle890d1dd restored on E with exactHEAD/clean/templateancestor. Initial E ownership guard failed -> exact command-scoped safe.directory -> successful verification; no globalGit config change. Operator ZIP overnight-operators-approved24-20261014-070241.zip SHA fc59265ab52e590d8ae954be4601adcb0f11740db36ddd503cc7488454630529 allCRC/memberSHA verified. Proof approved24-preservation-20261014-070241.json, not finaldelivery.
+- E snapshot064251 all4 model/fullpairs verified, observed16.4minold. Actual activePID26686/26750 live steps28180/29060 finite loss0.28874/0.31705 grad0.89372/0.34766. Ownscratch12.14GiBfree; ownPID1 sleep infinity confirms container has no24h expiry. Data004notready, training400h continues while finalshard transfers.
+
+
+### 2026-10-14T07:05:30.0327536+03:00 reproduction recipe and full-dev report refreshed
+- Added OVERNIGHT_TRAINING_RECIPE.md from actual build_manifest/runtime/expanded-stage operator: duration-based clean replay, fixed stage seeds/offsets, CTC exclusion, archive hashes, relocation versus exact resume, inherited-best payload config and parent chain. Commands/documentation inspected; no claim of fresh full retraining.
+- Updated OVERNIGHT_REPORT_DRAFT.md from18SHA-distinct full monitor models; all2703/2864record counts,54402/50948words and error-ratios asserted. RegistrySHA3d985d90eeffe73bce7c4085204c47d91ab58e61d49bcf3a2cb832a6104d923d; bestfullgreedy31.95807/14.05647. User-approved24GiB policy reflected; no newtest claimed.
+
