@@ -7,7 +7,7 @@
 | Проверка | Фактическое состояние / доказательство |
 |---|---|
 | История шаблона, текущая ветка | source-checkpoint-20261014-115600/verification.json: commitdd37d9e,219файлов ZIP/clone побайтово совпали, template ancestor e9ca57d |
-| Чистая CPU установка | clean-install-acceptance-20261014-0744.zip:162passed2skipped,pipcheckRC0; не доказательство нового GPU Colab |
+| Чистая CPU установка | clean-current-code-acceptance-20261014-1245.zip:172passed2skipped,pipcheckRC0,55точныхверсий,source007d49b; не доказательство нового GPU Colab |
 | Полный train-other и replayclean | frozen-training-inputs-stage004-20261014-072227.tar.gz;496.8568895uniqueotherh и464.196488clean,не500ровно |
 | Сохранность родителей | overnight-parent-chain-audit-20261014-115647.json:22runs/8resumeedges,missing=[]; после16обновить |
 | Промежуточный выбор | 37SHA в проверенном full-dev-monitor; greedy b2d1e664 clean13.27892357/other30.23082358%; отдельный более ранний6b97 +beam50LM.1 clean12.60431602/other29.18465887% подтверждён независимым подсчётом; не окончательная оценка |
@@ -25,3 +25,5 @@
 14 октября12:05: текущий tests/169passed2skipped; это локальная CPU регрессия, не новый чистый GPU/Colab запуск. Actual runtime source ZIP18files включает фактический receiver с резервом24GiB. Очередь guarded cutoff45336/evaluator45397/server37656; ресурсная проверка послеactualexit, без изменения обучения.
 
 14 октября12:12: фактический новый checkpoint b2d1e664 загружен обычным inference.py на CPU/FP32. Проверены beam50+LM на одной TRAIN-аудиозаписи с эталоном, greedy на3TRAIN-derived WAV/FLAC/MP3 без эталонов(8/16/48кГц,mono/stereo), точные UID, metrics=null безGT и совпадение отдельного calc_metrics.py с inference summary. Архив cpu-real-model-compatibility-20261014-1210.zip SHA649b949c8588662c9741e219eddbdb59322a411e857fc4bc88eba11174b20bca,342231байт,allmemberSHA/CRC. Это функциональная проверка текущего реального кандидата, не качество по train, не финальный Colab и не подтверждение BF16/FP32 идентичности.
+
+14 октября12:50: новый acceptanceZIP5827945байт SHA f2c468f388f34f6dfe803ca0ca00438b1933ecd54fa74540eeb94476f794309d включает чистую установку, полный sourcebundle007d49b,191исходныйфайл ZIP/восстановленного checkout побайтово совпали при исходном Gitcore.autocrlf=true,templateancestor проверен. Прежний тест с принудительным autocrlf=false выявил только EOL и сохранён как диагностика. Обе новые небольшие приватные Driveкопии скачаны обратно и совпали поSHA; доступ owner-only. Старый e05c облачный2.2GB архив имеет подтверждённую загрузку/размер/приватность, облачныйSHA пока не проверен.
