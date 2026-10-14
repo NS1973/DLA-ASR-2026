@@ -1,10 +1,8 @@
-name: Restore original project history
+name: Import verified ASR overnight history
 on:
   push:
-    branches: [codex/hw1-asr, codex/api-snapshots]
-    paths:
-      - history/DLA-ASR-2026.bundle
-      - .github/workflows/restore-history.yml
+    branches: [codex/api-snapshots]
+    paths: [.github/workflows/restore-history.yml]
 permissions:
   contents: write
 jobs:
@@ -13,9 +11,15 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
-      - name: Verify and import the original local history
+        with:
+          fetch-depth: 0
+      - name: Download and verify the preserved original Git bundle
         run: |
-          git bundle verify history/DLA-ASR-2026.bundle
-          git fetch history/DLA-ASR-2026.bundle refs/heads/codex/hw1-asr:refs/remotes/bundle/hw1-asr
-          git push origin refs/remotes/bundle/hw1-asr:refs/heads/codex/original-history
-          git rev-parse refs/remotes/bundle/hw1-asr
+          python -m pip install gdown==5.2.0
+          gdown --fuzzy 'https://drive.google.com/file/d/1f66bpxzu05lmqzi8rFUSlJsKa_7qE2tZ/view' -O history/overnight-08a25ef.bundle
+          echo 'f0d30be6f47442d1454179761f25dfddf99610f2d7901872f784711d73d8d470  history/overnight-08a25ef.bundle' | sha256sum --check --strict
+          git bundle verify history/overnight-08a25ef.bundle
+          git fetch history/overnight-08a25ef.bundle refs/heads/codex/hw1-asr-overnight-20261014:refs/remotes/bundle/overnight
+          test "$(git rev-parse refs/remotes/bundle/overnight)" = '08a25ef1824262add63fb07651679b4342121ecf'
+          git merge-base --is-ancestor e9ca57ddb6207d885be74c9a791ec59c3bee6b12 refs/remotes/bundle/overnight
+          git push origin refs/remotes/bundle/overnight:refs/heads/codex/hw1-asr-overnight-20261014
