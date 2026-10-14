@@ -5,6 +5,18 @@ import time
 GIB = 2**30
 
 
+def decoder_worker_budget(available, requested, *, host_reserve=24*GIB,
+                          workspace=GIB, per_worker=5*GIB//4):
+    """Bound decoder concurrency using a conservative per-worker RSS allowance.
+
+    Zero means wait for memory, rather than silently taking the host reserve.
+    The allowance is a planning bound, not an OS-enforced per-process limit.
+    """
+    if available < 0 or requested < 1 or per_worker <= 0:
+        raise ValueError('Invalid decoder resource measurement')
+    return min(requested, max(0, (available-host_reserve-workspace)//per_worker))
+
+
 def process_matches_launch(pid, launch_config, proc_root=Path('/proc'), *,
                            expected_start_ticks=None, expected_namespace=None):
     process = Path(proc_root) / str(pid)
