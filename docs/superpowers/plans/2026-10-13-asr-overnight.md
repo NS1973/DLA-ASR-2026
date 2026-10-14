@@ -17,7 +17,7 @@
 - Новая ветка codex/hw1-asr-overnight-20261014; новые run_dir, snapshot и evaluation root. Старые evaluator roots не менять.
 - Только собственные модельные родители; один активный trainer на GPU. Новые конфигурации не менять посреди run.
 - Test не используется для выбора. Полный dev-other primary, полный dev-clean<=20% gate.
-- /home>=20GiB, root>=1GiB, MemAvailable>=32GiB; изменения чужих сервисов/Xorg запрещены. Apple/прочие E-пути не трогать.
+- /home>=20GiB, root>=1GiB, MemAvailable>=24GiB; изменения чужих сервисов/Xorg запрещены. Apple/прочие E-пути не трогать.
 - Не обещать ускорение, качество или отсутствие сбоев до измерения; наблюдательный timeout не означает остановку процесса.
 
 ## Review Focus
@@ -63,7 +63,7 @@
 - [ ] На нынешних100h это примерно14other-cycles для75% и27для85%; фактические длительности/повторы считать из manifest. На полномother500 потребуются другие количества. Эти повторы не добавляют уникальные часы.
 - [ ] Скачать официальный train-other-500 на E, сохранив прежние prefix/repair файлы; resume только при совпадении идентичности источника. Проверить официальный checksum полного исходника и собственныйSHA-256, tar/FLAC/transcript integrity, CTC feasibility и UID disjointness.
 - [ ] Передавать проверенные неподвижные шарды по SSH с SHA/resume. Можно обучать новый отдельный этап на готовых200/300h раньше завершения передачи500h; назвать точный объём/состав и сохранить provenance. Не менять данные активного trainer.
-- [ ] Для полного набора выделить отдельный проектный tmpfs ориентировочно48GiB с контейнерным RAM limit, только если MemAvailable после фактического наполнения>=32GiB. Существующий почти полный /dev/shm не расширять и чужие файлы не трогать. Не хранить на сервере одновременно полный compressed archive и extracted copy.
+- [ ] Для полного набора выделить отдельный проектный tmpfs ориентировочно48GiB с контейнерным RAM limit, только если MemAvailable после фактического наполнения>=24GiB. Существующий почти полный /dev/shm не расширять и чужие файлы не трогать. Не хранить на сервере одновременно полный compressed archive и extracted copy.
 - [ ] Прогнозировать ETA по измеренной передаче; сначала полезные проверенные данные, а не ждать до конца всей загрузки. Ошибка данных не останавливает обучение на предыдущем проверенном наборе.
 
 ### Task3: Ускорение существующего pipeline
@@ -118,3 +118,7 @@
 - SpecAugment original paper: https://arxiv.org/abs/1904.08779
 
 Эти источники обосновывают направления; конкретный выигрыш на нашей DS2 и установленном PyTorch доказывается собственным измерением.
+
+
+### Approved RAM reserve update, 14 October 2026
+Direct user approval lowers host MemAvailable reserve from32GiB to24GiB. Container cap100GiB/internal headroom8GiB, scratch5GiB, /home20GiB and root1GiB remain unchanged. Preflight uses24.5GiB host/9GiB container startup allowance. Receiver SHA c8a99fa56599afde3e80539c9d185d7bc399904bd54da95152dc2268c85549af readback verified; transfer resumed automatically without trainer signals. Historical32GiB observations remain historical evidence.
