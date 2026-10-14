@@ -18,6 +18,8 @@ model:
 batch_size: 32
 accumulation: 1
 workers: 8
+prefetch_factor: null
+skip_resumed_audio: false
 cpu_threads: 4
 epochs: 60
 lr: 0.0003

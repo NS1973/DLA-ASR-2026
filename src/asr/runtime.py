@@ -143,13 +143,25 @@ def worker_seed(worker_id):
     torch.set_num_threads(1)
 
 
+class ResumeAwareLengthBatchSampler(LengthBatchSampler):
+    start_batch = 0
+
+    def __iter__(self):
+        from itertools import islice
+        return islice(super().__iter__(), self.start_batch, None)
+
+
 def make_loader(entries, config, augment=False, shuffle=False):
-    sampler = LengthBatchSampler(entries, config["batch_size"], config["seed"], shuffle)
+    sampler_type = ResumeAwareLengthBatchSampler if config.get("skip_resumed_audio", False) else LengthBatchSampler
+    sampler = sampler_type(entries, config["batch_size"], config["seed"], shuffle)
+    options = {}
+    if config["workers"] > 0 and config.get("prefetch_factor") is not None:
+        options["prefetch_factor"] = config["prefetch_factor"]
     return DataLoader(SpeechDataset(entries, augment, config["seed"],config.get('augmentation_profile','legacy')),
                       batch_sampler=sampler, collate_fn=collate,
                       generator=torch.Generator().manual_seed(config["seed"]),
                       num_workers=config["workers"], pin_memory=True, worker_init_fn=worker_seed,
-                      persistent_workers=config["workers"] > 0)
+                      persistent_workers=config["workers"] > 0, **options)
 
 
 @torch.inference_mode()
@@ -236,7 +248,8 @@ def train(config):
         entries = sorted(entries, key=lambda e: e.get("duration", 0))[:config["batch_size"]]
     if config.get("limit_train"):
         entries = entries[:config["limit_train"]]
-    (directory / "train_manifest.json").write_text(json.dumps(entries, indent=2), encoding="utf-8")
+    with (directory / "train_manifest.json").open("w", encoding="utf-8") as stream:
+        json.dump(entries, stream, indent=2)
     loader = make_loader(entries, config, config["augment"] and not config["overfit"], not config["overfit"])
     validations = {}
     for part in config["valid_parts"]:
@@ -309,7 +322,13 @@ def train(config):
             model.train()
             epoch_loss = count = 0
             resume_batch = state.get("batch_index", 0) if epoch == state["epoch"] else 0
-            for batch_index, batch in enumerate(loader):
+            first_batch = 0
+            if isinstance(loader.batch_sampler, ResumeAwareLengthBatchSampler):
+                loader.batch_sampler.start_batch = resume_batch
+                first_batch = resume_batch
+            for batch_index, batch in enumerate(loader, start=first_batch):
+                if stopping or time.time() >= deadline:
+                    break
                 if batch_index < resume_batch:
                     continue
                 state["epoch"] = epoch
