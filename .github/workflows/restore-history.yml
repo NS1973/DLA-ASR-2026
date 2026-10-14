@@ -16,11 +16,11 @@ jobs:
       - name: Download and verify the preserved original Git bundle
         run: |
           python -m pip install gdown==5.2.0
-          gdown --fuzzy 'https://drive.google.com/file/d/1vYWH_4Bmvy0NM5glQCFjmIrSx6NsKpCj/view' -O history/complete-f152a54.bundle
-          echo 'cc80a76d636b7f5292d7d148e7f14cf03e70364122943318ba70aa545c6fffe2  history/complete-f152a54.bundle' | sha256sum --check --strict
-          git bundle verify history/complete-f152a54.bundle
-          git fetch history/complete-f152a54.bundle refs/heads/codex/hw1-asr-overnight-20261014:refs/remotes/bundle/overnight
-          test "$(git rev-parse refs/remotes/bundle/overnight)" = 'f152a543fc5f2a47f85e03423645597d20b7c261'
+          gdown --fuzzy 'https://drive.google.com/file/d/1qjtFx8ee_5jwJMI84ke9Uf9hNnq6TjnX/view' -O history/complete-1157d26.bundle
+          echo '8b1042a36a1bbd4df9c95d64a1595efca4b252de4a8e924f990de09ce159f896  history/complete-1157d26.bundle' | sha256sum --check --strict
+          git bundle verify history/complete-1157d26.bundle
+          git fetch history/complete-1157d26.bundle refs/heads/codex/hw1-asr-overnight-20261014:refs/remotes/bundle/overnight
+          test "$(git rev-parse refs/remotes/bundle/overnight)" = '1157d2645ea82828380dd5bbe711216fd488f38a'
           git merge-base --is-ancestor e9ca57ddb6207d885be74c9a791ec59c3bee6b12 refs/remotes/bundle/overnight
           git push origin refs/remotes/bundle/overnight:refs/heads/codex/hw1-asr-overnight-20261014
 
