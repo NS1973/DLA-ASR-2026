@@ -70,8 +70,10 @@ python calc_metrics.py --reference-dir /path/to/dataset/transcriptions --predict
 
 ```bash
 python train.py --help
-python train.py data_root=/path/to/LibriSpeech run_dir=runs/new-experiment
+python train.py data_root=/path/to/data/datasets run_dir=runs/new-experiment
 ```
+
+data_root — родитель папки LibriSpeech: ожидается `/path/to/data/datasets/LibriSpeech/train-clean-100/`. Команда выше создаёт новый опыт; для сохранённой итоговой смеси используйте точный рецепт ниже.
 
 Точный рецепт итоговой модели, сохранённые configs, frozen manifests и перенос путей: OVERNIGHT_TRAINING_REPRODUCTION.md, FINAL_TRAINING_RECIPE.json и RESUME_RECIPE.md. Полный resume загружает optimizer/scheduler/RNG; model-only init создаёт новый этап. Не подменяйте одно другим. Конфигурации фиксируют batch256, workers8, LR3e-5, warmup300, seed35, offset3400, cosine horizons, packed_stack и аугментации.
 
