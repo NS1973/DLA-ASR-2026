@@ -454,3 +454,34 @@ Full-corpus training, dev/test evaluation, full artifact download, fresh Colab v
 ### 2026-10-14T07:08:29.668088 real 1000-step production windows
 - Eproduction-throughput400-20261014-0708.json captures each1000step logged window:75 481.70994s/2.07594stepssec;85 405.48501s/2.46618stepssec, batch256workers8. Includes variable audio/checkpoint/validation; interval p95 is NOT per-step p95; audiohours not inferable from current log. No causal speedup claim. OOMevents0/host~29.9GiB vs authorized24.
 - Draft report updated measured throughput and limitations. No trainerconfiguration mutation.
+
+### 2026-10-14T07:10:33.5240064+03:00 verified transfer/controller wait
+- Actual LOCAL38336transfer/39888data-transition/18948backup processes exist with exactowncommands, no helperstderr. Last transfer1812049920new TAR bytes, progressing afterapproved24GiB. Stage004notannounced; existing400h trainers continue. NewestEsnapshot065751 fourpairs verified,1446816186transferredbytes SHA64d326b9f654fb270020c956529bf130d9cb20132855ddc98f18f5ed34fffd70. No restart/signals duringobservation; next action is verifiedready004/full-devparent controller.
+
+
+### 2026-10-14T07:16:02.6302060+03:00 full official train-other transfer verified; transition underway
+- expanded-ready-004-transfer-proof.json:496.8568894965278uniqueotherh148687trainableutterances, all29381finalshardmembersSHA/audio/CTC/transcripts verified9238newfiles. FinalshardarchiveSHAf4d145dd4732f99be1d5e4a0ea4e460b799f893c7e459ee673d01b6179b7a35a. Transfer completed; full500data available now, NOTyetclaimnew500trainerlaunch.
+- Controller39888 full-dev parentselection fromfreshEsnapshot065751. Current400lastcandidate3f19be1d fullgreedydevclean14.05279218/other31.90507969 verified;85evaluationpending. Existingtrainers continue untilguard/reserve/actualexit/newstage. Heartbeatupdated fullready/currentpendingtransition.
+- LOCAL39672 cleaninstall freshEvenv/source926fda4 pipinstall pending; local5872 frozen-input capture streaming EXACT original relative manifests fromconfigs+SHA and clean/excludedlists, complementresolvedruntrain_manifest alreadysnapshot. Verifylogs/status beforeclaimsuccess. Laterstage004manifestneedsadditionalcapture. No GPUtrainingconfiguration manuallychanged.
+
+
+### Full train-other stage004, 14 October 07:20 MSK
+Both new processes launched after prior400h actualtrain_exit and matching reserves: GPU0PID38827 mix75, GPU1PID38828 mix85. Parent2813ad260c7efbeed187f6c718b87408c3fbc2e06120419a16d15fd4f76d271e was chosen by full greedy dev-clean14.02154333%/dev-other31.35157415%; matching fullSHAc884a4515a987929363a41fb3e39c77457d11fbf53db54fe84249457405d6258. Newstage: source8b260c2, batch256/workers6/LR3e-5/warmup300/seed35/offset3400/cutoff14Oct13UTC; new optimizer/scheduler. Dataset496.8568895uniqueotherh+464.196488clean, fractions.750000091/.850000088, otherrepeats3/6. First75step1finite loss.340431/gradient.411292;85firststep confirmation pending at this observation. This replaces the earlier statement that full500is still transferring. Exact new frozen manifests and finalclosed400logs require capture in addition to earlier components.
+
+- 2026-10-14T07:21:39.9694428+03:00: BOTHfull500trainers confirmed actualsteps140/120, loss0.35083/0.34767 gradients0.43890/3.94266finite. Frozen-inputs071530 capture COMPLETED:10originalmanifests/inputfiles allSHAverified,876326644bytes SHA fbbf79964c0694bb9c7e186ff596315213a720016e192d212445d39249a0cc0b. This capturespriorstages only; stage004originals stillneedadditionalcapture. CleaninstallshortTMP retry stillpending.
+
+
+### 2026-10-14T07:25:23.7502345+03:00 full500 warm-window verification and exact manifests
+- Current500PID38827/38828 steps540/480 finite loss0.31374/0.32855 gradients0.54466/0.66566. Warm production windows200/180steps103.2862/109.5784sec =1.93637/1.64266stepssec. Eproduction-throughput500-warm-20261014-0725.json. Differentdata/order/lengths and backgroundcollection: NOTcontrolled6vs8worker comparison; no causal speedup claimed. Host~39GiB/containerheadroom13.14GiB/scratch9.35/OOM0 observed.
+- LOCAL28084 capture EXACTstage004twooriginalfrozen manifests with configSHAguard, streamingE; logs/preserve_frozen_training_manifests_stage004.py/.log/.err/status. Prior07153010files alreadyverified876326644SHAfbbf79964c0694bb9c7e186ff596315213a720016e192d212445d39249a0cc0b; preservebothcomponents. Closed400index004collector archivepartial1.693GBobserved, proofnotyetclaimed. ShortTMPfreshinstall retry15632stillpending.
+
+
+### 2026-10-14T07:27:17.0173740+03:00 stage004 inputs preserved and resource profile
+- EXACT2originalfull500frozen manifests archived E frozen-training-inputs-stage004-20261014-072227.tar.gz244590914SHA223e0acc41024adade626c392a369c01db5045a06c94f8e2df7ff06975c78f54, allconfigSHA/memberbytes verified. Complements071530prior10files; originalrelativehashes nowpreservedforcurrentstage too.
+- Eproduction-resource500-20261014-0726.json actual10.574sec profile: CPUquota throttle counters unchanged; trainingworkers ~0.61–0.97CPUcores each, mains0.73/0.65. TenGPU samples fluctuate0–99%; snapshotaverage alone doesnot distinguishinputwait/augmentation/compute. No runtimeworkerchange; needcontrolled evidence before promotingfuturepipeline changes. Freshinstall retry remainsactualbackgroundpending; no success claim.
+
+
+### 2026-10-14T07:30:02.7215715+03:00 installation recovery evidence and operator preservation
+- antlr4_python3_runtime4.9.3 dist-info/METADATA nowexistsinFRESH Evenv aftershortTMP retry: originalwheelbuildfailure repaired. Wholepipinstall stillruns (torchaudio/21dist-info observed); notclaimfullinstall/tests complete. Originalfailurelog retained. Existingtests/test_colab_source_archive.py requires ASR_SOURCE_TEST_ZIP forsourceexportswithout.git; if currentrunnerlaterfailsfixture, rerun with EXACT ownsource.zip env, notfakeGitfixture. WindowsExFATGitownership appliesonlytaskfixture; no globalGitconfig changes.
+- ReproductionoperatorZIP E reproduction-preflight-operators-20261014-072942.zip SHA859ba64e7e7ac8d8286ad527357931de44be3ea10ed6209f08e3f00b90b79bc6 allmemberSHA/CRC verified (freshinstallattempt/retry, originalmanifestcapture andstage004capture operators). Closed400TAR received1718676285bytes/serverSHAproof; deepingest stillpending, no finalclosed-proofclaim.
+
