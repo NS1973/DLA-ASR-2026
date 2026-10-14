@@ -401,3 +401,9 @@ Full-corpus training, dev/test evaluation, full artifact download, fresh Colab v
 - Added repeatable --closed-snapshot-proof to generic package_delivery; strict single-source input, audited logical-name reconstruction/SHA/status checks, weights excluded. RED two CLI-writer integration failures ->GREEN; full152passed1Windows skip.
 - OVERNIGHT_DELIVERY.md records newbranch/finalacceptance/source-ref/parent-chain/resource/Colab/PDF/exactrestore gates and warns against oldhardcodedcaller/contentaddressedTARaslogs.
 - Real closed-log aggregation through completed initial/specprobe/main100/200/300 stages running in session71630 onE; no claim until its verification JSON. Closed400collector5360 stillstreaming; subsequent stages excluded from early component and must be appended afteractualexit.
+
+
+### 2026-10-14T04:55:28: reduce persistent validation processes
+- Direct own PID descendants show8training+16validation workers pertrainer after both dev loaders first used; validationworkers retained roughly110-270MiB PssAnon each whileidle. Current training16totalworkers remain useful; persistentvalidation32totalworkers cost severalGiB.
+- New optional validation_workers config, genericdefault0; trainingworkers8 unchanged. RED missingvalidationloader ->GREEN directnum_workers/persistence guard; fullsuite153passed1skip. Not yetpromoted live.
+- Targeted POSIX_FADV_DONTNEED only first10000 own disk-backed cleanFLAC (2.316GB) reduced cgroup93.067->91.401GiB withoutwriting/deletingfiles/globalcacheflush; hostavailable32.55->32.15 from concurrenttransfer so no falsephysicalRAMgainclaim. Remaining physicalheadroom needs validationworkers fix. Lastshard17973/29381 verified onattempt27, transferresumes missingfiles.

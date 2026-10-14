@@ -137,6 +137,17 @@ def test_prefetch_factor_is_configurable_and_omitted_for_zero_workers(tmp_path):
  assert make_loader(entries,cfg).prefetch_factor is None
 
 
+def test_validation_loader_can_release_workers_without_changing_training_loader(tmp_path):
+ from src.asr.runtime import make_loader,make_validation_loader
+ root,path,sha=fixture_manifest(tmp_path);entries=load_manifest(path,root,sha)
+ cfg=dict(batch_size=2,seed=1,workers=8,prefetch_factor=1,validation_workers=0)
+ train=make_loader(entries,cfg,augment=True,shuffle=True)
+ valid=make_validation_loader(entries,cfg)
+ assert train.num_workers==8 and train.persistent_workers
+ assert valid.num_workers==0 and not valid.persistent_workers
+ assert cfg['workers']==8
+
+
 def test_deadline_reached_during_batch_fetch_prevents_optimizer_step(tmp_path,monkeypatch):
  from src.asr import runtime
  from omegaconf import OmegaConf

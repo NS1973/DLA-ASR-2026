@@ -164,6 +164,12 @@ def make_loader(entries, config, augment=False, shuffle=False):
                       persistent_workers=config["workers"] > 0, **options)
 
 
+def make_validation_loader(entries, config):
+    options = dict(config)
+    options["workers"] = config.get("validation_workers", config["workers"])
+    return make_loader(entries, options)
+
+
 @torch.inference_mode()
 def evaluate(model, loader, device, max_batches=None, bf16=True):
     model.eval()
@@ -257,7 +263,7 @@ def train(config):
             valid_entries = librispeech_entries(config["data_root"], part)
             if config["valid_limit"]:
                 valid_entries = random.Random(config["seed"]).sample(valid_entries, min(config["valid_limit"], len(valid_entries)))
-            validations[part] = make_loader(valid_entries, config)
+            validations[part] = make_validation_loader(valid_entries, config)
         except FileNotFoundError:
             logger.emit({"event": "validation_pending", "split": part})
     model = DeepSpeech2CTC(**config["model"]).to(device)
