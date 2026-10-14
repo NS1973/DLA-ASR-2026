@@ -45,7 +45,7 @@ python -m pytest tests -q
 python scripts/download_resources.py --manifest resources.json --output-dir artifacts
 ```
 
-Полные закрытые журналы обучения с самого первого этапа, W&B offline и медиа:
+Полные закрытые журналы обучения с самого первого этапа12октября, затем13октября и все22ночных этапа, W&B offline и медиа (9компонентов):
 
 ```bash
 python scripts/download_resources.py --manifest training-resources.json --output-dir training-artifacts

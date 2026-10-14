@@ -313,12 +313,12 @@
       },
       "portable_configuration": "docs/repro/closed-stages/expanded003_mix75_intern.json",
       "terminal": {
-        "archive": "closed_worker6_predecessor_905.tar.gz",
-        "logical_member": "expanded003_mix75_intern/metrics.jsonl",
+        "archive": "closed400-intern-stage003-logs.zip",
         "utc": "2026-10-14T01:58:21.797271+00:00",
         "event": "train_exit",
         "step": 10712,
-        "epoch": 4
+        "epoch": 4,
+        "member": "expanded003_mix75_intern/metrics.jsonl"
       },
       "parent_origin_candidates": []
     },
@@ -437,12 +437,12 @@
       },
       "portable_configuration": "docs/repro/closed-stages/expanded003_mix85_intern.json",
       "terminal": {
-        "archive": "closed_worker6_predecessor_906.tar.gz",
-        "logical_member": "expanded003_mix85_intern/metrics.jsonl",
+        "archive": "closed400-intern-stage003-logs.zip",
         "utc": "2026-10-14T01:58:22.750673+00:00",
         "event": "train_exit",
         "step": 10800,
-        "epoch": 2
+        "epoch": 2,
+        "member": "expanded003_mix85_intern/metrics.jsonl"
       },
       "parent_origin_candidates": []
     },

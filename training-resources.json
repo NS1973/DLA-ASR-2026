@@ -1,7 +1,37 @@
 {
-  "scope": "Full closed training logs from original initialization through final worker8 stages; no acoustic weights",
+  "scope": "Full closed logs from first from-scratch training on12October through13October e05c and all22overnight stages; W&B, JSONL, audio, plots; no acoustic weights",
   "model_sha256": "5d2e8e35b01f32cd7b4b7e553de419ab796a545ef606fad994f783f35905eef9",
   "resources": [
+    {
+      "filename": "closed-logs-1329.zip",
+      "url": "https://drive.google.com/file/d/1CTePHacX1rowRL0KE071nyZpC0QtgMJ_/view",
+      "bytes": 707817314,
+      "sha256": "fcaee6a15e80133e4c27bd72267ce14f9b4ab3928d53495eecda93dcedaa3e8d"
+    },
+    {
+      "filename": "extension-logs.zip",
+      "url": "https://drive.google.com/file/d/1V7LzukXVu0ghg-6o8TH2_Jevi70TeFnO/view",
+      "bytes": 96355784,
+      "sha256": "05c0c78bad1e67bc5cd475f4f7ff4856f1c12759dd3415b089f945def6dbd48e"
+    },
+    {
+      "filename": "closed-mixed50-logs.zip",
+      "url": "https://drive.google.com/file/d/1cAAkDGsa0rCraYHSMnY2-RXzQh9kGPM4/view",
+      "bytes": 54627454,
+      "sha256": "98ee95b7d93826acd13c2eb7f3b61a67fb4bb7fa548de03065df408f896508eb"
+    },
+    {
+      "filename": "extension5h-final-closed-logs.zip",
+      "url": "https://drive.google.com/file/d/1UGptqgLKxAXy4IEfS7ag6vyQQ5eq6f0F/view",
+      "bytes": 102311602,
+      "sha256": "fc9b315c7bf4c209169d7df188b7df5423d13712d0bae66bdfa8d2c7859618c3"
+    },
+    {
+      "filename": "othermix100-final-closed-logs.zip",
+      "url": "https://drive.google.com/file/d/191qxiw7dYhHNG1I4w_F5sMSg2cQlXJeQ/view",
+      "bytes": 62357463,
+      "sha256": "e1fef0cd3a51957e176cad1bc5316307ddcd5067b786d8dc48168621558c12bf"
+    },
     {
       "filename": "closed_logical_logs_through903.zip",
       "url": "https://drive.google.com/file/d/1vQAzztm4NX0PbA946kIwr5wwvZ6kB-e4/view",
@@ -19,6 +49,12 @@
       "url": "https://drive.google.com/file/d/1pS7Xg8Tav-Y5SO9yPS_TW2icykG1UBjp/view",
       "bytes": 329543094,
       "sha256": "c866abd59abef2a145bd7b80ff01fb3f734db8fff75aa082a4ac509bd6aeba02"
+    },
+    {
+      "filename": "closed400-intern-stage003-logs.zip",
+      "url": "https://drive.google.com/file/d/1ldMRvnEOFmgA5pa79enqzCHMeoR8uh5T/view",
+      "bytes": 298087583,
+      "sha256": "8456ae27716c1c013b0a17d6635c26c9951b66cb0ecd412c4dd2a09af8464f37"
     }
   ]
 }
