@@ -1,2 +1,5 @@
 # Preserve report bytes across Windows/Linux checkouts.
 *.pdf binary
+
+# Frozen training config hashes refer to exact original server bytes.
+docs/repro/closed-stages/*.json -text
