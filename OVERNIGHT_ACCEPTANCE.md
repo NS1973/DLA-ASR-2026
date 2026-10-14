@@ -23,3 +23,5 @@
 Все тяжёлые доказательства находятся в E:\DLA-ASR-2026-backups\01a13245-8e70-7373-8dae-fbd7d26072df\20261013-1115. Архивы Apple и другие каталоги E не затрагиваются. Цель остаётся активной до обязательной приёмки.
 
 14 октября12:05: текущий tests/169passed2skipped; это локальная CPU регрессия, не новый чистый GPU/Colab запуск. Actual runtime source ZIP18files включает фактический receiver с резервом24GiB. Очередь guarded cutoff45336/evaluator45397/server37656; ресурсная проверка послеactualexit, без изменения обучения.
+
+14 октября12:12: фактический новый checkpoint b2d1e664 загружен обычным inference.py на CPU/FP32. Проверены beam50+LM на одной TRAIN-аудиозаписи с эталоном, greedy на3TRAIN-derived WAV/FLAC/MP3 без эталонов(8/16/48кГц,mono/stereo), точные UID, metrics=null безGT и совпадение отдельного calc_metrics.py с inference summary. Архив cpu-real-model-compatibility-20261014-1210.zip SHA649b949c8588662c9741e219eddbdb59322a411e857fc4bc88eba11174b20bca,342231байт,allmemberSHA/CRC. Это функциональная проверка текущего реального кандидата, не качество по train, не финальный Colab и не подтверждение BF16/FP32 идентичности.
