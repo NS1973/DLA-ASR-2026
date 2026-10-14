@@ -485,3 +485,24 @@ Both new processes launched after prior400h actualtrain_exit and matching reserv
 - antlr4_python3_runtime4.9.3 dist-info/METADATA nowexistsinFRESH Evenv aftershortTMP retry: originalwheelbuildfailure repaired. Wholepipinstall stillruns (torchaudio/21dist-info observed); notclaimfullinstall/tests complete. Originalfailurelog retained. Existingtests/test_colab_source_archive.py requires ASR_SOURCE_TEST_ZIP forsourceexportswithout.git; if currentrunnerlaterfailsfixture, rerun with EXACT ownsource.zip env, notfakeGitfixture. WindowsExFATGitownership appliesonlytaskfixture; no globalGitconfig changes.
 - ReproductionoperatorZIP E reproduction-preflight-operators-20261014-072942.zip SHA859ba64e7e7ac8d8286ad527357931de44be3ea10ed6209f08e3f00b90b79bc6 allmemberSHA/CRC verified (freshinstallattempt/retry, originalmanifestcapture andstage004capture operators). Closed400TAR received1718676285bytes/serverSHAproof; deepingest stillpending, no finalclosed-proofclaim.
 
+
+### 2026-10-14T07:32:18.8284622+03:00 closed400 full reserve accepted and delivery component catalog
+- Eexpanded-predecessors-004-verification.json nowPASSED all4closed model/fullpairs+logs/selfcontained1718676285bytes SHAde28431af649b937028b0330a7cfdd4589c727aaaa0b2db5fdd293ae3eea5e2a. Priorstageactualtrain_exit preserved; oldartifactsuntouched.
+- logs/overnight-delivery-components.json and Eovernight-delivery-components-through0732.json catalog5verified preservationcomponents(originalmanifestsprior/full500,closed400,earlyparents,logicalearlylogs), explicitremainingfinalgates; nofinalcomplete claim. RawcontentaddressedTARasattachment, logicalclosedlogs generatedvia--closed-snapshot-proof.
+- Actualfull5001280/1180stepsfinite, last/fullcheckpoints56/50sec observed; nextnewEsnapshot viaexisting18948loop (15minstart cadence), do notduplicate/restart. Freshinstallshorttemp retrystillpending.
+
+
+### 2026-10-14T07:34:55.6009597+03:00 first full500 off-server checkpoint reserve verified
+- Existingincremental loop18948 producedinc-20261014-072751:997082237bytes SHA547bd920484bc0258aa3808e45cae9e1a4af92d6a0d091354875ca570d266fda, TWOnewstage last-model/fullpairs deeplyverified. Best checkpoints notyetcreated before firstepochdev, so do notclaimfournewpairs. Parentfull remainsseparatelyverified. No trainerpause/restart.
+- Freshinstall progress confirmed liveactualpip6340 child18364,436MBwrites/49dist-info vsprior21. Not a timeout/hang; installation continueswithoutrestart. Observeproperterminalstatusbeforetests; one attemptedretry-command-00.logreadabsentbecausepipnotreturned yet, notaninstallfailure.
+
+
+### 2026-10-14T07:41:49.3295794+03:00 first full500 epoch monitor and guarded benchmark
+- expanded004_mix75 epoch0step2297 dev512ONLY: clean1463/10133=14.43797493%, other2922/9083=32.16998789%,512records each; NOTfull/test. GPU85step2200stilltraining. No cleanalarm/selectionchange basedonnarrowmonitor. FULLparent2813dev14.02154/31.35157unchanged.
+- OptionalCPUloaderworkerprofile stoppedBEFOREbenchmark onheadroomguard10.5GiB. Observedcgroup92.619/100,host34.798GiB,OOM0; no extra workers/trainer signals. No unmeasuredspeedgainclaimed; nextprofileonlywhenheadroomreturns.
+- LOCAL31288 finish_clean_install_export_tests.py waitsactualinstallerterminal; afterdependency+pipchecksuccess mayrepairknown source-export fixture withASR_SOURCE_TEST_ZIP=exactsourceZIP and ownCprojecttinytesttemp, allheavyenv/source/artifactsremainE. No activepiprestart. Existingheartbeatprompt rewrittencohesively with current500PIDs/reserves/firstsubset andallfinalgates, historicalconflictingprefixesremoved; cadence10minutes/goalunchanged.
+
+
+### 2026-10-14T07:45:25.123428 fresh clean installation accepted
+- FRESH Evenv(systemsitefalse), sourceGitexport926fda4: dependenciesinstalled/pipcheckRC0, final162passed2skipped. Firstantlr4longTMP failure ->shortTMP successfulbuild; Efilesystem hardlink/mtime/epochfixture failures and missing.git ->exactSHA ASR_SOURCE_TEST_ZIP +tinyownNTFSfixtures ->successfulfullrerun. Allfailedlogs retained. CPUcleaninstalldoesnotreplacefinalGPUColab. Coreproductdiff926->currentHEADempty.
+- Eclean-install-acceptance-20261014-0744.zip1219566SHA c5baf0a7c114dd07f9e5769fcc4d4922f53c38137d52ac77f26fc3203942cabc allmemberSHA/CRC. SourceZIPsha ff53018696470ba4bf7a0e97c2135a3207d23fd9cb8d0388af01bce08772e9dc. Deliverycatalognow6components/finalcompletefalse. Draftreportupdated22full-devSHAmodels withcheckedcounts, fulldata496.86h andexplicitnotyetnewfull500metrics.
