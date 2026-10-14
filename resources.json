@@ -33,14 +33,15 @@
     }
   ],
   "training_logs_delivery": {
-    "method": "local_reproduction_archive",
-    "archive": "reproduction.zip",
+    "method": "sha256_verified_download_script",
+    "script": "python scripts/download_resources.py --manifest training-resources.json --output-dir training-artifacts",
+    "manifest": "training-resources.json",
+    "also_in": "reproduction.zip",
     "logs": [
       "closed_logical_logs_through903.zip",
       "closed400_worker6_logical_logs.zip",
       "final-worker8-closed-logs.zip"
-    ],
-    "scope": "Full closed logs, parents and all source/evaluation proof components in local archive; no cloud archive publication requested"
+    ]
   },
   "decoder_provenance": {
     "name": "beam50_lm0.1_bonus1.0",

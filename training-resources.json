@@ -1,0 +1,24 @@
+{
+  "scope": "Full closed training logs from original initialization through final worker8 stages; no acoustic weights",
+  "model_sha256": "5d2e8e35b01f32cd7b4b7e553de419ab796a545ef606fad994f783f35905eef9",
+  "resources": [
+    {
+      "filename": "closed_logical_logs_through903.zip",
+      "url": "https://drive.google.com/file/d/1vQAzztm4NX0PbA946kIwr5wwvZ6kB-e4/view",
+      "bytes": 1832851305,
+      "sha256": "7522678f29de4447999eb8cac66bbeac4e36f61c084022db142a740fb904d0f2"
+    },
+    {
+      "filename": "closed400_worker6_logical_logs.zip",
+      "url": "https://drive.google.com/file/d/1_U3ghMVM23FEC7MZZPsjA3NC4dnoIyFN/view",
+      "bytes": 612834475,
+      "sha256": "b62904b483d9b94e3f5781dffa23bf81b37d90b949f81039bfa79e6e2866038f"
+    },
+    {
+      "filename": "final-worker8-closed-logs.zip",
+      "url": "https://drive.google.com/file/d/1pS7Xg8Tav-Y5SO9yPS_TW2icykG1UBjp/view",
+      "bytes": 329543094,
+      "sha256": "c866abd59abef2a145bd7b80ff01fb3f734db8fff75aa082a4ac509bd6aeba02"
+    }
+  ]
+}

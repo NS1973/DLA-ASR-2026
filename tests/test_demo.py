@@ -4,9 +4,10 @@ from pathlib import Path
 from types import SimpleNamespace
 import zipfile
 from scripts.prepare_custom_dataset import extract
+from calc_metrics import directory_metrics
 
 
-def test_second_notebook_dataset_does_not_include_first(tmp_path, monkeypatch):
+def test_second_notebook_dataset_does_not_include_first(tmp_path, monkeypatch, capsys):
     notebook=json.loads((Path(__file__).parents[1]/'DLA_ASR_Demo.ipynb').read_text(encoding='utf-8'))
     cell=''.join(next(c['source'] for c in notebook['cells'] if c['cell_type']=='code' and 'prepare_custom_dataset.py' in ''.join(c['source'])))
     archives={}
@@ -28,6 +29,9 @@ def test_second_notebook_dataset_does_not_include_first(tmp_path, monkeypatch):
             for audio in (dataset/'audio').iterdir():
                 (dest/f'{audio.stem}.txt').write_text(audio.stem,encoding='utf-8')
             outputs.append({p.stem for p in dest.glob('*.txt')})
+        elif args[1]=='calc_metrics.py':
+            result=directory_metrics(args[args.index('--reference-dir')+1],args[args.index('--prediction-dir')+1])
+            Path(args[args.index('--output')+1]).write_text(json.dumps(result),encoding='utf-8')
     # Colab uses UTF-8 by default; reproduce that default on Windows too.
     original_read=Path.read_text
     monkeypatch.setattr(Path, "read_text", lambda self, *a, **kw: original_read(self, *a, **{"encoding":"utf-8", **kw}))
@@ -37,3 +41,5 @@ def test_second_notebook_dataset_does_not_include_first(tmp_path, monkeypatch):
         namespace['DATASET_URL']=link
         exec(compile(cell,'notebook-user-cell','exec'),namespace)
     assert outputs==[{'first'},{'second'}]
+
+    assert capsys.readouterr().out.count('\"wer\": 0.0') == 2

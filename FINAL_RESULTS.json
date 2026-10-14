@@ -14,7 +14,7 @@
     "checkpoint_sha256": "5d2e8e35b01f32cd7b4b7e553de419ab796a545ef606fad994f783f35905eef9"
   },
   "completed_utc": "2026-10-14T14:51:50.251120+00:00",
-  "status": "evaluated_frozen_candidate; resource/Colab/final-packaging_acceptance_pending",
+  "status": "full_evaluation_verified; current delivery acceptance in ACCEPTANCE.md",
   "selection_criterion": "full dev-other greedy corpus WER, with full dev-clean WER <=20%",
   "resume_sha256": "a4ca08dd25c3d4bdffb37697c41c743afb9335354bd753eaa64c5c64fe6b50cd",
   "dev": {
@@ -6312,5 +6312,10 @@
     ],
     "scheduler_step_after": 74029,
     "completed_utc": "2026-10-14T14:24:59Z"
-  }
+  },
+  "delivery_notes": [
+    "The first v1 archive is preserved; corrected v2 fixes documentation, displays Colab metrics and supplies separate training-resources manifest",
+    "Weights and all full dev/test counts/metrics are unchanged",
+    "LLM prohibition remains disclosed"
+  ]
 }
