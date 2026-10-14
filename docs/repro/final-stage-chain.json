@@ -1,0 +1,800 @@
+{
+  "scope": "Closed overnight stages; earlier e05c training chain is preserved in historical_e05c_* components",
+  "selected": "expanded004_mix85_intern__last",
+  "selected_step": 74028,
+  "selected_model_sha256": "5d2e8e35b01f32cd7b4b7e553de419ab796a545ef606fad994f783f35905eef9",
+  "all_resume_edges_tensor_state_schedule_seed_and_data_verified": true,
+  "all_model_initialization_bytes_sha_verified": true,
+  "runs": [
+    {
+      "run": "expanded001_mix75",
+      "configuration_sha256": "90c904e493b0b70425fce4d22a876f0774cfeb8e728229c607b2995d49267cbc",
+      "kind": "own_model_initialization_new_optimizer",
+      "parent_model_sha256": "8297e2d66e8a1aa44afec4ab1e01b3ffde7aff048ca77a4882df78a482ecee09",
+      "parent_model_state": {
+        "step": 21400,
+        "epoch": 5,
+        "batch_index": 3040,
+        "micro_count": 0,
+        "best_wer": 0.33695062398263703
+      },
+      "protected_e05c_anchor": false,
+      "configuration": {
+        "archive": "closed_logical_logs_through903.zip",
+        "member": "expanded001_mix75/config.json",
+        "sha256": "90c904e493b0b70425fce4d22a876f0774cfeb8e728229c607b2995d49267cbc"
+      },
+      "portable_configuration": "docs/repro/closed-stages/expanded001_mix75.json",
+      "terminal": {
+        "archive": "closed_logical_logs_through903.zip",
+        "utc": "2026-10-13T23:42:43.597467+00:00",
+        "event": "train_exit",
+        "step": 10140,
+        "epoch": 4,
+        "member": "expanded001_mix75/metrics.jsonl"
+      },
+      "parent_origin_candidates": [
+        {
+          "artifact": "main85_packed__last_model.pt",
+          "state": {
+            "step": 21400,
+            "epoch": 5,
+            "batch_index": 3040,
+            "micro_count": 0,
+            "best_wer": 0.33695062398263703
+          }
+        }
+      ]
+    },
+    {
+      "run": "expanded001_mix85",
+      "configuration_sha256": "fec489470f4b90f84a7b73606cd6a2df10633be9b68d07a8e8a2d2e49d8e5849",
+      "kind": "own_model_initialization_new_optimizer",
+      "parent_model_sha256": "8297e2d66e8a1aa44afec4ab1e01b3ffde7aff048ca77a4882df78a482ecee09",
+      "parent_model_state": {
+        "step": 21400,
+        "epoch": 5,
+        "batch_index": 3040,
+        "micro_count": 0,
+        "best_wer": 0.33695062398263703
+      },
+      "protected_e05c_anchor": false,
+      "configuration": {
+        "archive": "closed_logical_logs_through903.zip",
+        "member": "expanded001_mix85/config.json",
+        "sha256": "fec489470f4b90f84a7b73606cd6a2df10633be9b68d07a8e8a2d2e49d8e5849"
+      },
+      "portable_configuration": "docs/repro/closed-stages/expanded001_mix85.json",
+      "terminal": {
+        "archive": "closed_logical_logs_through903.zip",
+        "utc": "2026-10-13T23:42:43.625030+00:00",
+        "event": "train_exit",
+        "step": 10835,
+        "epoch": 2,
+        "member": "expanded001_mix85/metrics.jsonl"
+      },
+      "parent_origin_candidates": [
+        {
+          "artifact": "main85_packed__last_model.pt",
+          "state": {
+            "step": 21400,
+            "epoch": 5,
+            "batch_index": 3040,
+            "micro_count": 0,
+            "best_wer": 0.33695062398263703
+          }
+        }
+      ]
+    },
+    {
+      "run": "expanded002_mix75",
+      "configuration_sha256": "d8ffa036bdf21f79f32be6272c1611703e9827fc14d197edc3d91f738fb24435",
+      "kind": "own_model_initialization_new_optimizer",
+      "parent_model_sha256": "44c02577f2f33d2c3159e599d129278dbf6ac3d231495888ab783b8dcb6be51e",
+      "parent_model_state": {
+        "step": 7651,
+        "epoch": 3,
+        "batch_index": 1192,
+        "micro_count": 0,
+        "best_wer": 0.3307487815684537
+      },
+      "protected_e05c_anchor": false,
+      "configuration": {
+        "archive": "closed_logical_logs_through903.zip",
+        "member": "expanded002_mix75/config.json",
+        "sha256": "d8ffa036bdf21f79f32be6272c1611703e9827fc14d197edc3d91f738fb24435"
+      },
+      "portable_configuration": "docs/repro/closed-stages/expanded002_mix75.json",
+      "terminal": {
+        "archive": "closed_logical_logs_through903.zip",
+        "utc": "2026-10-14T00:19:13.168564+00:00",
+        "event": "train_exit",
+        "step": 6040,
+        "epoch": 2,
+        "member": "expanded002_mix75/metrics.jsonl"
+      },
+      "parent_origin_candidates": [
+        {
+          "artifact": "expanded001_mix75__last_model.pt",
+          "state": {
+            "step": 7651,
+            "epoch": 3,
+            "batch_index": 1192,
+            "micro_count": 0,
+            "best_wer": 0.3307487815684537
+          }
+        }
+      ]
+    },
+    {
+      "run": "expanded002_mix75_intern",
+      "configuration_sha256": "99219a8454fee2d565aa43ba405fb4ff16cd2e392db25d799efa4d255a8a7242",
+      "kind": "exact_full_resume",
+      "parent_resume": "expanded002_mix75/last.pt",
+      "parent_resume_sha256": "44422e6d5169ee889e3612c7d8af391f1279e492e8f88cf35fbd815bb47b00ac",
+      "parent_model_sha256": "e5a6d3a44d0e7cca05bd8aa260adcb0d686e7dcaa293a88bf40f874fb3800dab",
+      "restored_state": {
+        "step": 6040,
+        "epoch": 2,
+        "batch_index": 1412,
+        "micro_count": 0,
+        "best_wer": 0.3184678819444444
+      },
+      "schedule_seed_data_fields_match": true,
+      "original_full_training_origin": "/overnight/runs/expanded002_mix75",
+      "configuration": {
+        "archive": "closed_logical_logs_through903.zip",
+        "member": "expanded002_mix75_intern/config.json",
+        "sha256": "99219a8454fee2d565aa43ba405fb4ff16cd2e392db25d799efa4d255a8a7242"
+      },
+      "portable_configuration": "docs/repro/closed-stages/expanded002_mix75_intern.json",
+      "terminal": {
+        "archive": "closed_logical_logs_through903.zip",
+        "utc": "2026-10-14T00:50:41.897468+00:00",
+        "event": "train_exit",
+        "step": 9840,
+        "epoch": 4,
+        "member": "expanded002_mix75_intern/metrics.jsonl"
+      },
+      "parent_origin_candidates": []
+    },
+    {
+      "run": "expanded002_mix85",
+      "configuration_sha256": "a06b52780a363422f327ca110e8376daa06ab44cbcbce40919ffad3fbd27668e",
+      "kind": "own_model_initialization_new_optimizer",
+      "parent_model_sha256": "44c02577f2f33d2c3159e599d129278dbf6ac3d231495888ab783b8dcb6be51e",
+      "parent_model_state": {
+        "step": 7651,
+        "epoch": 3,
+        "batch_index": 1192,
+        "micro_count": 0,
+        "best_wer": 0.3307487815684537
+      },
+      "protected_e05c_anchor": false,
+      "configuration": {
+        "archive": "closed_logical_logs_through903.zip",
+        "member": "expanded002_mix85/config.json",
+        "sha256": "a06b52780a363422f327ca110e8376daa06ab44cbcbce40919ffad3fbd27668e"
+      },
+      "portable_configuration": "docs/repro/closed-stages/expanded002_mix85.json",
+      "terminal": {
+        "archive": "closed_logical_logs_through903.zip",
+        "utc": "2026-10-14T00:19:14.105962+00:00",
+        "event": "train_exit",
+        "step": 6060,
+        "epoch": 1,
+        "member": "expanded002_mix85/metrics.jsonl"
+      },
+      "parent_origin_candidates": [
+        {
+          "artifact": "expanded001_mix75__last_model.pt",
+          "state": {
+            "step": 7651,
+            "epoch": 3,
+            "batch_index": 1192,
+            "micro_count": 0,
+            "best_wer": 0.3307487815684537
+          }
+        }
+      ]
+    },
+    {
+      "run": "expanded002_mix85_intern",
+      "configuration_sha256": "22b2942bbeba712b991b824c968d764d044c82d85892dd53cbe974d8317e3f7a",
+      "kind": "exact_full_resume",
+      "parent_resume": "expanded002_mix85/last.pt",
+      "parent_resume_sha256": "cbbf530f5230edf94b64dc4c115343cca29a0df11b1d7ea89fa253539a8c73cf",
+      "parent_model_sha256": "1002e76e2d515c34e49f3da61c86b4ad246d4a09b2508e436436021b20c10d1f",
+      "restored_state": {
+        "step": 6060,
+        "epoch": 1,
+        "batch_index": 2368,
+        "micro_count": 0,
+        "best_wer": 0.3221571180555556
+      },
+      "schedule_seed_data_fields_match": true,
+      "original_full_training_origin": "/overnight/runs/expanded002_mix85",
+      "configuration": {
+        "archive": "closed_logical_logs_through903.zip",
+        "member": "expanded002_mix85_intern/config.json",
+        "sha256": "22b2942bbeba712b991b824c968d764d044c82d85892dd53cbe974d8317e3f7a"
+      },
+      "portable_configuration": "docs/repro/closed-stages/expanded002_mix85_intern.json",
+      "terminal": {
+        "archive": "closed_logical_logs_through903.zip",
+        "utc": "2026-10-14T00:50:41.276089+00:00",
+        "event": "train_exit",
+        "step": 9421,
+        "epoch": 2,
+        "member": "expanded002_mix85_intern/metrics.jsonl"
+      },
+      "parent_origin_candidates": []
+    },
+    {
+      "run": "expanded003_mix75",
+      "configuration_sha256": "afff4d0b532480984e9b2a6ead90b8613e602aeada2be60c3dbad22bf2eebc59",
+      "kind": "own_model_initialization_new_optimizer",
+      "parent_model_sha256": "da6ccc5d9826f598baf5bf2d7c60458fab935f6d9bddc1ce3a635df0e9791acc",
+      "parent_model_state": {
+        "step": 4628,
+        "epoch": 1,
+        "batch_index": 2314,
+        "micro_count": 0,
+        "best_wer": 0.3184678819444444
+      },
+      "protected_e05c_anchor": false,
+      "configuration": {
+        "archive": "closed_logical_logs_through903.zip",
+        "member": "expanded003_mix75/config.json",
+        "sha256": "afff4d0b532480984e9b2a6ead90b8613e602aeada2be60c3dbad22bf2eebc59"
+      },
+      "portable_configuration": "docs/repro/closed-stages/expanded003_mix75.json",
+      "terminal": {
+        "archive": "closed_logical_logs_through903.zip",
+        "utc": "2026-10-14T01:34:11.060724+00:00",
+        "event": "train_exit",
+        "step": 7514,
+        "epoch": 3,
+        "member": "expanded003_mix75/metrics.jsonl"
+      },
+      "parent_origin_candidates": [
+        {
+          "artifact": "expanded002_mix75/best_model.pt",
+          "state": {
+            "step": 4628,
+            "epoch": 1,
+            "batch_index": 2314,
+            "micro_count": 0,
+            "best_wer": 0.3184678819444444
+          }
+        },
+        {
+          "artifact": "expanded002_mix75_intern__best_model.pt",
+          "state": {
+            "step": 4628,
+            "epoch": 1,
+            "batch_index": 2314,
+            "micro_count": 0,
+            "best_wer": 0.3184678819444444
+          }
+        },
+        {
+          "artifact": "expanded002_mix75_intern",
+          "state": {
+            "step": 4628,
+            "epoch": 1,
+            "batch_index": 2314,
+            "micro_count": 0,
+            "best_wer": 0.3184678819444444
+          }
+        }
+      ]
+    },
+    {
+      "run": "expanded003_mix75_intern",
+      "configuration_sha256": "d65ecc18d5882f403d5a025d4b5e4a6e7d7a6099cb8fd8162f2697e082e0fd67",
+      "kind": "exact_full_resume",
+      "parent_resume": "expanded003_mix75/last.pt",
+      "parent_resume_sha256": "5112cf5b2f5e3d9448548e162cece236822fb77a8f031b678ee027182f3b071c",
+      "parent_model_sha256": "c6b8144fea46585f5b7f96c6b80e8591bc4eafb90eef7b13987fa4de13571106",
+      "restored_state": {
+        "step": 7514,
+        "epoch": 3,
+        "batch_index": 107,
+        "micro_count": 0,
+        "best_wer": 0.3301136363636364
+      },
+      "schedule_seed_data_fields_match": true,
+      "original_full_training_origin": "/overnight/runs/expanded003_mix75",
+      "configuration": {
+        "archive": "parent_chain_through0607.zip",
+        "member": "configs/expanded003_mix75_intern/config.json",
+        "sha256": "d65ecc18d5882f403d5a025d4b5e4a6e7d7a6099cb8fd8162f2697e082e0fd67"
+      },
+      "portable_configuration": "docs/repro/closed-stages/expanded003_mix75_intern.json",
+      "terminal": {
+        "archive": "closed_worker6_predecessor_905.tar.gz",
+        "logical_member": "expanded003_mix75_intern/metrics.jsonl",
+        "utc": "2026-10-14T01:58:21.797271+00:00",
+        "event": "train_exit",
+        "step": 10712,
+        "epoch": 4
+      },
+      "parent_origin_candidates": []
+    },
+    {
+      "run": "expanded003_mix75_intern_intern",
+      "configuration_sha256": "cd45ce265d47ac8a90fe22d3192135345c398cf272799db6c95668a5cb42b795",
+      "kind": "exact_full_resume",
+      "parent_resume": "expanded003_mix75_intern/last.pt",
+      "parent_resume_sha256": "73a2a8b5a9333bdff36fa6eeacbefe3f359ab4d7d5c9faa556d7e00fa2c8b062",
+      "parent_model_sha256": "f580ca27f689876028e315eae573ac92f133127613c5f4fffc9467cb4ae980d5",
+      "restored_state": {
+        "step": 10712,
+        "epoch": 4,
+        "batch_index": 836,
+        "micro_count": 0,
+        "best_wer": 0.32488636363636364
+      },
+      "schedule_seed_data_fields_match": true,
+      "original_full_training_origin": "/overnight/runs/expanded003_mix75_intern",
+      "configuration": {
+        "archive": "closed400_worker6_logical_logs.zip",
+        "member": "expanded003_mix75_intern_intern/config.json",
+        "sha256": "cd45ce265d47ac8a90fe22d3192135345c398cf272799db6c95668a5cb42b795"
+      },
+      "portable_configuration": "docs/repro/closed-stages/expanded003_mix75_intern_intern.json",
+      "terminal": {
+        "archive": "closed400_worker6_logical_logs.zip",
+        "utc": "2026-10-14T04:19:17.597530+00:00",
+        "event": "train_exit",
+        "step": 30308,
+        "epoch": 12,
+        "member": "expanded003_mix75_intern_intern/metrics.jsonl"
+      },
+      "parent_origin_candidates": []
+    },
+    {
+      "run": "expanded003_mix85",
+      "configuration_sha256": "d6354e8533f08ebaeccba13e4f4461e0d5bb32e31a186f7e0d7fe6adb9d143b2",
+      "kind": "own_model_initialization_new_optimizer",
+      "parent_model_sha256": "da6ccc5d9826f598baf5bf2d7c60458fab935f6d9bddc1ce3a635df0e9791acc",
+      "parent_model_state": {
+        "step": 4628,
+        "epoch": 1,
+        "batch_index": 2314,
+        "micro_count": 0,
+        "best_wer": 0.3184678819444444
+      },
+      "protected_e05c_anchor": false,
+      "configuration": {
+        "archive": "closed_logical_logs_through903.zip",
+        "member": "expanded003_mix85/config.json",
+        "sha256": "d6354e8533f08ebaeccba13e4f4461e0d5bb32e31a186f7e0d7fe6adb9d143b2"
+      },
+      "portable_configuration": "docs/repro/closed-stages/expanded003_mix85.json",
+      "terminal": {
+        "archive": "closed_logical_logs_through903.zip",
+        "utc": "2026-10-14T01:34:12.127399+00:00",
+        "event": "train_exit",
+        "step": 7479,
+        "epoch": 1,
+        "member": "expanded003_mix85/metrics.jsonl"
+      },
+      "parent_origin_candidates": [
+        {
+          "artifact": "expanded002_mix75/best_model.pt",
+          "state": {
+            "step": 4628,
+            "epoch": 1,
+            "batch_index": 2314,
+            "micro_count": 0,
+            "best_wer": 0.3184678819444444
+          }
+        },
+        {
+          "artifact": "expanded002_mix75_intern__best_model.pt",
+          "state": {
+            "step": 4628,
+            "epoch": 1,
+            "batch_index": 2314,
+            "micro_count": 0,
+            "best_wer": 0.3184678819444444
+          }
+        },
+        {
+          "artifact": "expanded002_mix75_intern",
+          "state": {
+            "step": 4628,
+            "epoch": 1,
+            "batch_index": 2314,
+            "micro_count": 0,
+            "best_wer": 0.3184678819444444
+          }
+        }
+      ]
+    },
+    {
+      "run": "expanded003_mix85_intern",
+      "configuration_sha256": "de2699e28656013bde46fb7156d8fd41ce1128ee17215389e0434ebf7b953110",
+      "kind": "exact_full_resume",
+      "parent_resume": "expanded003_mix85/last.pt",
+      "parent_resume_sha256": "1f140def7798d172d9df1298b05693657f3a7bae01c90f01bf71d109eb218b14",
+      "parent_model_sha256": "37ab16826efddfe7da5b5369165620140a8efc4111e3b9f605dd1f0f8249e37c",
+      "restored_state": {
+        "step": 7479,
+        "epoch": 1,
+        "batch_index": 3650,
+        "micro_count": 0,
+        "best_wer": 0.33
+      },
+      "schedule_seed_data_fields_match": true,
+      "original_full_training_origin": "/overnight/runs/expanded003_mix85",
+      "configuration": {
+        "archive": "parent_chain_through0607.zip",
+        "member": "configs/expanded003_mix85_intern/config.json",
+        "sha256": "de2699e28656013bde46fb7156d8fd41ce1128ee17215389e0434ebf7b953110"
+      },
+      "portable_configuration": "docs/repro/closed-stages/expanded003_mix85_intern.json",
+      "terminal": {
+        "archive": "closed_worker6_predecessor_906.tar.gz",
+        "logical_member": "expanded003_mix85_intern/metrics.jsonl",
+        "utc": "2026-10-14T01:58:22.750673+00:00",
+        "event": "train_exit",
+        "step": 10800,
+        "epoch": 2
+      },
+      "parent_origin_candidates": []
+    },
+    {
+      "run": "expanded003_mix85_intern_intern",
+      "configuration_sha256": "33b0b16043a2704e497a8ee03a5ca1ece5a48748a4b2ba9e3f1dc5a1d104160f",
+      "kind": "exact_full_resume",
+      "parent_resume": "expanded003_mix85_intern/last.pt",
+      "parent_resume_sha256": "6169f5314bef39b78950c8a31c47101d6771fd2fa557df62f396976177edd8e1",
+      "parent_model_sha256": "ee6b9ea73ab8836bf1562201a1016d643389201478c8404ae0bf5f8aa411f32e",
+      "restored_state": {
+        "step": 10800,
+        "epoch": 2,
+        "batch_index": 3142,
+        "micro_count": 0,
+        "best_wer": 0.32227272727272727
+      },
+      "schedule_seed_data_fields_match": true,
+      "original_full_training_origin": "/overnight/runs/expanded003_mix85_intern",
+      "configuration": {
+        "archive": "closed400_worker6_logical_logs.zip",
+        "member": "expanded003_mix85_intern_intern/config.json",
+        "sha256": "33b0b16043a2704e497a8ee03a5ca1ece5a48748a4b2ba9e3f1dc5a1d104160f"
+      },
+      "portable_configuration": "docs/repro/closed-stages/expanded003_mix85_intern_intern.json",
+      "terminal": {
+        "archive": "closed400_worker6_logical_logs.zip",
+        "utc": "2026-10-14T04:19:18.800879+00:00",
+        "event": "train_exit",
+        "step": 31508,
+        "epoch": 8,
+        "member": "expanded003_mix85_intern_intern/metrics.jsonl"
+      },
+      "parent_origin_candidates": []
+    },
+    {
+      "run": "expanded004_mix75",
+      "configuration_sha256": "653571475dd25e2fcd70e558e3c0c3151d9a989c4e447045500951231e54ebe4",
+      "kind": "own_model_initialization_new_optimizer",
+      "parent_model_sha256": "2813ad260c7efbeed187f6c718b87408c3fbc2e06120419a16d15fd4f76d271e",
+      "parent_model_state": {
+        "step": 26803,
+        "epoch": 6,
+        "batch_index": 3829,
+        "micro_count": 0,
+        "best_wer": 0.3151136363636364
+      },
+      "protected_e05c_anchor": false,
+      "configuration": {
+        "archive": "closed400_worker6_logical_logs.zip",
+        "member": "expanded004_mix75/config.json",
+        "sha256": "653571475dd25e2fcd70e558e3c0c3151d9a989c4e447045500951231e54ebe4"
+      },
+      "portable_configuration": "docs/repro/closed-stages/expanded004_mix75.json",
+      "terminal": {
+        "archive": "closed400_worker6_logical_logs.zip",
+        "utc": "2026-10-14T05:13:57.142012+00:00",
+        "event": "train_exit",
+        "step": 6459,
+        "epoch": 2,
+        "member": "expanded004_mix75/metrics.jsonl"
+      },
+      "parent_origin_candidates": [
+        {
+          "artifact": "expanded003_mix85_intern_intern__best_model.pt",
+          "state": {
+            "step": 26803,
+            "epoch": 6,
+            "batch_index": 3829,
+            "micro_count": 0,
+            "best_wer": 0.3151136363636364
+          }
+        }
+      ]
+    },
+    {
+      "run": "expanded004_mix75_intern",
+      "configuration_sha256": "02b380c7dc4d2b31efa463f41aad6109f1506f6e26fa7cc44ffd4ca37a5579b1",
+      "kind": "exact_full_resume",
+      "parent_resume": "expanded004_mix75/last.pt",
+      "parent_resume_sha256": "00f27f96c6c16e2db9cc72660148664f489ec49bec2a2287a58b42fdaa9b3b3b",
+      "parent_model_sha256": "93b14da19add14763955c74003b1f9bac92a8c9c36fbcdd378e41234cfdbb8a0",
+      "restored_state": {
+        "step": 6459,
+        "epoch": 2,
+        "batch_index": 1865,
+        "micro_count": 0,
+        "best_wer": 0.32169987889463836
+      },
+      "schedule_seed_data_fields_match": true,
+      "original_full_training_origin": "/overnight/runs/expanded004_mix75",
+      "configuration": {
+        "archive": "final-worker8-closed-logs.zip",
+        "member": "expanded004_mix75_intern/config.json",
+        "sha256": "02b380c7dc4d2b31efa463f41aad6109f1506f6e26fa7cc44ffd4ca37a5579b1"
+      },
+      "portable_configuration": "docs/repro/closed-stages/expanded004_mix75_intern.json",
+      "terminal": {
+        "archive": "final-worker8-closed-logs.zip",
+        "utc": "2026-10-14T13:00:07.647489+00:00",
+        "event": "train_exit",
+        "step": 75013,
+        "epoch": 32,
+        "member": "expanded004_mix75_intern/metrics.jsonl"
+      },
+      "parent_origin_candidates": []
+    },
+    {
+      "run": "expanded004_mix85",
+      "configuration_sha256": "e3631c78a6e4e750e0f39651cb8abd4c8d74c55ac6dc9bb990dafe9f4b43e175",
+      "kind": "own_model_initialization_new_optimizer",
+      "parent_model_sha256": "2813ad260c7efbeed187f6c718b87408c3fbc2e06120419a16d15fd4f76d271e",
+      "parent_model_state": {
+        "step": 26803,
+        "epoch": 6,
+        "batch_index": 3829,
+        "micro_count": 0,
+        "best_wer": 0.3151136363636364
+      },
+      "protected_e05c_anchor": false,
+      "configuration": {
+        "archive": "closed400_worker6_logical_logs.zip",
+        "member": "expanded004_mix85/config.json",
+        "sha256": "e3631c78a6e4e750e0f39651cb8abd4c8d74c55ac6dc9bb990dafe9f4b43e175"
+      },
+      "portable_configuration": "docs/repro/closed-stages/expanded004_mix85.json",
+      "terminal": {
+        "archive": "closed400_worker6_logical_logs.zip",
+        "utc": "2026-10-14T05:38:03.517504+00:00",
+        "event": "train_exit",
+        "step": 9186,
+        "epoch": 2,
+        "member": "expanded004_mix85/metrics.jsonl"
+      },
+      "parent_origin_candidates": [
+        {
+          "artifact": "expanded003_mix85_intern_intern__best_model.pt",
+          "state": {
+            "step": 26803,
+            "epoch": 6,
+            "batch_index": 3829,
+            "micro_count": 0,
+            "best_wer": 0.3151136363636364
+          }
+        }
+      ]
+    },
+    {
+      "run": "expanded004_mix85_intern",
+      "configuration_sha256": "27c5ab80f5e7eedd4802568f3ddb2aaca9a3fc03dd104471feae635290425e1e",
+      "kind": "exact_full_resume",
+      "parent_resume": "expanded004_mix85/last.pt",
+      "parent_resume_sha256": "e4f1f1144029cac9c722f54b5671057e568ef70a15a1e45adb5fd2f17668d167",
+      "parent_model_sha256": "bc1b302b766da953b6270015a9d22c9ff1c72b24fc492d8d9463a15cd88a523a",
+      "restored_state": {
+        "step": 9186,
+        "epoch": 2,
+        "batch_index": 1042,
+        "micro_count": 0,
+        "best_wer": 0.31872729274468786
+      },
+      "schedule_seed_data_fields_match": true,
+      "original_full_training_origin": "/overnight/runs/expanded004_mix85",
+      "configuration": {
+        "archive": "final-worker8-closed-logs.zip",
+        "member": "expanded004_mix85_intern/config.json",
+        "sha256": "27c5ab80f5e7eedd4802568f3ddb2aaca9a3fc03dd104471feae635290425e1e"
+      },
+      "portable_configuration": "docs/repro/closed-stages/expanded004_mix85_intern.json",
+      "terminal": {
+        "archive": "final-worker8-closed-logs.zip",
+        "utc": "2026-10-14T13:00:08.187211+00:00",
+        "event": "train_exit",
+        "step": 74028,
+        "epoch": 18,
+        "member": "expanded004_mix85_intern/metrics.jsonl"
+      },
+      "parent_origin_candidates": []
+    },
+    {
+      "run": "main75_packed",
+      "configuration_sha256": "9977b96b35d0d744e63c6290db749ef37fae640ff2a55f9bc7e1a50c685fcc6d",
+      "kind": "own_model_initialization_new_optimizer",
+      "parent_model_sha256": "e05cdea14cb642968ffa30e87373d84bb13c6ffcb6a5b08f5a4cd9da66366e4f",
+      "parent_model_state": {
+        "step": 46179,
+        "epoch": 20,
+        "batch_index": 2199,
+        "micro_count": 0,
+        "best_wer": 0.3504823151125402
+      },
+      "protected_e05c_anchor": true,
+      "configuration": {
+        "archive": "closed_logical_logs_through903.zip",
+        "member": "main75_packed/config.json",
+        "sha256": "9977b96b35d0d744e63c6290db749ef37fae640ff2a55f9bc7e1a50c685fcc6d"
+      },
+      "portable_configuration": "docs/repro/closed-stages/main75_packed.json",
+      "terminal": {
+        "archive": "closed_logical_logs_through903.zip",
+        "utc": "2026-10-13T22:36:32.703839+00:00",
+        "event": "train_exit",
+        "step": 21813,
+        "epoch": 10,
+        "member": "main75_packed/metrics.jsonl"
+      },
+      "parent_origin_candidates": []
+    },
+    {
+      "run": "main85_packed",
+      "configuration_sha256": "d1915df79fd80de4b9625c85228bb132caadc0e21b3373352c72ffd86a5254a8",
+      "kind": "own_model_initialization_new_optimizer",
+      "parent_model_sha256": "e05cdea14cb642968ffa30e87373d84bb13c6ffcb6a5b08f5a4cd9da66366e4f",
+      "parent_model_state": {
+        "step": 46179,
+        "epoch": 20,
+        "batch_index": 2199,
+        "micro_count": 0,
+        "best_wer": 0.3504823151125402
+      },
+      "protected_e05c_anchor": true,
+      "configuration": {
+        "archive": "closed_logical_logs_through903.zip",
+        "member": "main85_packed/config.json",
+        "sha256": "d1915df79fd80de4b9625c85228bb132caadc0e21b3373352c72ffd86a5254a8"
+      },
+      "portable_configuration": "docs/repro/closed-stages/main85_packed.json",
+      "terminal": {
+        "archive": "closed_logical_logs_through903.zip",
+        "utc": "2026-10-13T22:36:32.806267+00:00",
+        "event": "train_exit",
+        "step": 23120,
+        "epoch": 6,
+        "member": "main85_packed/metrics.jsonl"
+      },
+      "parent_origin_candidates": []
+    },
+    {
+      "run": "mix75_initial",
+      "configuration_sha256": "11963f0091fbcc1650f2b02976b87269c4ec1adb674ffe25ae50c290a5ddb54e",
+      "kind": "own_model_initialization_new_optimizer",
+      "parent_model_sha256": "e05cdea14cb642968ffa30e87373d84bb13c6ffcb6a5b08f5a4cd9da66366e4f",
+      "parent_model_state": {
+        "step": 46179,
+        "epoch": 20,
+        "batch_index": 2199,
+        "micro_count": 0,
+        "best_wer": 0.3504823151125402
+      },
+      "protected_e05c_anchor": true,
+      "configuration": {
+        "archive": "closed_logical_logs_through903.zip",
+        "member": "mix75_initial/config.json",
+        "sha256": "11963f0091fbcc1650f2b02976b87269c4ec1adb674ffe25ae50c290a5ddb54e"
+      },
+      "portable_configuration": "docs/repro/closed-stages/mix75_initial.json",
+      "terminal": {
+        "archive": "closed_logical_logs_through903.zip",
+        "utc": "2026-10-13T19:40:52.130907+00:00",
+        "event": "train_exit",
+        "step": 2865,
+        "epoch": 1,
+        "member": "mix75_initial/metrics.jsonl"
+      },
+      "parent_origin_candidates": []
+    },
+    {
+      "run": "mix85_initial",
+      "configuration_sha256": "19b9f80f0590804d8f3ac35ce39514b54b7494ff083d26cc99115f6cd3ddfe82",
+      "kind": "own_model_initialization_new_optimizer",
+      "parent_model_sha256": "e05cdea14cb642968ffa30e87373d84bb13c6ffcb6a5b08f5a4cd9da66366e4f",
+      "parent_model_state": {
+        "step": 46179,
+        "epoch": 20,
+        "batch_index": 2199,
+        "micro_count": 0,
+        "best_wer": 0.3504823151125402
+      },
+      "protected_e05c_anchor": true,
+      "configuration": {
+        "archive": "closed_logical_logs_through903.zip",
+        "member": "mix85_initial/config.json",
+        "sha256": "19b9f80f0590804d8f3ac35ce39514b54b7494ff083d26cc99115f6cd3ddfe82"
+      },
+      "portable_configuration": "docs/repro/closed-stages/mix85_initial.json",
+      "terminal": {
+        "archive": "closed_logical_logs_through903.zip",
+        "utc": "2026-10-13T19:40:52.032766+00:00",
+        "event": "train_exit",
+        "step": 3040,
+        "epoch": 0,
+        "member": "mix85_initial/metrics.jsonl"
+      },
+      "parent_origin_candidates": []
+    },
+    {
+      "run": "specprobe75_control",
+      "configuration_sha256": "dc50af07844147fcda0b2f97d63fd0cbc2e413b63de56359733a094bac2f096d",
+      "kind": "own_model_initialization_new_optimizer",
+      "parent_model_sha256": "e05cdea14cb642968ffa30e87373d84bb13c6ffcb6a5b08f5a4cd9da66366e4f",
+      "parent_model_state": {
+        "step": 46179,
+        "epoch": 20,
+        "batch_index": 2199,
+        "micro_count": 0,
+        "best_wer": 0.3504823151125402
+      },
+      "protected_e05c_anchor": true,
+      "configuration": {
+        "archive": "closed_logical_logs_through903.zip",
+        "member": "specprobe75_control/config.json",
+        "sha256": "dc50af07844147fcda0b2f97d63fd0cbc2e413b63de56359733a094bac2f096d"
+      },
+      "portable_configuration": "docs/repro/closed-stages/specprobe75_control.json",
+      "terminal": {
+        "archive": "closed_logical_logs_through903.zip",
+        "utc": "2026-10-13T20:11:09.488485+00:00",
+        "event": "train_exit",
+        "step": 4640,
+        "epoch": 2,
+        "member": "specprobe75_control/metrics.jsonl"
+      },
+      "parent_origin_candidates": []
+    },
+    {
+      "run": "specprobe75_masked",
+      "configuration_sha256": "6308249a67be978f8e805e83a80cfac95106ac2382fabce4f5fc382efc673650",
+      "kind": "own_model_initialization_new_optimizer",
+      "parent_model_sha256": "e05cdea14cb642968ffa30e87373d84bb13c6ffcb6a5b08f5a4cd9da66366e4f",
+      "parent_model_state": {
+        "step": 46179,
+        "epoch": 20,
+        "batch_index": 2199,
+        "micro_count": 0,
+        "best_wer": 0.3504823151125402
+      },
+      "protected_e05c_anchor": true,
+      "configuration": {
+        "archive": "closed_logical_logs_through903.zip",
+        "member": "specprobe75_masked/config.json",
+        "sha256": "6308249a67be978f8e805e83a80cfac95106ac2382fabce4f5fc382efc673650"
+      },
+      "portable_configuration": "docs/repro/closed-stages/specprobe75_masked.json",
+      "terminal": {
+        "archive": "closed_logical_logs_through903.zip",
+        "utc": "2026-10-13T20:11:13.226842+00:00",
+        "event": "train_exit",
+        "step": 4599,
+        "epoch": 2,
+        "member": "specprobe75_masked/metrics.jsonl"
+      },
+      "parent_origin_candidates": []
+    }
+  ]
+}

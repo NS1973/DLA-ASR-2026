@@ -81,5 +81,7 @@
     "Final stage uses full resume, not a new optimizer",
     "Transfer only paths and calendar cutoff for new machine; preserve optimizer/scheduler/RNG and fixed manifests",
     "Parent archives in full reproduction.zip contain exact preceding stages"
-  ]
+  ],
+  "portable_stage_chain": "docs/repro/final-stage-chain.json",
+  "exact_stage_configurations": "docs/repro/closed-stages/"
 }
