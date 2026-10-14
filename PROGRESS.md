@@ -674,3 +674,7 @@ Found old logs/build_final_results.py hardcoded four-stage receipt schema, incom
 ### 2026-10-14 16:59 MSK — Restored final report source acceptance
 
 Exact source7f9c51d bundle cloned on E, template ancestor and198regular source ZIP/checkout bytes checked. First test run:175passed2skipped6setup errors because tests git subprocess did not inherit command-scoped safe.directory. Preserved tests-first-ownership-failure.log; reran with exact restored path via subprocess-only GIT_CONFIG_COUNT/key/value, no global Git changes. Successful rerun181passed2skipped13.83sec/pipcheckRC0 in previously fresh55-pinned CPU env. Packaged source-report-code-acceptance-7f9c51d.zip with source/bundle/tests/receipt and preservedfailurelog; CRC and archiveSHA verified. This is code/CPU acceptance, not selected new weights/freshColab/final delivery.
+
+### 2026-10-14 17:03 MSK — Closed-training report draft and verified evaluation wait
+
+Updated OVERNIGHT_REPORT_DRAFT.md to actual training exits75013/74028,22-stage/8-edge audit,6988closed-log files,181-test restored-source acceptance, and local-only archive delivery. Historical tables explicitly remain historical; final model/decoder/test pending. Actual evaluator46126 live,71 full-dev candidates completed. Best so far expanded004_mix85_intern LAST: FULLgreedydevclean7053/54402=12.96459689%,other15174/50948=29.78330847%; this is not finalselection/test. Local30636/7172/37076 actualcommands/liveness verified; no restarts or duplicatejobs.
