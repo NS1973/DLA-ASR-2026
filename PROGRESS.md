@@ -658,3 +658,7 @@ Training remains terminal. Evaluator PID46126 and acceptance/analysis PID28977/2
 ### 2026-10-14 16:43 MSK — Anonymous Colab source ready
 
 Only own inference source A Drive1VMYIOB54X3j9xr2gFsqXM0xOXTNBtFqR released reader-by-link after training deadline; private parent unchanged. Anonymous no-cookie download 1256401bytes SHA947880caa84b9739388ddde5dbd0d98fd49518c3a4cbb0b9ef8aefb08ea19f62 matches exact source959ca7c. Receipt colab-source-A-anonymous-verification-20261014.json and screenshot colab-source-public-share-20261014-1643.png saved on E; receipt staged. Evaluator46126 verified live and advancing,34 candidates evaluated; selection/test pending. Automation refreshed.
+
+### 2026-10-14 16:48 MSK — User delivery scope
+
+User explicitly requested delivery as a local archive and full metrics only. Keep full dev model/decoder selection then frozen full test; no subset final scores. Do not pursue GitHub publication/cloud archive/log upload. Connector329MB upload failed HTTP413 before action with current100MiB limit; browser fallback was progressing, then cancelled on changed user scope. Local final-worker8 logs retained verified. Screenshot cloud-log-upload-cancelled-local-delivery-20261014.png records cancellation. Fresh Colab/reproducibility checks remain part of original accepted plan; final delivery itself is local archive. Automation updated to preserve these latest instructions.
