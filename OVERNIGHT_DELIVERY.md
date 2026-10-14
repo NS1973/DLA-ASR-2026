@@ -84,3 +84,7 @@ ZIP CRC, все parent-model SHA, model/full matching. Восстановить 
 
 Цель закрывается после обязательной приёмки нового комплекта. Напоминалка
 останавливается после выдачи результата, а не автоматически в 16:00.
+
+## Подготовленные дополнительные закрытые логи
+
+`overnight-closed-logical-400-worker6-20261014-1200.zip` содержит3286файлов четырёх закрытых этапов: expanded003_mix75_intern_intern, expanded003_mix85_intern_intern, expanded004_mix75 и expanded004_mix85. SHA-256 b62904b483d9b94e3f5781dffa23bf81b37d90b949f81039bfa79e6e2866038f;612834475байт. Проверены все memberSHA/CRC и train_exit; сохранены400медиа и WandB. Добавлять ZIP как отдельный готовый компонент manifest вместе с прежними closed-logZIP; logs.zip будущего комплекта строить из окончательных двух worker8snapshotproof. Не считать этот ZIP окончательными логами живых worker8. Для --closed-snapshot-proof использовать внутренний expanded-predecessors-final/.../verification.json с files/resolved_files/states; внешний expanded-predecessors-NNN-verification.json является краткой квитанцией и не подходит этому API.
