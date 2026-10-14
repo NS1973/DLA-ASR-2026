@@ -38,10 +38,17 @@
     "manifest": "training-resources.json",
     "also_in": "reproduction.zip",
     "logs": [
+      "closed-logs-1329.zip",
+      "extension-logs.zip",
+      "closed-mixed50-logs.zip",
+      "extension5h-final-closed-logs.zip",
+      "othermix100-final-closed-logs.zip",
       "closed_logical_logs_through903.zip",
       "closed400_worker6_logical_logs.zip",
-      "final-worker8-closed-logs.zip"
-    ]
+      "final-worker8-closed-logs.zip",
+      "closed400-intern-stage003-logs.zip"
+    ],
+    "authoritative_manifest": "training-resources.json;9components covering first-step training and all22overnight stages"
   },
   "decoder_provenance": {
     "name": "beam50_lm0.1_bonus1.0",
