@@ -445,3 +445,12 @@ Full-corpus training, dev/test evaluation, full artifact download, fresh Colab v
 - Added OVERNIGHT_TRAINING_RECIPE.md from actual build_manifest/runtime/expanded-stage operator: duration-based clean replay, fixed stage seeds/offsets, CTC exclusion, archive hashes, relocation versus exact resume, inherited-best payload config and parent chain. Commands/documentation inspected; no claim of fresh full retraining.
 - Updated OVERNIGHT_REPORT_DRAFT.md from18SHA-distinct full monitor models; all2703/2864record counts,54402/50948words and error-ratios asserted. RegistrySHA3d985d90eeffe73bce7c4085204c47d91ab58e61d49bcf3a2cb832a6104d923d; bestfullgreedy31.95807/14.05647. User-approved24GiB policy reflected; no newtest claimed.
 
+
+### 2026-10-14T07:07:08.0253997+03:00 final evaluator pre-cutoff audit
+- Actual4remote waiters6920/28976/28977/28978 alive with expected commands. All15actual evaluator/sourceSHA matched runtime-provenance; batch16asserted. Source review confirms actualterminalproof + allowned best/last + offservermatchingreserves, SHA-dedup, full-dev other-primary/clean<=20, decoderfreeze BEFORE test. This is preflight, not completed finalevaluation.
+- Relevant existing regression suite39passed (finalevaluation,otherselection,cachedcandidates,strictcacheddev). Proof Efinal-evaluator-preflight-20261014-0707.json. Training untouched; no duplicate evaluator launched.
+
+
+### 2026-10-14T07:08:29.668088 real 1000-step production windows
+- Eproduction-throughput400-20261014-0708.json captures each1000step logged window:75 481.70994s/2.07594stepssec;85 405.48501s/2.46618stepssec, batch256workers8. Includes variable audio/checkpoint/validation; interval p95 is NOT per-step p95; audiohours not inferable from current log. No causal speedup claim. OOMevents0/host~29.9GiB vs authorized24.
+- Draft report updated measured throughput and limitations. No trainerconfiguration mutation.
