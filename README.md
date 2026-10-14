@@ -33,6 +33,8 @@ python -m pip check
 python -m pytest tests -q
 ```
 
+Если исходники распакованы из source.zip без каталога .git, перед pytest задайте ASR_SOURCE_TEST_ZIP абсолютным путём к этому ZIP: Linux/macOS `export ASR_SOURCE_TEST_ZIP=/path/source.zip`, PowerShell `$env:ASR_SOURCE_TEST_ZIP="C:\path\source.zip"`. Это вход для теста установки реального Git-export; при восстановлении из bundle переменная не нужна.
+
 Для точной CPU среды предоставлен requirements-lock-cpu.txt и доказательства чистой установки. requirements-report.txt содержит дополнительные зависимости генерации PDF; они не нужны для распознавания. Сохранены проверки Colab PyTorch2.11.0/TeslaT4 и новая полная проверка окончательного notebook на CPU; лимит GPU аккаунта отражён в ACCEPTANCE.md. Обучение выполнено на H200 с BF16; при CPU инференсе используется FP32, поэтому побитовое равенство разных устройств не заявляется.
 
 ## Скачать все внешние ресурсы
