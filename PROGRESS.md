@@ -662,3 +662,11 @@ Only own inference source A Drive1VMYIOB54X3j9xr2gFsqXM0xOXTNBtFqR released read
 ### 2026-10-14 16:48 MSK — User delivery scope
 
 User explicitly requested delivery as a local archive and full metrics only. Keep full dev model/decoder selection then frozen full test; no subset final scores. Do not pursue GitHub publication/cloud archive/log upload. Connector329MB upload failed HTTP413 before action with current100MiB limit; browser fallback was progressing, then cancelled on changed user scope. Local final-worker8 logs retained verified. Screenshot cloud-log-upload-cancelled-local-delivery-20261014.png records cancellation. Fresh Colab/reproducibility checks remain part of original accepted plan; final delivery itself is local archive. Automation updated to preserve these latest instructions.
+
+### 2026-10-14 16:51 MSK — Final selection advancing
+
+Evaluator46126 confirmed live again after a bounded wait,48 full-dev candidate evaluations completed, selection/complete absent. Acceptance/analysis controllers remain pending their dependencies. Staged delivery-components-index.json now lists24 preserved components and local-archive-only delivery; final source/model/decoder/test/Colab/report gates remain pending. No training restarts, no additional cloud transfers.
+
+### 2026-10-14 16:55 MSK — Report terminal-proof compatibility repaired
+
+Found old logs/build_final_results.py hardcoded four-stage receipt schema, incompatible with actual22-stage overnight proof from emitter. Added tracked ops/delivery_evidence.py and scripts/build_final_results.py, preserving strict22-stage inventory/live/pending/exit-timestamp/active checks and explicit legacy4 support. RED missingmodule test -> new guard ->31 focused passed -> actualcurrent22-stage proof passed -> full181passed2Windows-symlinkskipped in17.61sec. No evaluator/training/inference code modified. Use NEW tracked scripts/build_final_results.py for new final capture, not old logs operator. Proof terminal-report-parser-current-proof-verification.json staged. Evaluator46126 real live,56full-dev candidates completed; selection/test pending.
