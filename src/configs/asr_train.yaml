@@ -18,6 +18,9 @@ model:
 batch_size: 32
 accumulation: 1
 workers: 8
+validation_workers: 0
+prefetch_factor: null
+skip_resumed_audio: false
 cpu_threads: 4
 epochs: 60
 lr: 0.0003
@@ -28,6 +31,7 @@ bf16: true
 augment: true
 augmentation_profile: legacy
 data_epoch_offset: 0
+intern_manifest_entries: false
 resume: null
 recovery_lr_scale: 1.0
 init_checkpoint: null
@@ -36,7 +40,7 @@ overfit_target: 0.03
 max_steps: null
 log_every: 20
 checkpoint_seconds: 300
-end_utc: '2026-10-13T09:30:00+00:00'
+end_utc: null
 hydra:
   run:
     dir: .

@@ -54,3 +54,26 @@ def test_directory_logs_with_epoch_timestamp_remain_supported(tmp_path):
     with zipfile.ZipFile(destination) as archive:
         assert archive.read('collection.json') == record.read_bytes()
         assert archive.getinfo('collection.json').date_time[0] >= 1980
+def test_delivery_log_writer_accepts_closed_snapshot_proofs(tmp_path):
+    import hashlib,json,zipfile
+    from scripts.package_delivery import write_logs_zip
+    files={};resolved={}
+    for name,data in {'run/status.json':b'{"event":"train_exit"}','run/metrics.jsonl':b'{"loss":0.2}\n','run/best_model.pt':b'weights','run/best.pt':b'resume'}.items():
+        path=tmp_path/hashlib.sha256(data).hexdigest();path.write_bytes(data)
+        files[name]={'sha256':path.name,'bytes':len(data)};resolved[name]=str(path)
+    proof=tmp_path/'proof.json'
+    proof.write_text(json.dumps({'all_model_full_pairs_tensor_state_verified':True,'states':[{'model':'run/best_model.pt','resume':'run/best.pt'}],'files':files,'resolved_files':resolved}))
+    destination=tmp_path/'logs.zip'
+    write_logs_zip(destination,snapshot_proofs=[proof])
+    with zipfile.ZipFile(destination) as archive:
+        assert archive.read('run/metrics.jsonl')==b'{"loss":0.2}\n'
+        assert 'snapshot-log-manifest.json' in archive.namelist()
+        assert not any(name.endswith('.pt') for name in archive.namelist())
+
+
+def test_delivery_log_writer_rejects_mixed_log_sources(tmp_path):
+    import pytest
+    from scripts.package_delivery import write_logs_zip
+    with pytest.raises(ValueError,match='exactly one'):
+        write_logs_zip(tmp_path/'logs.zip',directory=tmp_path,snapshot_proofs=[tmp_path/'proof.json'])
+

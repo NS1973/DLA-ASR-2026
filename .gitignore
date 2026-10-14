@@ -120,3 +120,4 @@ logs/
 *.partial
 *.pt
 *.pth
+.superpowers/sdd/

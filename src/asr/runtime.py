@@ -143,13 +143,31 @@ def worker_seed(worker_id):
     torch.set_num_threads(1)
 
 
+class ResumeAwareLengthBatchSampler(LengthBatchSampler):
+    start_batch = 0
+
+    def __iter__(self):
+        from itertools import islice
+        return islice(super().__iter__(), self.start_batch, None)
+
+
 def make_loader(entries, config, augment=False, shuffle=False):
-    sampler = LengthBatchSampler(entries, config["batch_size"], config["seed"], shuffle)
+    sampler_type = ResumeAwareLengthBatchSampler if config.get("skip_resumed_audio", False) else LengthBatchSampler
+    sampler = sampler_type(entries, config["batch_size"], config["seed"], shuffle)
+    options = {}
+    if config["workers"] > 0 and config.get("prefetch_factor") is not None:
+        options["prefetch_factor"] = config["prefetch_factor"]
     return DataLoader(SpeechDataset(entries, augment, config["seed"],config.get('augmentation_profile','legacy')),
                       batch_sampler=sampler, collate_fn=collate,
                       generator=torch.Generator().manual_seed(config["seed"]),
                       num_workers=config["workers"], pin_memory=True, worker_init_fn=worker_seed,
-                      persistent_workers=config["workers"] > 0)
+                      persistent_workers=config["workers"] > 0, **options)
+
+
+def make_validation_loader(entries, config):
+    options = dict(config)
+    options["workers"] = config.get("validation_workers", config["workers"])
+    return make_loader(entries, options)
 
 
 @torch.inference_mode()
@@ -223,7 +241,12 @@ def train(config):
     directory.mkdir(parents=True, exist_ok=True)
     (directory / "config.json").write_text(json.dumps(config, indent=2), encoding="utf-8")
     logger = RunLog(directory, config)
-    if config.get("custom_train"):
+    if config.get('training_manifest_path'):
+        from ops.build_mixed_manifest import load_manifest
+        entries = load_manifest(config['training_manifest_path'], config['data_root'],
+                                config['training_manifest_sha256'],
+                                intern_entries=config.get('intern_manifest_entries', False))
+    elif config.get("custom_train"):
         entries = CustomDirDataset(config["custom_train"]).entries
     else:
         entries = sum([librispeech_entries(config["data_root"], p) for p in config["train_parts"]], [])
@@ -231,7 +254,8 @@ def train(config):
         entries = sorted(entries, key=lambda e: e.get("duration", 0))[:config["batch_size"]]
     if config.get("limit_train"):
         entries = entries[:config["limit_train"]]
-    (directory / "train_manifest.json").write_text(json.dumps(entries, indent=2), encoding="utf-8")
+    with (directory / "train_manifest.json").open("w", encoding="utf-8") as stream:
+        json.dump(entries, stream, indent=2)
     loader = make_loader(entries, config, config["augment"] and not config["overfit"], not config["overfit"])
     validations = {}
     for part in config["valid_parts"]:
@@ -239,10 +263,15 @@ def train(config):
             valid_entries = librispeech_entries(config["data_root"], part)
             if config["valid_limit"]:
                 valid_entries = random.Random(config["seed"]).sample(valid_entries, min(config["valid_limit"], len(valid_entries)))
-            validations[part] = make_loader(valid_entries, config)
+            validations[part] = make_validation_loader(valid_entries, config)
         except FileNotFoundError:
             logger.emit({"event": "validation_pending", "split": part})
     model = DeepSpeech2CTC(**config["model"]).to(device)
+    model.packed_stack = bool(config.get('packed_stack', False))
+    feature_augment = None
+    if config.get('specaugment', False):
+        from src.asr.specaugment import MildSpecAugment
+        feature_augment = MildSpecAugment().to(device).train()
     if config.get("init_checkpoint") and not config.get('resume'):
         metadata = initialize_from_checkpoint(model, config['init_checkpoint'], directory)
         logger.emit({'event': 'initialize_from_model', **metadata})
@@ -299,7 +328,13 @@ def train(config):
             model.train()
             epoch_loss = count = 0
             resume_batch = state.get("batch_index", 0) if epoch == state["epoch"] else 0
-            for batch_index, batch in enumerate(loader):
+            first_batch = 0
+            if isinstance(loader.batch_sampler, ResumeAwareLengthBatchSampler):
+                loader.batch_sampler.start_batch = resume_batch
+                first_batch = resume_batch
+            for batch_index, batch in enumerate(loader, start=first_batch):
+                if stopping or time.time() >= deadline:
+                    break
                 if batch_index < resume_batch:
                     continue
                 state["epoch"] = epoch
@@ -312,8 +347,11 @@ def train(config):
                 if (output_lengths < batch["target_lengths"] + torch.tensor(repeats)).any():
                     invalid = output_lengths < batch["target_lengths"] + torch.tensor(repeats)
                     raise ValueError(f"CTC target requires more timesteps than output: {[uid for uid,bad in zip(batch['uids'],invalid) if bad]}")
+                spectrogram = batch["spectrogram"].to(device, non_blocking=True)
+                if feature_augment is not None:
+                    spectrogram = feature_augment(spectrogram, batch['spectrogram_length'])
                 with torch.autocast(device_type=device.type, dtype=torch.bfloat16, enabled=mixed):
-                    result = model(batch["spectrogram"].to(device, non_blocking=True), batch["spectrogram_length"])
+                    result = model(spectrogram, batch["spectrogram_length"])
                 loss = criterion(result["log_probs"].transpose(0, 1).float(), batch["targets"].to(device),
                                  result["log_probs_length"], batch["target_lengths"])
                 if not torch.isfinite(loss):

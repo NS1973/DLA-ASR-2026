@@ -1,7 +1,7 @@
 {
   "status": "frozen_final_inference_resources; delivery_acceptance_separate",
-  "model_sha256": "e05cdea14cb642968ffa30e87373d84bb13c6ffcb6a5b08f5a4cd9da66366e4f",
-  "selected": "lr_candidate_othermix100_5x__best",
+  "model_sha256": "5d2e8e35b01f32cd7b4b7e553de419ab796a545ef606fad994f783f35905eef9",
+  "selected": "lr_candidate_overnight_expanded004_mix85_intern__last",
   "inference_overrides": [
     "decoder=beam",
     "beam_width=50",
@@ -13,10 +13,10 @@
   ],
   "resources": [
     {
-      "url": "https://drive.google.com/file/d/1VSmjUfUtmZBIRtqBB2EAAXB29dvT_645/view",
+      "url": "https://drive.google.com/file/d/1wHbYWEqVIwR0WLNQ5TwBfhu78TphNc6z/view",
       "filename": "model.pt",
       "bytes": 97898508,
-      "sha256": "e05cdea14cb642968ffa30e87373d84bb13c6ffcb6a5b08f5a4cd9da66366e4f"
+      "sha256": "5d2e8e35b01f32cd7b4b7e553de419ab796a545ef606fad994f783f35905eef9"
     },
     {
       "url": "https://drive.google.com/file/d/1JGya3yQFvHgqNRhqS5CT7tlsuN-6s4I8/view",
@@ -32,5 +32,27 @@
       "bytes": 34094057
     }
   ],
-  "training_logs_delivery": "Complete closed logs, parents and evaluation evidence are separate members of the reproducibility archive; see delivery manifest."
+  "training_logs_delivery": {
+    "method": "sha256_verified_download_script",
+    "script": "python scripts/download_resources.py --manifest training-resources.json --output-dir training-artifacts",
+    "manifest": "training-resources.json",
+    "also_in": "reproduction.zip",
+    "logs": [
+      "closed_logical_logs_through903.zip",
+      "closed400_worker6_logical_logs.zip",
+      "final-worker8-closed-logs.zip"
+    ]
+  },
+  "decoder_provenance": {
+    "name": "beam50_lm0.1_bonus1.0",
+    "wer": 0.2819934050404334,
+    "selection": "full dev-other corpus WER, with full dev-clean WER <=20%",
+    "pooled_wer": 0.19942097769340295,
+    "dev_clean_wer": 0.12209109959192677,
+    "decoder": "beam",
+    "width": 50,
+    "lm_weight": 0.1,
+    "word_bonus": 1.0,
+    "checkpoint_sha256": "5d2e8e35b01f32cd7b4b7e553de419ab796a545ef606fad994f783f35905eef9"
+  }
 }
