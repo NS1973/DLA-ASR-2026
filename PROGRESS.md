@@ -678,3 +678,7 @@ Exact source7f9c51d bundle cloned on E, template ancestor and198regular source Z
 ### 2026-10-14 17:03 MSK — Closed-training report draft and verified evaluation wait
 
 Updated OVERNIGHT_REPORT_DRAFT.md to actual training exits75013/74028,22-stage/8-edge audit,6988closed-log files,181-test restored-source acceptance, and local-only archive delivery. Historical tables explicitly remain historical; final model/decoder/test pending. Actual evaluator46126 live,71 full-dev candidates completed. Best so far expanded004_mix85_intern LAST: FULLgreedydevclean7053/54402=12.96459689%,other15174/50948=29.78330847%; this is not finalselection/test. Local30636/7172/37076 actualcommands/liveness verified; no restarts or duplicatejobs.
+
+### 2026-10-14 17:13 MSK — Portable archive inventory and all final states
+
+Added final_worker8_all_closed_states.tar.gz1738261087bytes SHAe76bee1015600d6e78e501c4c27cdd4fc73bc142d86e5f6213d151deb84846de to NEW staging, source/destination SHA checked. All four final best/last model/full pairs now preserved inside planned single archive as well as existing reserves. delivery-components-index.json26components have portable archive_member mappings, no unresolvedentries. Added ARCHIVE_README.md explaining local model/LM inference, full-only final metric tables, source ZIP/bundle exactref restore, logicallogs versus blobTAR, parent/manifests and historicalproof limits. Staged README and copyreceipt; finalmetrics/acceptance remain pending. Evaluator46126 last verified live84full-dev completed.
