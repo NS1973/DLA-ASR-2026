@@ -388,3 +388,16 @@ Full-corpus training, dev/test evaluation, full artifact download, fresh Colab v
 - Current expanded003 mix75/85 PID15892/15893 uses400.65833953125 unique other hours with75/85% exposure fractions. Parent da6ccc5d9826f598baf5bf2d7c60458fab935f6d9bddc1ce3a635df0e9791acc full greedy dev-clean14.56380280%/dev-other33.02386747%; no new test.
 - Last data shard retry19 stopped by unchanged32GiB global RAM guard; old data retained. Own tmpfs48GiB free7.75GiB, cap100GiB; reserve not lowered.
 - TDD: RED giant manifest serialization then streaming json.dump byte-identical output; configurable prefetch only with workers; real packed+Spec fullresume optimizer/scheduler/tensors exact and resumed audiofetch4->2; deadline crossing duringfetch RED performed1step, guard nowpreventsstep. These changes are not yet promoted to live trainers.
+
+
+### 2026-10-14T04:37:16: streaming continuation and own scratch quota
+- Source6ba17e1:150localtests passed1Windows skip;18remoteCPUtests passed. Streaming manifest output identical; exact packed+Spec model/AdamW/scheduler resume proved; skipped audiofetch4->2; deadline crossing duringfetch preventsoptimizerstep.
+- Verified freshE042751fourbest/last SHA/model-fullpairs BEFORE SIGTERM. Old400PID15892/15893 actualexit7514/7479; newownfullcontinuations22691/22755 restoredpositions and advanced7560/7520finite. No optimizer/scheduler/LR/seed/data/batch change. Sourceimmutable /overnight/code-intern-6ba17e1 prefetch1/skipresume. ClosedcaptureLOCAL5360 index903 inprogress, notyetverified.
+- ONLYown/overnighttmpfs48->56GiB samecontainer/no restart preservednosuid,nodev,noexec. InitialnamespaceinspectiondeniedwithoutSYS_PTRACE; minimalnamespacehelperwithSYS_ADMIN/SYS_CHROOT/SYS_PTRACE succeeded andremoved. RAMglobal42.26GiB/cgroup84.08of100 aftercontinuation, scratch13.60free;32GiB/8GiB guardsnotlowered. Finalshardtransfer16620continues, nofalsefull500claim.
+- Automationupdated actualPIDs/source/finalwatchers. Sourcebundle E:\DLA-ASR-2026-backups\01a13245-8e70-7373-8dae-fbd7d26072df\20261013-1115\source-streaming-20261014-043715.bundle SHA 7286004a5cb6709d5b5a337d47c4846ee3504beed0c6d2fb728528028592afe8 verified; operatorsZIP b98dc585b9cd7ec71c2c237bd2fb9ec6e2f75cd8a3495713b15c6bd62896572e CRCverified. Finalacceptancestillpending16cutoff.
+
+
+### 2026-10-14T04:42:54: delivery path accepts verified logical snapshot logs
+- Added repeatable --closed-snapshot-proof to generic package_delivery; strict single-source input, audited logical-name reconstruction/SHA/status checks, weights excluded. RED two CLI-writer integration failures ->GREEN; full152passed1Windows skip.
+- OVERNIGHT_DELIVERY.md records newbranch/finalacceptance/source-ref/parent-chain/resource/Colab/PDF/exactrestore gates and warns against oldhardcodedcaller/contentaddressedTARaslogs.
+- Real closed-log aggregation through completed initial/specprobe/main100/200/300 stages running in session71630 onE; no claim until its verification JSON. Closed400collector5360 stillstreaming; subsequent stages excluded from early component and must be appended afteractualexit.

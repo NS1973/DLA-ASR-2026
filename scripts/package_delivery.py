@@ -38,10 +38,14 @@ def export_source(root, output, source_ref=None):
     return {'commit':commit,'source_ref':reference,'source_branch':reference.removeprefix('refs/heads/')}
 
 
-def write_logs_zip(destination, directory=None, logs_archive=None):
+def write_logs_zip(destination, directory=None, logs_archive=None, snapshot_proofs=None):
     """Stream a captured TAR directly, or support the original directory input."""
-    if (directory is None) == (logs_archive is None):
+    if sum(value is not None for value in (directory, logs_archive, snapshot_proofs)) != 1:
         raise ValueError('Supply exactly one log directory or archive')
+    if snapshot_proofs is not None:
+        from ops.snapshot_log_packaging import write_snapshot_logs
+        write_snapshot_logs(destination, snapshot_proofs)
+        return
     destination = Path(destination)
     temporary = Path(str(destination) + '.tmp')
     excluded = {'.pt', '.pth', '.tmp', '.npz', '.partial'}
@@ -80,6 +84,8 @@ def main():
     logs = p.add_mutually_exclusive_group(required=True)
     logs.add_argument('--runs', help='Directory of collected run artifacts')
     logs.add_argument('--logs-archive', help='Captured TAR/TAR.GZ; streams without unpacking many files')
+    logs.add_argument('--closed-snapshot-proof', action='append',
+                      help='Verified closed content-addressed snapshot proof; repeat for several stages')
     p.add_argument('--resume-checkpoint', help='Full matching checkpoint with optimizer, scheduler and RNG states')
     p.add_argument('--lm', help='Frozen external LM, when selected by dev evaluation')
     p.add_argument('--output', default='delivery/final')
@@ -97,7 +103,8 @@ def main():
         shutil.copy2(args.resume_checkpoint, output/'resume.pt')
     if args.lm:
         shutil.copy2(args.lm, output/Path(args.lm).name)
-    write_logs_zip(output/'logs.zip', directory=args.runs, logs_archive=args.logs_archive)
+    write_logs_zip(output/'logs.zip', directory=args.runs, logs_archive=args.logs_archive,
+                   snapshot_proofs=args.closed_snapshot_proof)
     for name in ['REPORT.md','REPORT.pdf','DLA_ASR_Demo.ipynb','requirements.txt','requirements-lock-cpu.txt','requirements-report.txt','resources.json','lm_sources.json']:
         if (root/name).exists():
             shutil.copy2(root/name,output/name)
