@@ -17,10 +17,10 @@
 
 ## Установка в чистое окружение
 
-Python3.12. Распакуйте source.zip в новую папку либо восстановите Git:
+Python3.12. Получите исходники и историю из публичного GitHub:
 
 ```bash
-git clone --branch codex/hw1-asr-overnight-20261014 source.bundle DLA-ASR-2026
+git clone --branch codex/hw1-asr-overnight-20261014 https://github.com/NS1973/DLA-ASR-2026.git DLA-ASR-2026
 cd DLA-ASR-2026
 python -m venv .venv
 ```
@@ -33,7 +33,7 @@ python -m pip check
 python -m pytest tests -q
 ```
 
-Если исходники распакованы из source.zip без каталога .git, перед pytest задайте ASR_SOURCE_TEST_ZIP абсолютным путём к этому ZIP: Linux/macOS `export ASR_SOURCE_TEST_ZIP=/path/source.zip`, PowerShell `$env:ASR_SOURCE_TEST_ZIP="C:\path\source.zip"`. Это вход для теста установки реального Git-export; при восстановлении из bundle переменная не нужна.
+Если исходники распакованы из source.zip без каталога .git, перед pytest задайте ASR_SOURCE_TEST_ZIP абсолютным путём к этому ZIP: Linux/macOS `export ASR_SOURCE_TEST_ZIP=/path/source.zip`, PowerShell `$env:ASR_SOURCE_TEST_ZIP="C:\path\source.zip"`. Это вход для теста установки реального Git-export; при обычном git clone переменная не нужна.
 
 Для точной CPU среды предоставлен requirements-lock-cpu.txt и доказательства чистой установки. requirements-report.txt содержит дополнительные зависимости генерации PDF; они не нужны для распознавания. Сохранены проверки Colab PyTorch2.11.0/TeslaT4 и новая полная проверка окончательного notebook на CPU; лимит GPU аккаунта отражён в ACCEPTANCE.md. Обучение выполнено на H200 с BF16; при CPU инференсе используется FP32, поэтому побитовое равенство разных устройств не заявляется.
 
@@ -51,7 +51,7 @@ python scripts/download_resources.py --manifest resources.json --output-dir arti
 python scripts/download_resources.py --manifest training-resources.json --output-dir training-artifacts
 ```
 
-Оба вызова проверяют SHA-256; повторный запуск использует готовые проверенные файлы и возобновляет незавершённую передачу. Тяжёлые веса, аудио и журналы не помещаются в Git. В полном reproduction.zip все журналы, родители, model.pt, resume.pt и LM уже приложены; скачивание их повторно не требуется. Начните с ARCHIVE_README.md. Файл training-resources.json публикуется только с реально проверенными ссылками.
+Оба вызова проверяют SHA-256; повторный запуск использует готовые проверенные файлы и возобновляет незавершённую передачу. Тяжёлые веса, аудио и журналы не помещаются в Git. В отдельно подготовленной папке ASR-RESULTS журналы, родители, model.pt, resume.pt и LM уже распакованы; повторно скачивать их не требуется. При установке из GitHub используйте команды выше. Файл training-resources.json публикуется только с реально проверенными ссылками.
 
 ## Инференс на своём наборе
 
@@ -62,7 +62,7 @@ python inference.py checkpoint=artifacts/model.pt custom_dir=/path/to/dataset ou
 python calc_metrics.py --reference-dir /path/to/dataset/transcriptions --prediction-dir predictions
 ```
 
-Для весов из полного архива замените checkpoint и lm_path на пути к распакованным файлам. Словарь: английские буквы, пробел, апостроф, CTC blank. CustomDirDataset находится в src/datasets/custom_dir_dataset.py; Hydra config — src/configs/asr_inference.yaml. WER/CER корпусные: сумма ошибок, делённая на суммарное число слов/символов.
+Для готовой папки ASR-RESULTS используйте checkpoint=weights/model.pt и lm_path=weights/3-gram.pruned.1e-7.arpa. Словарь: английские буквы, пробел, апостроф, CTC blank. CustomDirDataset находится в src/datasets/custom_dir_dataset.py; Hydra config — src/configs/asr_inference.yaml. WER/CER корпусные: сумма ошибок, делённая на суммарное число слов/символов.
 
 ## Обучение и воспроизведение
 
@@ -81,6 +81,6 @@ data_root — родитель папки LibriSpeech: ожидается `/path
 
 ## Документы и прежние результаты
 
-ACCEPTANCE.md — текущие подтверждённые проверки; исторические ledgers имеют явную пометку. README_E05C_HISTORICAL.md, REPORT_BASELINE и REPORT_E640 относятся к прежним моделям. Их метрики не являются текущими. Все прежние архивы и веса сохранены отдельно.
+ACCEPTANCE.md — текущие подтверждённые проверки; исторические ledgers имеют явную пометку. REPORT_BASELINE и REPORT_E640 относятся к прежним моделям. Их метрики не являются текущими. Все прежние результаты и веса сохранены; старые инструкции доступны в истории Git.
 
 Использовалась помощь LLM. Правила курса запрещают LLM; техническая воспроизводимость не отменяет это несоответствие.

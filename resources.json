@@ -36,7 +36,7 @@
     "method": "sha256_verified_download_script",
     "script": "python scripts/download_resources.py --manifest training-resources.json --output-dir training-artifacts",
     "manifest": "training-resources.json",
-    "also_in": "reproduction.zip",
+    "also_in": "logs/training/ and logs/comparisons/ in the unpacked ASR-RESULTS folder",
     "logs": [
       "closed-logs-1329.zip",
       "extension-logs.zip",

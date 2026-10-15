@@ -1,9 +1,15 @@
-# Template provenance and Git history
+# Происхождение шаблона и история Git
 
-This project started from the official Blinorot/pytorch_project_template `example/asr` branch, as required by the DLA 2026 HW1 instructions. The workstation checkout retains that history and uses branch `codex/hw1-asr`. The upstream remote is named `template` and its push URL is disabled.
+Проект основан на официальной ветке [example/asr](https://github.com/Blinorot/pytorch_project_template/tree/example/asr) шаблона Blinorot/pytorch_project_template, указанного в исходном задании DLA 2026. Проверенный commit шаблона: `e9ca57ddb6207d885be74c9a791ec59c3bee6b12`.
 
-The implementation branch retains the original template and local implementation ancestry. While workstation Git CLI authentication was unavailable, a project-only GitHub Actions workflow imported the verified Git bundle into the private repository. The API snapshot commits are retained separately under `codex/api-snapshots`; they do not replace the source history.
+Публичный репозиторий: [NS1973/DLA-ASR-2026](https://github.com/NS1973/DLA-ASR-2026). Сдаваемая ветка — `codex/hw1-asr-overnight-20261014`. Исходная версия кода итоговой модели зафиксирована commit `1157d2645ea82828380dd5bbe711216fd488f38a`; последующие правки документации не меняют модель и производственный Python-код.
 
-The latest published original-history bundle is available at `history/DLA-ASR-2026.bundle` on `codex/api-snapshots`, and the reproducible delivery contains `source.bundle`. Restore the latter using `git clone --branch codex/hw1-asr source.bundle restored-project`. Verify the restored HEAD against the delivery manifest.
+Получить исходники и полную Git-историю можно напрямую:
 
-The course prohibits LLM use. This project was prepared with an AI coding assistant; technical completeness does not establish compliance with that rule.
+```bash
+git clone --branch codex/hw1-asr-overnight-20261014 https://github.com/NS1973/DLA-ASR-2026.git DLA-ASR-2026
+```
+
+В готовой папке ASR-RESULTS история уже находится в скрытом `.git`; дополнительные bundle или архивы не нужны. Проверка происхождения этой папки: `verification/source-provenance.json`. История шаблона и реализации сохранена, `git fsck` пройден. Старые API snapshots и архивные комплекты относятся к истории передачи, а не к шагам установки текущего решения.
+
+Использование LLM раскрыто в отчёте; техническая готовность не означает соблюдения соответствующего правила курса.

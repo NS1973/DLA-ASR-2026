@@ -5,7 +5,7 @@
 | Требование | Подтверждённый факт |
 |---|---|
 | Собственная CTC-модель | 24 471 453 параметра, собственное обучение; все родители и полные configs сохранены |
-| Шаблон и Git-история | Template ancestor e9ca57d; source.bundle сохраняет исходные commit, ZIP и каноническое Git-tree восстанавливаются точно |
+| Шаблон и Git-история | Template ancestor e9ca57d; публичный git clone сохраняет историю шаблона и реализации; в ASR-RESULTS история находится в .git |
 | Интерфейсы | train.py, inference.py, CustomDirDataset в src/datasets, Hydra configs, отдельный calc_metrics.py; 181 passed / 2 Windows symlink skipped на текущем исправленном исходнике (15,56сек) |
 | Чистая установка | Зафиксированные 55 CPU зависимостей и проверки source7f9 и текущий39a5c7f:181passed/2skip,pipcheck; runtime/inference/model/decoder после этого не менялись; точный export/bundle окончательного выпуска проверяется перед упаковкой |
 | Аугментации и logging | Четыре waveform аугментации, мягкий SpecAugment; полные JSONL/W&B offline/target-prediction/audio/спектрограммы включены с первого этапа |
@@ -18,8 +18,8 @@
 | Отчёт | Четыре страницы PDF, все визуально проверены; полные таблицы/beam-LM сравнение/графики закрытых финальных запусков/анализ и ограничения |
 | Ресурсы для инференса | Model, LM, example и frozen source публично доступны с SHA-256; decoder идентичен полной оценке |
 | Полные журналы скриптом | Все9компонентов: ранние5ZIP, ночные3ZIP и промежуточный worker6ZIP; реальный scripts/download_resources.py проверяет bytes/SHA. Итоговое доказательство all-nine-training-resources-verification.json в corrected-v2-acceptance.zip |
-| Публичный Git | Репозиторий публичный, anonymous GitHub API200. Финальный commit/anonymousclone/точный Git-tree фиксируются внешним corrected-v2-verification.json после сборки |
-| Новый полный архив | v1 сохранён неизменным; v2 создаётся отдельно. Размер/SHA внешнего ZIP, проверка всех членов/CRC и exact bundle restore фиксируются снаружи в corrected-v2-verification.json, receipt Drive — после завершённой загрузки |
+| Публичный Git | Репозиторий публичный, anonymous GitHub API200. Исходный код модели зафиксирован commit1157d264; Git-история и template ancestor проверены; последующие правки затрагивают документацию |
+| Готовая папка результатов | ASR-RESULTS проверена: исходники с Git-историей, модель/full checkpoint, распакованная LM, полные логи, manifests/родители и результаты. Приёмка: verification/folder-verification.json внутри готовой папки. Все прежние комплекты сохранены |
 
 Клиентский Colab files.download зависит от доступности output-frame. ZIP также можно скачать через панель «Файлы». Фактические байты ZIP независимо получены и проверены, а не объявлены скачанными по попытке нажатия.
 
